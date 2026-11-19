@@ -82,9 +82,13 @@ class MainActivity : ComponentActivity() {
             var sharingFixture by remember { mutableStateOf<FixtureEntity?>(null) }
 
             MaterialTheme(
-                colorScheme = if (isDark) DarkColors else LightColors
+                colorScheme = com.matchpick.app.ui.theme.MatchPickDarkColorScheme,
+                typography = com.matchpick.app.ui.theme.MatchPickTypography
             ) {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = com.matchpick.app.ui.theme.MatchPickPalette.DeepObsidian
+                ) {
                     MainNavigationHost(
                         adUnitId = "ca-app-pub-3940256099942544/6300978111",
                         predictViewModel = predictViewModel,
@@ -128,22 +132,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-private val DarkColors = darkColorScheme(
-    primary = Color(0xFF00F59B),
-    onPrimary = Color(0xFF041B11),
-    primaryContainer = Color(0xFF0B291D),
-    onPrimaryContainer = Color(0xFF6BFFB8),
-    secondary = Color(0xFF00E5FF),
-    onSecondary = Color(0xFF001F26),
-    secondaryContainer = Color(0xFF003640),
-    onSecondaryContainer = Color(0xFF6BF0FF),
-    tertiary = Color(0xFF8B5CF6),
-    background = Color(0xFF070B14),
-    surface = Color(0xFF0E1424),
-    surfaceVariant = Color(0xFF162035),
-    outline = Color(0xFF64748B),
-    outlineVariant = Color(0xFF26334D)
-)
-
-private val LightColors = DarkColors // 2026+ dark-first sports app default

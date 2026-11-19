@@ -140,42 +140,58 @@ fun MainNavigationHost(
         androidx.compose.ui.platform.LocalContext provides localizedContext
     ) {
         Scaffold(
-        containerColor = Color(0xFF070B14),
+        containerColor = Color(0xFF04070E),
         bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF090D18),
-                tonalElevation = 8.dp
-            ) {
-                items.forEach { screen ->
-                    val isSelected = currentRoute == screen.route
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                screen.icon,
-                                contentDescription = null,
-                                tint = if (isSelected) Color(0xFF00F59B) else Color(0xFF64748B)
-                            )
-                        },
-                        label = {
-                            Text(
-                                text = stringResource(screen.titleRes),
-                                color = if (isSelected) Color(0xFF00F59B) else Color(0xFF64748B)
-                            )
-                        },
-                        selected = isSelected,
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = Color(0xFF0B291D)
-                        ),
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
+            androidx.compose.material3.Surface(
+                color = Color(0xFF080D1A),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    androidx.compose.ui.graphics.Brush.horizontalGradient(
+                        listOf(
+                            Color(0x3300F59B),
+                            Color(0x2200E5FF),
+                            Color(0x33A855F7)
+                        )
                     )
+                ),
+                shadowElevation = 16.dp
+            ) {
+                NavigationBar(
+                    containerColor = Color.Transparent,
+                    tonalElevation = 0.dp
+                ) {
+                    items.forEach { screen ->
+                        val isSelected = currentRoute == screen.route
+                        NavigationBarItem(
+                            icon = {
+                                Icon(
+                                    screen.icon,
+                                    contentDescription = null,
+                                    tint = if (isSelected) Color(0xFF00F59B) else Color(0xFF64748B)
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = stringResource(screen.titleRes),
+                                    fontWeight = if (isSelected) androidx.compose.ui.text.font.FontWeight.Black else androidx.compose.ui.text.font.FontWeight.Medium,
+                                    color = if (isSelected) Color(0xFF00F59B) else Color(0xFF94A3B8)
+                                )
+                            },
+                            selected = isSelected,
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = Color(0xFF0A2E20)
+                            ),
+                            onClick = {
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }

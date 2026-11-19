@@ -93,4 +93,19 @@
     <!-- Ad & Monetization -->
     <string name="ad_sponsor_label">Ad</string>
     <string name="ad_loading_reward">Loading rewarded ad...</string>
+
+    <!-- 2026+ Spatial Arena & Neural Telemetry -->
+    <string name="hero_match_of_the_day">MATCH OF THE DAY • 2X STREAK BOOST</string>
+    <string name="neural_radar_badge">NEURAL RADAR 2026</string>
+    <string name="tactical_sheet_title">Neural Match Telemetry</string>
+    <string name="metric_xg_advantage">xG Advantage</string>
+    <string name="metric_press_intensity">Press Intensity</string>
+    <string name="metric_win_probability">AI Win Probability</string>
+    <string name="tap_for_telemetry">Tap card for Neural Telemetry &amp; xG Breakdown</string>
+    <string name="vip_accuracy_banner">91.4% Rolling 30-Day Neural Accuracy</string>
+    <string name="vip_vault_locked_hint">Encrypted Pro Signal • Unlock Instant Access</string>
+    <string name="profile_tier_badge">PRO ANALYST • TIER IV</string>
+    <string name="profile_accuracy_label">Accuracy</string>
+    <string name="profile_global_rank_label">Global Rank</string>
+    <string name="feed_trending_matches">TRENDING DERBIES</string>
 </resources>

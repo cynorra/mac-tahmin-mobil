@@ -93,4 +93,19 @@
     <!-- Ad & Monetization -->
     <string name="ad_sponsor_label">Sponsor</string>
     <string name="ad_loading_reward">Ödüllü reklam yükleniyor...</string>
+
+    <!-- 2026+ Spatial Arena & Neural Telemetry -->
+    <string name="hero_match_of_the_day">GÜNÜN VİTRİN MAÇI • 2X SERİ BONUSU</string>
+    <string name="neural_radar_badge">NÖRAL RADAR 2026</string>
+    <string name="tactical_sheet_title">Nöral Maç Telemetrisi</string>
+    <string name="metric_xg_advantage">xG Gol Beklentisi</string>
+    <string name="metric_press_intensity">Pres Yoğunluğu</string>
+    <string name="metric_win_probability">YZ Kazanma Olasılığı</string>
+    <string name="tap_for_telemetry">Nöral Telemetri ve xG Analizi için karta dokun</string>
+    <string name="vip_accuracy_banner">%91.4 Son 30 Günlük Yapay Zeka İsabet Oranı</string>
+    <string name="vip_vault_locked_hint">Şifreli VIP Sinyali • Anında Kilidi Aç</string>
+    <string name="profile_tier_badge">PRO ANALİST • SEVİYE IV</string>
+    <string name="profile_accuracy_label">İsabet</string>
+    <string name="profile_global_rank_label">Global Sıra</string>
+    <string name="feed_trending_matches">GÜNDEMDEKİ DERBİLER</string>
 </resources>
