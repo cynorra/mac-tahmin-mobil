@@ -63,7 +63,13 @@ fun PredictScreen(
     BoxWithConstraints(modifier = modifier.fillMaxSize().background(MatchPickPalette.DeepObsidian)) {
         val isWideScreen = maxWidth >= 600.dp
 
-        Column(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .widthIn(max = if (isWideScreen) 1100.dp else 720.dp)
+        ) {
             // 1. Sleek Luxury Single-Row Top Navigation Header
             Row(
                 modifier = Modifier

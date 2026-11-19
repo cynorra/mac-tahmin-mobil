@@ -60,6 +60,20 @@ fun AdaptiveBannerAd(
             AdView(context).apply {
                 setAdSize(AdSize.BANNER)
                 this.adUnitId = adUnitId
+                this.adListener = object : AdListener() {
+                    override fun onAdClicked() {
+                        super.onAdClicked()
+                        android.util.Log.d("GoogleAdsAnalytics", "🎯 [CONVERSION] Banner Ad Clicked: unit=$adUnitId")
+                    }
+                    override fun onAdImpression() {
+                        super.onAdImpression()
+                        android.util.Log.d("GoogleAdsAnalytics", "👁️ [CONVERSION] Banner Ad Impression: unit=$adUnitId")
+                    }
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        super.onAdFailedToLoad(error)
+                        android.util.Log.w("GoogleAdsAnalytics", "Banner ad failed to load: ${error.message}")
+                    }
+                }
                 loadAd(AdRequest.Builder().build())
             }
         }

@@ -52,7 +52,9 @@ fun ProfileScreen(
             .background(MatchPickPalette.DeepObsidian)
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .widthIn(max = 680.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Top Bar

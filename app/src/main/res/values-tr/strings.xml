@@ -108,4 +108,10 @@
     <string name="profile_accuracy_label">İsabet</string>
     <string name="profile_global_rank_label">Global Sıra</string>
     <string name="feed_trending_matches">GÜNDEMDEKİ DERBİLER</string>
+    <string name="feed_empty_title">Henüz Topluluk Yorumu Yok</string>
+    <string name="feed_empty_desc">Bugünkü maçlar hakkında ilk taktik analizini ve tahminini aşağıdan paylaş!</string>
+    <string name="leaderboard_empty_title">Yeni Maç Günü Puan Durumu</string>
+    <string name="leaderboard_empty_desc">Günün maçlarını tahmin ederek podyumun zirvesine hemen yerleş!</string>
+    <string name="vip_empty_title">YZ Telemetrisi Hazırlanıyor</string>
+    <string name="vip_empty_desc">Günün en yüksek güven oranlı banko analizleri başlama düdüğüne doğru güncellenecektir.</string>
 </resources>

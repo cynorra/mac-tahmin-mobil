@@ -30,7 +30,7 @@ class FeedViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(
         FeedUiState(
-            posts = getDefaultPosts("GLOBAL"),
+            posts = emptyList(),
             currentRegion = "GLOBAL"
         )
     )
@@ -44,8 +44,7 @@ class FeedViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, currentRegion = region) }
             val fetchedPosts = fetchPostsFromFirestore(region)
-            val finalPosts = fetchedPosts.ifEmpty { getDefaultPosts(region) }
-            _uiState.update { it.copy(posts = finalPosts, isLoading = false) }
+            _uiState.update { it.copy(posts = fetchedPosts, isLoading = false) }
         }
     }
 
@@ -171,76 +170,6 @@ class FeedViewModel @Inject constructor(
             } catch (_: Exception) {
                 // Misafir veya offline modunda yerel durum korunur
             }
-        }
-    }
-
-    private fun getDefaultPosts(region: String): List<PostUiModel> {
-        return if (region == "TR") {
-            listOf(
-                PostUiModel(
-                    id = "tr_feed_1",
-                    authorName = "Burak K.",
-                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png",
-                    text = "Beşiktaş - Trabzonspor derbisinde Semih Kılıçsoy ilk 11 başlıyor. Karşılıklı Gol Var (KG Var) oranı 1.78 kaçmaz! 🔥",
-                    timestampFormatted = "14:20",
-                    likesCount = 28,
-                    isLiked = false,
-                    attachedPrediction = "Beşiktaş vs Trabzonspor -> KG Var"
-                ),
-                PostUiModel(
-                    id = "tr_feed_2",
-                    authorName = "Rıdvan Taktik",
-                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8695.png",
-                    text = "Fenerbahçe Kadıköy'de müthiş baskıyla başlıyor. İlk yarı 1.5 Üst taktiği banko duruyor.",
-                    timestampFormatted = "13:45",
-                    likesCount = 34,
-                    isLiked = true,
-                    attachedPrediction = "Fenerbahçe vs Adana Demirspor -> İY 1.5 Üst"
-                ),
-                PostUiModel(
-                    id = "tr_feed_3",
-                    authorName = "Aslan Yüreği",
-                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png",
-                    text = "Galatasaray deplasmanda Osimhen ve Icardi ikilisiyle yine gol şov yapacaktır. Maç Sonucu 2 & 2.5 Üst!",
-                    timestampFormatted = "12:10",
-                    likesCount = 56,
-                    isLiked = false,
-                    attachedPrediction = "Sivasspor vs Galatasaray -> 2 & 2.5 Üst"
-                )
-            )
-        } else {
-            listOf(
-                PostUiModel(
-                    id = "global_feed_1",
-                    authorName = "Liam Tactical",
-                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
-                    text = "Arsenal vs Man City title race battle. Rice and Rodri midfield duel will decide the whole match tempo. Under 2.5 goals looks very sharp.",
-                    timestampFormatted = "15:45",
-                    likesCount = 42,
-                    isLiked = false,
-                    attachedPrediction = "Arsenal vs Manchester City -> Under 2.5"
-                ),
-                PostUiModel(
-                    id = "global_feed_2",
-                    authorName = "Carlos Madrid",
-                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
-                    text = "El Clásico at Bernabéu! Vini Jr and Bellingham always deliver in big matches. Expecting early goals.",
-                    timestampFormatted = "14:10",
-                    likesCount = 68,
-                    isLiked = true,
-                    attachedPrediction = "Real Madrid vs FC Barcelona -> 1X & Over 2.5"
-                ),
-                PostUiModel(
-                    id = "global_feed_3",
-                    authorName = "Marco Interista",
-                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8636.png",
-                    text = "Inter Milan solid defense at San Siro: Clean sheet for Sommer is highly probable against Juventus.",
-                    timestampFormatted = "11:30",
-                    likesCount = 31,
-                    isLiked = false,
-                    attachedPrediction = "Inter Milan vs Juventus -> 1"
-                )
-            )
         }
     }
 }

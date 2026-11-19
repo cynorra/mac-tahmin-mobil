@@ -71,7 +71,14 @@ class FixtureRepository @Inject constructor(
                         officialPick = raw["officialPick"] as? String,
                         officialConfidence = (raw["officialConfidence"] as? Number)?.toInt() ?: 0,
                         userPick = null,
-                        isLocked = (raw["isLocked"] as? Boolean) ?: false
+                        isLocked = (raw["isLocked"] as? Boolean) ?: false,
+                        oddsHome = (raw["oddsHome"] as? Number)?.toFloat() ?: 2.10f,
+                        oddsDraw = (raw["oddsDraw"] as? Number)?.toFloat() ?: 3.30f,
+                        oddsAway = (raw["oddsAway"] as? Number)?.toFloat() ?: 3.20f,
+                        votesHomePercent = (raw["votesHomePercent"] as? Number)?.toInt() ?: 45,
+                        votesDrawPercent = (raw["votesDrawPercent"] as? Number)?.toInt() ?: 25,
+                        votesAwayPercent = (raw["votesAwayPercent"] as? Number)?.toInt() ?: 30,
+                        aiAnalysis = raw["aiAnalysis"] as? String ?: ""
                     )
                 }
                 fixtureDao.insertFixtures(entities)

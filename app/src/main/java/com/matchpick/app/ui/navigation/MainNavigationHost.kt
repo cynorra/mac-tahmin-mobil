@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,59 +83,33 @@ fun MainNavigationHost(
     val feedState by feedViewModel.uiState.collectAsState()
     val leaderboardState by leaderboardViewModel.uiState.collectAsState()
 
-    var officialPicks by remember {
-        mutableStateOf(
-            listOf(
+    var unlockedPickIds by rememberSaveable { mutableStateOf(setOf<String>()) }
+
+    val officialPicks = remember(predictState.fixtures, unlockedPickIds) {
+        predictState.fixtures
+            .filter { it.officialPick != null }
+            .mapIndexed { index, fixture ->
+                val pickLabel = when (fixture.officialPick) {
+                    "1" -> "${fixture.homeTeamName} (1)"
+                    "X" -> "Draw (X)"
+                    "2" -> "${fixture.awayTeamName} (2)"
+                    else -> fixture.officialPick ?: "Home Win"
+                }
+                // First pick is unlocked for instant preview, subsequent picks are VIP locked
+                val isLocked = index > 0 && !unlockedPickIds.contains(fixture.id)
                 OfficialPickUiModel(
-                    fixtureId = "laliga_rm_barca",
-                    leagueName = "La Liga EA Sports",
-                    homeTeam = "Real Madrid",
-                    homeLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
-                    awayTeam = "FC Barcelona",
-                    awayLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8634.png",
-                    recommendedPick = "1X & Over 2.5",
-                    confidenceRate = 84,
-                    analysisReason = "El Clásico showdown. Real Madrid is unbeaten in their last 18 home matches with high conversion in the final 20 minutes.",
-                    isVipLocked = true
-                ),
-                OfficialPickUiModel(
-                    fixtureId = "epl_ars_mci",
-                    leagueName = "Premier League",
-                    homeTeam = "Arsenal",
-                    homeLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
-                    awayTeam = "Manchester City",
-                    awayLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png",
-                    recommendedPick = "Over 2.5 Goals",
-                    confidenceRate = 79,
-                    analysisReason = "Title clash showdown. Both teams have scored in 8 of their last 9 encounters with 3.2 xG combined.",
-                    isVipLocked = true
-                ),
-                OfficialPickUiModel(
-                    fixtureId = "superlig_gs_fb",
-                    leagueName = "Trendyol Süper Lig",
-                    homeTeam = "Galatasaray",
-                    homeLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png",
-                    awayTeam = "Fenerbahçe",
-                    awayLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8695.png",
-                    recommendedPick = "1 (Home Win)",
-                    confidenceRate = 74,
-                    analysisReason = "Intercontinental Derby. Galatasaray holds 12 consecutive home league wins and an average of 2.4 goals per match at RAMS Park.",
-                    isVipLocked = true
-                ),
-                OfficialPickUiModel(
-                    fixtureId = "epl_liv_che",
-                    leagueName = "Premier League",
-                    homeTeam = "Liverpool",
-                    homeLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8650.png",
-                    awayTeam = "Chelsea",
-                    awayLogo = "https://images.fotmob.com/image_resources/logo/teamlogo/8455.png",
-                    recommendedPick = "Both Teams To Score",
-                    confidenceRate = 78,
-                    analysisReason = "High-octane clash at Anfield. Both defenses have conceded in 4 consecutive fixtures with explosive wide transitions.",
-                    isVipLocked = false
+                    fixtureId = fixture.id,
+                    leagueName = fixture.leagueName,
+                    homeTeam = fixture.homeTeamName,
+                    homeLogo = fixture.homeTeamLogo,
+                    awayTeam = fixture.awayTeamName,
+                    awayLogo = fixture.awayTeamLogo,
+                    recommendedPick = pickLabel,
+                    confidenceRate = fixture.officialConfidence.coerceIn(60, 95),
+                    analysisReason = if (fixture.aiAnalysis.isNotBlank()) fixture.aiAnalysis else "${fixture.leagueName} high-confidence tactical pick.",
+                    isVipLocked = isLocked
                 )
-            )
-        )
+            }
     }
 
     var isNotificationsEnabled by remember { mutableStateOf(true) }
@@ -325,9 +300,7 @@ fun MainNavigationHost(
                                 recommendedPick = unlockedPick?.recommendedPick ?: "",
                                 confidence = unlockedPick?.confidenceRate ?: 80
                             )
-                            officialPicks = officialPicks.map {
-                                if (it.fixtureId == id) it.copy(isVipLocked = false) else it
-                            }
+                            unlockedPickIds = unlockedPickIds + id
                         }
                     )
                 }

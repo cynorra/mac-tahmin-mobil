@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
@@ -59,8 +60,21 @@ class RewardedAdController(private val context: Context) {
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
                     rewardedAd = ad
+                    ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdShowedFullScreenContent() {
+                            android.util.Log.d("GoogleAdsAnalytics", "👁️ [CONVERSION] Rewarded Ad Impression: unit=$adUnitId")
+                        }
+                        override fun onAdClicked() {
+                            android.util.Log.d("GoogleAdsAnalytics", "🎯 [CONVERSION] Rewarded Ad Clicked: unit=$adUnitId")
+                        }
+                        override fun onAdDismissedFullScreenContent() {
+                            rewardedAd = null
+                            loadAd(adUnitId)
+                        }
+                    }
                 }
                 override fun onAdFailedToLoad(error: LoadAdError) {
+                    android.util.Log.w("GoogleAdsAnalytics", "Rewarded ad failed to load: ${error.message}")
                     rewardedAd = null
                 }
             }
@@ -95,6 +109,8 @@ fun OfficialPicksScreen(
             .fillMaxSize()
             .background(MatchPickPalette.DeepObsidian)
             .statusBarsPadding()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .widthIn(max = 720.dp)
     ) {
         // Luxury Top Bar
         Row(
@@ -168,25 +184,66 @@ fun OfficialPicksScreen(
 
         Spacer(modifier = Modifier.height(6.dp))
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            items(picks, key = { it.fixtureId }) { pickItem ->
-                VipPickCard(
-                    pick = pickItem,
-                    onUnlock = {
-                        activity?.let { act ->
-                            rewardedAdController.showAd(act) {
-                                onUnlockPick(pickItem.fixtureId)
-                            }
+        if (picks.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.widthIn(max = 420.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MatchPickPalette.VipDeep,
+                        border = BorderStroke(1.dp, MatchPickPalette.VipGold.copy(alpha = 0.4f)),
+                        modifier = Modifier.size(56.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(text = "👑", fontSize = 24.sp)
                         }
                     }
-                )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.vip_empty_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextPrimary,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = stringResource(R.string.vip_empty_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MatchPickPalette.TextMuted,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 18.sp
+                    )
+                }
             }
-            item {
-                Spacer(modifier = Modifier.height(72.dp))
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                items(picks, key = { it.fixtureId }) { pickItem ->
+                    VipPickCard(
+                        pick = pickItem,
+                        onUnlock = {
+                            activity?.let { act ->
+                                rewardedAdController.showAd(act) {
+                                    onUnlockPick(pickItem.fixtureId)
+                                }
+                            }
+                        }
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(72.dp))
+                }
             }
         }
     }

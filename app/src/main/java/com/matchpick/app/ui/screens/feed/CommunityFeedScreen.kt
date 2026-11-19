@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Verified
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -71,6 +73,8 @@ fun CommunityFeedScreen(
             .fillMaxSize()
             .background(MatchPickPalette.DeepObsidian)
             .statusBarsPadding()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .widthIn(max = 720.dp)
     ) {
         // Top Bar
         Row(
@@ -173,30 +177,77 @@ fun CommunityFeedScreen(
         }
 
         // Feed Posts Stream
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            itemsIndexed(
-                items = posts,
-                key = { _, post -> post.id }
-            ) { index, post ->
-                PostCard(
-                    post = post,
-                    onLike = { onLikePost(post.id) }
-                )
-
-                if (index > 0 && index % 4 == 0) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        contentAlignment = Alignment.Center
+        if (posts.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.widthIn(max = 420.dp)
+                ) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MatchPickPalette.SurfaceElevated,
+                        border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.4f)),
+                        modifier = Modifier.size(56.dp)
                     ) {
-                        AdaptiveBannerAd(adUnitId = adUnitId)
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.ChatBubbleOutline,
+                                contentDescription = null,
+                                tint = MatchPickPalette.NeonEmerald,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.feed_empty_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextPrimary,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = stringResource(R.string.feed_empty_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MatchPickPalette.TextMuted,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 18.sp
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                itemsIndexed(
+                    items = posts,
+                    key = { _, post -> post.id }
+                ) { index, post ->
+                    PostCard(
+                        post = post,
+                        onLike = { onLikePost(post.id) }
+                    )
+
+                    if (index > 0 && index % 4 == 0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AdaptiveBannerAd(adUnitId = adUnitId)
+                        }
                     }
                 }
             }

@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,6 +63,8 @@ fun LeaderboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .widthIn(max = if (isWideScreen) 1000.dp else 720.dp)
         ) {
             // Header
             Row(
@@ -179,8 +182,50 @@ fun LeaderboardScreen(
                         contentPadding = PaddingValues(bottom = 80.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        itemsIndexed(topUsers, key = { _, user -> user.userId }) { _, item ->
-                            LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
+                        if (topUsers.isEmpty()) {
+                            item {
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = MatchPickPalette.SurfaceDark,
+                                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Surface(
+                                            shape = CircleShape,
+                                            color = MatchPickPalette.EmeraldDeep,
+                                            border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.4f)),
+                                            modifier = Modifier.size(52.dp)
+                                        ) {
+                                            Box(contentAlignment = Alignment.Center) {
+                                                Text(text = "🏆", fontSize = 22.sp)
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = stringResource(R.string.leaderboard_empty_title),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MatchPickPalette.TextPrimary,
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.leaderboard_empty_desc),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MatchPickPalette.TextMuted,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            itemsIndexed(topUsers, key = { _, user -> user.userId }) { _, item ->
+                                LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
+                            }
                         }
                     }
 
@@ -219,14 +264,56 @@ fun LeaderboardScreen(
                         )
                     }
 
-                    if (topUsers.size >= 3) {
+                    if (topUsers.isEmpty()) {
+                        item {
+                            Surface(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                color = MatchPickPalette.SurfaceDark,
+                                border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(24.dp).fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = MatchPickPalette.EmeraldDeep,
+                                        border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.4f)),
+                                        modifier = Modifier.size(52.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(text = "🏆", fontSize = 22.sp)
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.leaderboard_empty_title),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MatchPickPalette.TextPrimary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.leaderboard_empty_desc),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MatchPickPalette.TextMuted,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    } else if (topUsers.size >= 3) {
                         item {
                             PodiumSection(topThree = topUsers.take(3))
                         }
                     }
 
-                    itemsIndexed(topUsers.drop(3), key = { _, user -> user.userId }) { _, item ->
-                        LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
+                    if (topUsers.isNotEmpty()) {
+                        itemsIndexed(topUsers.drop(3), key = { _, user -> user.userId }) { _, item ->
+                            LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
+                        }
                     }
 
                     item {
