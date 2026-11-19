@@ -16,11 +16,13 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.matchpick.app.R
 import com.matchpick.app.ui.theme.MatchPickPalette
 import kotlin.math.cos
 import kotlin.math.sin
@@ -188,7 +190,7 @@ fun CelebrationDialog(
                             Text(text = "⚡", fontSize = 14.sp)
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = "$streakCount STREAK • +10 XP BOOST",
+                                text = stringResource(R.string.streak_boost_badge, streakCount),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Black,
                                 color = MatchPickPalette.NeonEmerald
@@ -210,7 +212,7 @@ fun CelebrationDialog(
                         )
                     ) {
                         Text(
-                            text = "DEVAM ET • KEEP DOMINATING",
+                            text = stringResource(R.string.btn_keep_dominating),
                             fontWeight = FontWeight.Black
                         )
                     }

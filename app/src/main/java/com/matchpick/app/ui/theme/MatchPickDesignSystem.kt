@@ -71,10 +71,19 @@ object MatchPickPalette {
 
     val SelectedOddsGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFF00E676),
-            Color(0xFF00C853)
+            Color(0xFF0E3824),
+            Color(0xFF072215)
         )
     )
+
+    val LuxurySelectedGradient = Brush.verticalGradient(
+        colors = listOf(
+            Color(0xFF0E3B26),
+            Color(0xFF062215)
+        )
+    )
+
+    val DialTrackColor = Color(0xFF131D2E)
 
     val VipCrownGradient = Brush.linearGradient(
         colors = listOf(VipGold, VipAmber)

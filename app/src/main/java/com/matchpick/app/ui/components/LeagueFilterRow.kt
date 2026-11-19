@@ -48,7 +48,7 @@ fun LeagueFilterRow(
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp)
     ) {
         items(leagues, key = { it.id }) { item ->
             val isSelected = item.id == selectedLeagueId
@@ -64,26 +64,27 @@ fun LeagueFilterRow(
 
             Surface(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .clickable { onLeagueSelected(item.id) },
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = containerColor,
                 border = BorderStroke(if (isSelected) 1.2.dp else 0.5.dp, borderColor)
             ) {
                 Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = item.iconEmoji,
-                        fontSize = 13.sp
+                        fontSize = 12.sp
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = stringResource(item.titleRes),
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextSecondary
+                        color = if (isSelected) MatchPickPalette.TextPrimary else MatchPickPalette.TextSecondary,
+                        fontSize = 12.sp
                     )
                 }
             }

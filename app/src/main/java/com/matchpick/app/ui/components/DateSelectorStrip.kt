@@ -24,9 +24,9 @@ import java.util.*
 
 @Immutable
 data class DateItem(
-    val dateString: String, // "2026-11-18"
-    val dayLabel: String,   // "Wed"
-    val dayNumber: String,  // "18"
+    val dateString: String,
+    val dayLabel: String,
+    val dayNumber: String,
     val isToday: Boolean = false
 )
 
@@ -41,8 +41,8 @@ fun DateSelectorStrip(
     LazyRow(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
         items(dateList, key = { it.dateString }) { item ->
@@ -57,42 +57,40 @@ fun DateSelectorStrip(
             )
 
             Surface(
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(20.dp),
                 color = bgColor,
                 border = BorderStroke(if (isSelected) 1.2.dp else 0.5.dp, borderColor),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .clickable { onDateSelected(item.dateString) }
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Text(
-                        text = item.dayLabel.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 10.sp,
-                        color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = item.dayNumber,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = if (isSelected) MatchPickPalette.TextPrimary else MatchPickPalette.TextSecondary
-                    )
                     if (item.isToday) {
-                        Spacer(modifier = Modifier.height(3.dp))
                         Box(
                             modifier = Modifier
-                                .size(4.dp)
+                                .size(6.dp)
                                 .clip(CircleShape)
                                 .background(MatchPickPalette.NeonEmerald)
                         )
-                    } else {
-                        Spacer(modifier = Modifier.height(7.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
                     }
+                    Text(
+                        text = item.dayLabel.uppercase(),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                        fontSize = 11.sp,
+                        color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = item.dayNumber,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isSelected) MatchPickPalette.TextPrimary else MatchPickPalette.TextSecondary
+                    )
                 }
             }
         }

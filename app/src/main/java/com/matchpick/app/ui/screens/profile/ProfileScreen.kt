@@ -176,14 +176,14 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "SEASON PASS • LVL 14",
+                            text = stringResource(R.string.season_pass_title, 14),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.ElectricCyan,
                             fontSize = 10.sp
                         )
                         Text(
-                            text = "$totalPoints / 500 XP",
+                            text = stringResource(R.string.xp_progress_label, totalPoints, 500),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.NeonEmerald,

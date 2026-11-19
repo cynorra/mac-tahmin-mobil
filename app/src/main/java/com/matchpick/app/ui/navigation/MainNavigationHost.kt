@@ -12,13 +12,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -114,11 +108,14 @@ fun MainNavigationHost(
     }
 
     var isNotificationsEnabled by remember { mutableStateOf(true) }
-    val initialLang = try {
-        val tags = androidx.appcompat.app.AppCompatDelegate.getApplicationLocales().toLanguageTags()
-        if (tags.startsWith("en", ignoreCase = true)) "en" else "tr"
-    } catch (_: Exception) { "tr" }
-    var currentLanguage by remember { mutableStateOf(initialLang) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { context.getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE) }
+    var currentLanguage by remember {
+        mutableStateOf(
+            prefs.getString("pref_language", null)
+                ?: if (java.util.Locale.getDefault().language.startsWith("en", ignoreCase = true)) "en" else "tr"
+        )
+    }
 
     val items = listOf(
         Screen.Predict,
@@ -129,12 +126,12 @@ fun MainNavigationHost(
     )
     val routeOrder = remember { items.mapIndexed { index, screen -> screen.route to index }.toMap() }
 
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val locale = java.util.Locale(currentLanguage)
+    val locale = remember(currentLanguage) { java.util.Locale(currentLanguage) }
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     val localizedConfig = remember(currentLanguage, configuration) {
         android.content.res.Configuration(configuration).apply {
             setLocale(locale)
+            setLayoutDirection(locale)
         }
     }
     val localizedContext = remember(currentLanguage, context) {
@@ -149,18 +146,22 @@ fun MainNavigationHost(
             containerColor = MatchPickPalette.DeepObsidian,
             bottomBar = {
                 Surface(
-                    color = MatchPickPalette.SurfaceDark,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding(),
+                    color = Color(0xFA0B111D),
                     border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
-                    shadowElevation = 8.dp
+                    shadowElevation = 16.dp
                 ) {
                     NavigationBar(
                         containerColor = Color.Transparent,
-                        tonalElevation = 0.dp
+                        tonalElevation = 0.dp,
+                        modifier = Modifier.height(64.dp)
                     ) {
                         items.forEach { screen ->
                             val isSelected = currentRoute == screen.route
                             val iconScale by animateFloatAsState(
-                                targetValue = if (isSelected) 1.08f else 1.0f,
+                                targetValue = if (isSelected) 1.12f else 1.0f,
                                 animationSpec = spring(
                                     dampingRatio = Spring.DampingRatioMediumBouncy,
                                     stiffness = Spring.StiffnessMedium
@@ -170,23 +171,23 @@ fun MainNavigationHost(
 
                             NavigationBarItem(
                                 icon = {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Box(
+                                        modifier = if (isSelected) {
+                                            Modifier
+                                                .clip(RoundedCornerShape(14.dp))
+                                                .background(MatchPickPalette.EmeraldDeep)
+                                                .padding(horizontal = 12.dp, vertical = 4.dp)
+                                        } else {
+                                            Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                                        },
+                                        contentAlignment = Alignment.Center
+                                    ) {
                                         Icon(
                                             screen.icon,
                                             contentDescription = null,
                                             modifier = Modifier.scale(iconScale),
                                             tint = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
                                         )
-                                        if (isSelected) {
-                                            Spacer(modifier = Modifier.height(3.dp))
-                                            Box(
-                                                modifier = Modifier
-                                                    .width(12.dp)
-                                                    .height(2.dp)
-                                                    .clip(RoundedCornerShape(1.dp))
-                                                    .background(MatchPickPalette.NeonEmerald)
-                                            )
-                                        }
                                     }
                                 },
                                 label = {
@@ -194,7 +195,7 @@ fun MainNavigationHost(
                                         text = stringResource(screen.titleRes),
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                         color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted,
-                                        fontSize = 11.sp
+                                        fontSize = 10.sp
                                     )
                                 },
                                 selected = isSelected,
@@ -335,10 +336,10 @@ fun MainNavigationHost(
                     val firebaseUser = remember { FirebaseAuth.getInstance().currentUser }
                     val resolvedName = firebaseUser?.displayName?.takeIf { it.isNotBlank() }
                         ?: firebaseUser?.email?.substringBefore("@")?.takeIf { it.isNotBlank() }
-                        ?: if (java.util.Locale.getDefault().language == "tr") "Misafir Analist" else "Guest Analyst"
+                        ?: if (currentLanguage == "tr") "Misafir Analist" else "Guest Analyst"
                     val resolvedEmail = firebaseUser?.email?.takeIf { it.isNotBlank() }
                         ?: if (firebaseUser?.isAnonymous == true) {
-                            if (java.util.Locale.getDefault().language == "tr") "Misafir Oturumu" else "Guest Session"
+                            if (currentLanguage == "tr") "Misafir Oturumu" else "Guest Session"
                         } else "analyst@matchpick.app"
                     val resolvedAvatar = firebaseUser?.photoUrl?.toString().orEmpty()
 
@@ -358,12 +359,8 @@ fun MainNavigationHost(
                         onChangeLanguage = { lang ->
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             currentLanguage = lang
+                            prefs.edit().putString("pref_language", lang).apply()
                             analyticsTracker.logLanguageSwitched(lang)
-                            try {
-                                androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
-                                    androidx.core.os.LocaleListCompat.forLanguageTags(lang)
-                                )
-                            } catch (_: Exception) {}
                         }
                     )
                 }

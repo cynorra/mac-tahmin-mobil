@@ -417,7 +417,7 @@ fun VipPickCard(
                         fontSize = 10.sp
                     )
                     Text(
-                        text = "${pick.confidenceRate}% AI Confidence",
+                        text = stringResource(R.string.ai_confidence, pick.confidenceRate),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = if (pick.isVipLocked) MatchPickPalette.VipGold else MatchPickPalette.NeonEmerald,

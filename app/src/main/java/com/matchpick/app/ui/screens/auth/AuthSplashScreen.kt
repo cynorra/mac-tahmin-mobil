@@ -282,7 +282,7 @@ fun CinematicSplashIntro(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "SYNCING NEURAL TELEMETRY • ${(bootProgress * 100).toInt()}%",
+                    text = stringResource(R.string.syncing_telemetry_progress, (bootProgress * 100).toInt()),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Black,
                     fontSize = 10.sp,
@@ -343,7 +343,7 @@ fun AuthSplashScreen(
                 letterSpacing = 4.sp
             )
             Text(
-                text = "Predict. Compete. Dominate.",
+                text = stringResource(R.string.auth_slogan),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MatchPickPalette.NeonEmerald,
                 fontWeight = FontWeight.Bold,
@@ -387,7 +387,7 @@ fun AuthSplashScreen(
                     )
                 ) {
                     Text(
-                        text = "Continue with Google",
+                        text = stringResource(R.string.btn_continue_google),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black
                     )

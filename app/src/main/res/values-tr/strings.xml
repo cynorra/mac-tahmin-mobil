@@ -23,6 +23,18 @@
     <string name="pick_home">1</string>
     <string name="pick_draw">X</string>
     <string name="pick_away">2</string>
+    <string name="pick_selected">Seçildi</string>
+    <string name="pick_locked">Kilitlendi</string>
+    <string name="marquee_derby_badge">GÜNÜN ÖNE ÇIKAN DERBİSİ</string>
+    <string name="ai_probability_label">Kazanma İhtimali</string>
+    <string name="ai_confidence_title">AI GÜVENİ</string>
+    <string name="pick_label">TAHMİN: %1$s</string>
+    <string name="probability_label">%%%1$d İhtimal</string>
+    <string name="empty_fixtures_title">Bu Lig İçin Yaklaşan Maç Bulunamadı</string>
+    <string name="empty_fixtures_desc">Diğer ligleri seçerek günün canlı ve yaklaşan derbilerini keşfedin.</string>
+    <string name="ai_telemetry_hint">Yapay Zeka Telemetri Analizi ve xG Beklentisi</string>
+    <string name="season_pass_title">SEZON BİLETİ • SV %1$d</string>
+    <string name="xp_progress_label">%1$d / %2$d XP</string>
     <string name="odds_label">Oran: %1$.2f</string>
     <string name="crowd_votes">Topluluk Oyları</string>
     <string name="ai_confidence">%% %1$d Güven</string>
@@ -89,6 +101,13 @@
     <string name="btn_share_story">Hikaye</string>
     <string name="btn_share_whatsapp">WhatsApp</string>
     <string name="btn_share_general">Paylaş</string>
+    <string name="streak_boost_badge">%1$d SERİ • +10 XP BONUSU</string>
+    <string name="btn_keep_dominating">DEVAM ET</string>
+    <string name="celebration_default_title">DURDURULAMAZ SERİ!</string>
+    <string name="celebration_default_desc">Üst üste %1$d maç tahmin serisine ulaştın! Nöral analist sıralamasında hızla yükseliyorsun.</string>
+    <string name="syncing_telemetry_progress">NÖRAL TELEMETRİ SENKRONİZE EDİLİYOR • %%%1$d</string>
+    <string name="auth_slogan">Tahmin Et. Yarış. Zirveye Yerleş.</string>
+    <string name="btn_continue_google">Google ile Devam Et</string>
 
     <!-- Ad & Monetization -->
     <string name="ad_sponsor_label">Sponsor</string>

@@ -18,7 +18,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdMobManager
 import com.matchpick.app.core.analytics.AnalyticsTracker
@@ -145,8 +147,8 @@ class MainActivity : ComponentActivity() {
                         // Seri Kilometre Taşı Kutlama Penceresi
                         activeStreakModal?.let { milestone ->
                             CelebrationDialog(
-                                title = "UNSTOPPABLE STREAK!",
-                                message = "Üst üste $milestone maç tahmin serisine ulaştın! Nöral analist sıralamasında hızla yükseliyorsun.",
+                                title = stringResource(R.string.celebration_default_title),
+                                message = stringResource(R.string.celebration_default_desc, milestone),
                                 streakCount = milestone,
                                 onClaimReward = { activeStreakModal = null }
                             )

@@ -3,17 +3,17 @@ package com.matchpick.app.ui.screens.predict
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -60,21 +62,23 @@ fun PredictScreen(
         else fixtures.filter { it.leagueId.equals(selectedLeague, ignoreCase = true) }
     }
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize().background(MatchPickPalette.DeepObsidian)) {
-        val isWideScreen = maxWidth >= 600.dp
-
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MatchPickPalette.DeepObsidian)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .wrapContentWidth(Alignment.CenterHorizontally)
-                .widthIn(max = if (isWideScreen) 1100.dp else 720.dp)
+                .widthIn(max = 640.dp)
         ) {
-            // 1. Sleek Luxury Single-Row Top Navigation Header
+            // 1. Sleek Top Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -86,39 +90,34 @@ fun PredictScreen(
                             .background(MatchPickPalette.NeonEmerald),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "⚡",
-                            fontSize = 18.sp
-                        )
+                        Text(text = "⚡", fontSize = 18.sp)
                     }
                     Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.TextPrimary
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MatchPickPalette.EmeraldDeep,
+                            border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
+                        ) {
                             Text(
-                                text = stringResource(R.string.app_name),
-                                style = MaterialTheme.typography.titleMedium,
+                                text = "PRO",
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MatchPickPalette.TextPrimary
+                                color = MatchPickPalette.NeonEmerald
                             )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Surface(
-                                shape = RoundedCornerShape(4.dp),
-                                color = MatchPickPalette.EmeraldDeep,
-                                border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
-                            ) {
-                                Text(
-                                    text = "PRO",
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MatchPickPalette.NeonEmerald
-                                )
-                            }
                         }
                     }
                 }
 
-                // Sleek Streak & Points Pill (Inspired by Ezan Vakti badges)
+                // Sleek Streak & Points Pill
                 Surface(
                     shape = RoundedCornerShape(20.dp),
                     color = MatchPickPalette.SurfaceDark,
@@ -152,114 +151,95 @@ fun PredictScreen(
                 }
             }
 
-            // 2. Responsive Dual Pane or Scrollable Stream
-            if (isWideScreen) {
-                var activeFixtureId by remember { mutableStateOf<String?>(null) }
-                val currentFixture = filteredFixtures.find { it.id == activeFixtureId } ?: filteredFixtures.firstOrNull()
+            // 2. Streamlined Vertical Match List
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 96.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // Compact Date & League Filters
+                item(key = "header_date") {
+                    DateSelectorStrip(
+                        selectedDate = selectedDate,
+                        onDateSelected = { selectedDate = it }
+                    )
+                }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Left Column: Filter Chips + Match List
-                    Column(
-                        modifier = Modifier
-                            .weight(1.15f)
-                            .fillMaxHeight()
-                    ) {
-                        DateSelectorStrip(
-                            selectedDate = selectedDate,
-                            onDateSelected = { selectedDate = it }
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        LeagueFilterRow(
-                            selectedLeagueId = selectedLeague,
-                            onLeagueSelected = { selectedLeague = it }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+                item(key = "header_leagues") {
+                    LeagueFilterRow(
+                        selectedLeagueId = selectedLeague,
+                        onLeagueSelected = { selectedLeague = it }
+                    )
+                }
 
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(bottom = 80.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                // Empty State
+                if (filteredFixtures.isEmpty()) {
+                    item(key = "empty_fixtures") {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            color = MatchPickPalette.SurfaceDark,
+                            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                         ) {
-                            itemsIndexed(
-                                items = filteredFixtures,
-                                key = { _, it -> it.id },
-                                contentType = { _, _ -> "FixtureItem" }
-                            ) { index, fixture ->
-                                FixtureCard(
-                                    fixture = fixture,
-                                    isSpotlightMatch = index == 0,
-                                    onPickSelected = { pick -> onPredictSelected(fixture.id, pick) },
-                                    onShare = { onShareClicked(fixture) },
-                                    isSelectedInMasterDetail = currentFixture?.id == fixture.id,
-                                    onCardClicked = { activeFixtureId = fixture.id }
+                            Column(
+                                modifier = Modifier.padding(32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(text = "⚽", fontSize = 36.sp)
+                                Text(
+                                    text = stringResource(R.string.empty_fixtures_title),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MatchPickPalette.TextPrimary,
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    text = stringResource(R.string.empty_fixtures_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MatchPickPalette.TextMuted,
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }
                     }
-
-                    // Right Column: Tactical Detail Panel
-                    Box(
-                        modifier = Modifier
-                            .weight(0.85f)
-                            .fillMaxHeight()
-                            .padding(bottom = 80.dp)
-                    ) {
-                        currentFixture?.let { fix ->
-                            TacticalInsightPanel(
-                                fixture = fix,
-                                onPickSelected = { pick -> onPredictSelected(fix.id, pick) },
-                                onShare = { onShareClicked(fix) }
+                } else {
+                    // Item 0: Hero Spotlight Derby Card
+                    item(key = "hero_spotlight") {
+                        val heroFixture = filteredFixtures.first()
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            SpotlightDerbyHeroCard(
+                                fixture = heroFixture,
+                                onPickSelected = { pick -> onPredictSelected(heroFixture.id, pick) },
+                                onShare = { onShareClicked(heroFixture) },
+                                onOpenTelemetry = { telemetrySheetFixture = heroFixture }
                             )
                         }
                     }
-                }
-            } else {
-                // Mobile Portrait: Seamless Scroll with Date & League Strips
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 88.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    item(key = "header_date") {
-                        DateSelectorStrip(
-                            selectedDate = selectedDate,
-                            onDateSelected = { selectedDate = it }
-                        )
-                    }
 
-                    item(key = "header_leagues") {
-                        LeagueFilterRow(
-                            selectedLeagueId = selectedLeague,
-                            onLeagueSelected = { selectedLeague = it }
-                        )
-                    }
-
+                    // Remaining Fixtures
                     itemsIndexed(
-                        items = filteredFixtures,
+                        items = filteredFixtures.drop(1),
                         key = { _, it -> it.id },
                         contentType = { _, _ -> "FixtureItem" }
                     ) { index, fixture ->
                         Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                             FixtureCard(
                                 fixture = fixture,
-                                isSpotlightMatch = index == 0,
                                 onPickSelected = { pick -> onPredictSelected(fixture.id, pick) },
                                 onShare = { onShareClicked(fixture) },
                                 onCardClicked = { telemetrySheetFixture = fixture }
                             )
                         }
 
-                        // Adaptive Banner Ad after 3rd fixture (Inline, non-intrusive)
-                        if (index == 2) {
+                        // Inline Banner Ad after 2nd regular fixture
+                        if (index == 1) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 6.dp),
+                                    .padding(vertical = 4.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 AdaptiveBannerAd(
@@ -289,7 +269,321 @@ fun PredictScreen(
 }
 
 /**
- * World-Class Match Card (Clean, Editorial, High-Impact)
+ * 2026+ Spotlight Derby Hero Card (Ezan Vakti Pro Hero Dial Caliber)
+ */
+@Composable
+fun SpotlightDerbyHeroCard(
+    fixture: FixtureEntity,
+    onPickSelected: (String) -> Unit,
+    onShare: () -> Unit,
+    onOpenTelemetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        color = MatchPickPalette.SurfaceDark,
+        border = BorderStroke(
+            1.2.dp,
+            Brush.horizontalGradient(
+                listOf(
+                    MatchPickPalette.NeonEmerald,
+                    MatchPickPalette.VipGold,
+                    MatchPickPalette.ElectricCyan
+                )
+            )
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MatchPickPalette.GlassCardGradient)
+                .padding(18.dp)
+        ) {
+            // Hero Badge Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MatchPickPalette.VipDeep,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.VipGold)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Text(text = "👑", fontSize = 11.sp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.marquee_derby_badge),
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.VipGold
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = onShare,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(MatchPickPalette.SurfaceElevated)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share",
+                        tint = MatchPickPalette.TextSecondary,
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Marquee Matchup Arena with Circular Win Probability Dial
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Home Club
+                HeroTeamColumn(
+                    name = fixture.homeTeamName,
+                    logoUrl = fixture.homeTeamLogo,
+                    probability = fixture.votesHomePercent,
+                    modifier = Modifier.weight(1f),
+                    alignment = Alignment.CenterHorizontally
+                )
+
+                // Central AI Probability Circular Gauge
+                Box(
+                    modifier = Modifier
+                        .size(96.dp)
+                        .padding(horizontal = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val strokeWidth = 5.dp.toPx()
+                        val diameter = size.minDimension - strokeWidth
+                        val radius = diameter / 2f
+                        val topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2f, strokeWidth / 2f)
+                        val arcSize = androidx.compose.ui.geometry.Size(diameter, diameter)
+
+                        // Background track
+                        drawArc(
+                            color = Color(0xFF131D2E),
+                            startAngle = 0f,
+                            sweepAngle = 360f,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = strokeWidth)
+                        )
+
+                        // Home Probability Arc (Emerald)
+                        val homeSweep = (fixture.votesHomePercent / 100f) * 360f
+                        drawArc(
+                            color = MatchPickPalette.NeonEmerald,
+                            startAngle = -90f,
+                            sweepAngle = homeSweep,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+
+                        // Away Probability Arc (Cyan)
+                        val awaySweep = (fixture.votesAwayPercent / 100f) * 360f
+                        drawArc(
+                            color = MatchPickPalette.ElectricCyan,
+                            startAngle = -90f + homeSweep,
+                            sweepAngle = awaySweep,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+                    }
+
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = stringResource(R.string.ai_confidence_title),
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.TextMuted
+                        )
+                        Text(
+                            text = "%${fixture.officialConfidence}",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Black,
+                            color = MatchPickPalette.NeonEmerald
+                        )
+                        fixture.officialPick?.let { pick ->
+                            Text(
+                                text = stringResource(R.string.pick_label, pick),
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MatchPickPalette.VipGold
+                            )
+                        }
+                    }
+                }
+
+                // Away Club
+                HeroTeamColumn(
+                    name = fixture.awayTeamName,
+                    logoUrl = fixture.awayTeamLogo,
+                    probability = fixture.votesAwayPercent,
+                    modifier = Modifier.weight(1f),
+                    alignment = Alignment.CenterHorizontally
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 1 - X - 2 Tactile Segmented Dock
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OddsButton(
+                    choice = stringResource(R.string.pick_home),
+                    odds = fixture.oddsHome,
+                    votePercent = fixture.votesHomePercent,
+                    isSelected = fixture.userPick == "1" || fixture.userPick == "HOME",
+                    isEnabled = !fixture.isLocked,
+                    onClick = { onPickSelected("1") },
+                    modifier = Modifier.weight(1f)
+                )
+                OddsButton(
+                    choice = stringResource(R.string.pick_draw),
+                    odds = fixture.oddsDraw,
+                    votePercent = fixture.votesDrawPercent,
+                    isSelected = fixture.userPick == "X" || fixture.userPick == "DRAW",
+                    isEnabled = !fixture.isLocked,
+                    onClick = { onPickSelected("X") },
+                    modifier = Modifier.weight(1f)
+                )
+                OddsButton(
+                    choice = stringResource(R.string.pick_away),
+                    odds = fixture.oddsAway,
+                    votePercent = fixture.votesAwayPercent,
+                    isSelected = fixture.userPick == "2" || fixture.userPick == "AWAY",
+                    isEnabled = !fixture.isLocked,
+                    onClick = { onPickSelected("2") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Expandable / Tappable Telemetry Pill
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpenTelemetry() },
+                shape = RoundedCornerShape(12.dp),
+                color = MatchPickPalette.SurfaceElevated,
+                border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AutoAwesome,
+                            contentDescription = null,
+                            tint = MatchPickPalette.NeonEmerald,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = fixture.aiAnalysis.ifEmpty { stringResource(R.string.ai_telemetry_hint) },
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MatchPickPalette.TextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = MatchPickPalette.TextMuted,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeroTeamColumn(
+    name: String,
+    logoUrl: String,
+    probability: Int,
+    modifier: Modifier = Modifier,
+    alignment: Alignment.Horizontal = Alignment.CenterHorizontally
+) {
+    Column(
+        horizontalAlignment = alignment,
+        modifier = modifier
+    ) {
+        Surface(
+            modifier = Modifier.size(54.dp),
+            shape = CircleShape,
+            color = MatchPickPalette.SurfaceElevated,
+            border = BorderStroke(1.dp, MatchPickPalette.BorderSubtle)
+        ) {
+            if (logoUrl.isNotBlank()) {
+                AsyncImage(
+                    model = logoUrl,
+                    contentDescription = name,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(6.dp)
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = name.firstOrNull()?.uppercase() ?: "T",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.NeonEmerald
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = MatchPickPalette.TextPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = stringResource(R.string.probability_label, probability),
+            style = MaterialTheme.typography.labelSmall,
+            color = MatchPickPalette.TextMuted,
+            fontSize = 11.sp
+        )
+    }
+}
+
+/**
+ * World-Class Match Card for Regular Fixtures
  */
 @Composable
 fun FixtureCard(
@@ -297,32 +591,23 @@ fun FixtureCard(
     onPickSelected: (String) -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier,
-    isSpotlightMatch: Boolean = false,
-    isSelectedInMasterDetail: Boolean = false,
     onCardClicked: (() -> Unit)? = null
 ) {
-    val cardBorder = when {
-        isSelectedInMasterDetail -> BorderStroke(1.2.dp, MatchPickPalette.NeonEmerald)
-        isSpotlightMatch -> BorderStroke(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.5f))
-        else -> BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
-    }
-
     Surface(
         onClick = { onCardClicked?.invoke() },
         modifier = modifier.fillMaxWidth(),
         enabled = onCardClicked != null,
         shape = RoundedCornerShape(20.dp),
         color = MatchPickPalette.SurfaceDark,
-        border = cardBorder,
-        shadowElevation = 0.dp
+        border = BorderStroke(0.6.dp, MatchPickPalette.BorderSubtle)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MatchPickPalette.GlassCardGradient)
-                .padding(16.dp)
+                .padding(14.dp)
         ) {
-            // Header Row: League Name, Stadium & Share
+            // Header: League & Stadium + Share
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -362,7 +647,7 @@ fun FixtureCard(
                 IconButton(
                     onClick = onShare,
                     modifier = Modifier
-                        .size(30.dp)
+                        .size(28.dp)
                         .clip(CircleShape)
                         .background(MatchPickPalette.SurfaceElevated)
                 ) {
@@ -370,14 +655,14 @@ fun FixtureCard(
                         imageVector = Icons.Default.Share,
                         contentDescription = "Share",
                         tint = MatchPickPalette.TextSecondary,
-                        modifier = Modifier.size(15.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Center Stage: Two Club Emblems & VS / Kickoff Time
+            // Two Club Emblems & VS Kickoff
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -391,22 +676,22 @@ fun FixtureCard(
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(horizontal = 12.dp)
+                    modifier = Modifier.padding(horizontal = 10.dp)
                 ) {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = MatchPickPalette.SurfaceElevated,
                         border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                     ) {
                         Text(
                             text = stringResource(R.string.versus),
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.TextSecondary
                         )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(3.dp))
                     LiveCountdownBadge()
                 }
 
@@ -417,9 +702,9 @@ fun FixtureCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // 1 - X - 2 Tactile Odds Pills (High-End Tactile Springs)
+            // 1 - X - 2 Odds Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -465,8 +750,8 @@ fun FixtureCard(
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
                             contentDescription = null,
-                            tint = MatchPickPalette.NeuralViolet,
-                            modifier = Modifier.size(13.dp)
+                            tint = MatchPickPalette.NeonEmerald,
+                            modifier = Modifier.size(12.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
@@ -499,7 +784,7 @@ fun FixtureCard(
 }
 
 /**
- * Tactile Odds Button (Inspired by Apple Sports pill interactions)
+ * Tactile Odds Button with Luxury Emerald Glass Selected State
  */
 @Composable
 private fun OddsButton(
@@ -519,12 +804,6 @@ private fun OddsButton(
         ),
         label = "oddsScale"
     )
-    val bgColor by animateColorAsState(
-        targetValue = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.SurfaceElevated,
-        label = "oddsBg"
-    )
-    val textColor = if (isSelected) Color(0xFF031A0E) else MatchPickPalette.TextPrimary
-    val oddsColor = if (isSelected) Color(0xFF031A0E) else MatchPickPalette.TextSecondary
 
     Surface(
         onClick = { onClick(choice) },
@@ -533,14 +812,16 @@ private fun OddsButton(
             .height(52.dp),
         enabled = isEnabled,
         shape = RoundedCornerShape(14.dp),
-        color = bgColor,
+        color = if (isSelected) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated,
         border = BorderStroke(
-            if (isSelected) 1.dp else 0.5.dp,
+            if (isSelected) 1.5.dp else 0.5.dp,
             if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.BorderSubtle
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(if (isSelected) MatchPickPalette.LuxurySelectedGradient else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -549,23 +830,23 @@ private fun OddsButton(
                     text = choice,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = textColor
+                    color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextPrimary
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = String.format(Locale.US, "%.2f", odds),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = oddsColor
+                    color = if (isSelected) Color.White else MatchPickPalette.TextSecondary
                 )
             }
             Spacer(modifier = Modifier.height(1.dp))
             Text(
-                text = if (isSelected) "✓ KİLİTLENDİ" else "%$votePercent",
+                text = if (isSelected) "✓ " + stringResource(R.string.pick_selected) else "%$votePercent",
                 style = MaterialTheme.typography.labelSmall,
-                fontWeight = FontWeight.Medium,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 fontSize = 10.sp,
-                color = if (isSelected) Color(0xFF031A0E) else MatchPickPalette.TextMuted
+                color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
             )
         }
     }
@@ -582,23 +863,34 @@ private fun TeamEmblemColumn(
         modifier = modifier
     ) {
         Surface(
-            modifier = Modifier.size(52.dp),
+            modifier = Modifier.size(44.dp),
             shape = CircleShape,
             color = MatchPickPalette.SurfaceElevated,
             border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
         ) {
-            AsyncImage(
-                model = logoUrl,
-                contentDescription = name,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
-            )
+            if (logoUrl.isNotBlank()) {
+                AsyncImage(
+                    model = logoUrl,
+                    contentDescription = name,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(5.dp)
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = name.firstOrNull()?.uppercase() ?: "T",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.NeonEmerald
+                    )
+                }
+            }
         }
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(5.dp))
         Text(
             text = name,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
             color = MatchPickPalette.TextPrimary,
             maxLines = 1,
@@ -650,7 +942,7 @@ private fun CrowdVotesBar(home: Int, draw: Int, away: Int) {
                 modifier = Modifier
                     .weight(draw.toFloat().coerceAtLeast(1f))
                     .fillMaxHeight()
-                    .background(MatchPickPalette.NeuralViolet)
+                    .background(MatchPickPalette.VipGold)
             )
             Box(
                 modifier = Modifier
@@ -658,128 +950,6 @@ private fun CrowdVotesBar(home: Int, draw: Int, away: Int) {
                     .fillMaxHeight()
                     .background(MatchPickPalette.ElectricCyan)
             )
-        }
-    }
-}
-
-@Composable
-private fun TacticalInsightPanel(
-    fixture: FixtureEntity,
-    onPickSelected: (String) -> Unit,
-    onShare: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        shape = RoundedCornerShape(20.dp),
-        color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MatchPickPalette.GlassCardGradient)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.analysis_reason_label),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MatchPickPalette.TextPrimary
-                )
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    color = MatchPickPalette.EmeraldDeep,
-                    border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
-                ) {
-                    Text(
-                        text = stringResource(R.string.neural_radar_badge),
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MatchPickPalette.NeonEmerald
-                    )
-                }
-            }
-
-            Text(
-                text = fixture.aiAnalysis.ifEmpty { stringResource(R.string.tactical_metrics_fallback) },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MatchPickPalette.TextSecondary,
-                lineHeight = 20.sp
-            )
-
-            HorizontalDivider(color = MatchPickPalette.BorderSubtle)
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.confidence_rate_label),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MatchPickPalette.TextMuted
-                )
-                Text(
-                    text = "${fixture.officialConfidence}%",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MatchPickPalette.NeonEmerald
-                )
-            }
-
-            // Tactical Odds Buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OddsButton(
-                    choice = "1",
-                    odds = fixture.oddsHome,
-                    votePercent = fixture.votesHomePercent,
-                    isSelected = fixture.userPick == "1" || fixture.userPick == "HOME",
-                    isEnabled = !fixture.isLocked,
-                    onClick = { onPickSelected("1") },
-                    modifier = Modifier.weight(1f)
-                )
-                OddsButton(
-                    choice = "X",
-                    odds = fixture.oddsDraw,
-                    votePercent = fixture.votesDrawPercent,
-                    isSelected = fixture.userPick == "X" || fixture.userPick == "DRAW",
-                    isEnabled = !fixture.isLocked,
-                    onClick = { onPickSelected("X") },
-                    modifier = Modifier.weight(1f)
-                )
-                OddsButton(
-                    choice = "2",
-                    odds = fixture.oddsAway,
-                    votePercent = fixture.votesAwayPercent,
-                    isSelected = fixture.userPick == "2" || fixture.userPick == "AWAY",
-                    isEnabled = !fixture.isLocked,
-                    onClick = { onPickSelected("2") },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Button(
-                onClick = onShare,
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MatchPickPalette.NeonEmerald)
-            ) {
-                Text(
-                    text = stringResource(R.string.btn_share),
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF031A0E)
-                )
-            }
         }
     }
 }

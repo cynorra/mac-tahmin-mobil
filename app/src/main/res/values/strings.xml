@@ -23,6 +23,18 @@
     <string name="pick_home">1</string>
     <string name="pick_draw">X</string>
     <string name="pick_away">2</string>
+    <string name="pick_selected">Selected</string>
+    <string name="pick_locked">Locked</string>
+    <string name="marquee_derby_badge">MARQUEE MATCH OF THE DAY</string>
+    <string name="ai_probability_label">Win Probability</string>
+    <string name="ai_confidence_title">AI CONFIDENCE</string>
+    <string name="pick_label">PICK: %1$s</string>
+    <string name="probability_label">%1$d%% Probability</string>
+    <string name="empty_fixtures_title">No Upcoming Matches for This League</string>
+    <string name="empty_fixtures_desc">Select other leagues to explore today\'s live and upcoming derby fixtures.</string>
+    <string name="ai_telemetry_hint">AI Neural Telemetry Analysis &amp; xG Breakdown</string>
+    <string name="season_pass_title">SEASON PASS • LVL %1$d</string>
+    <string name="xp_progress_label">%1$d / %2$d XP</string>
     <string name="odds_label">Odds: %1$.2f</string>
     <string name="crowd_votes">Crowd Votes</string>
     <string name="ai_confidence">%1$d%% Win Rate</string>
@@ -89,6 +101,13 @@
     <string name="btn_share_story">Story</string>
     <string name="btn_share_whatsapp">WhatsApp</string>
     <string name="btn_share_general">Share</string>
+    <string name="streak_boost_badge">%1$d STREAK • +10 XP BOOST</string>
+    <string name="btn_keep_dominating">KEEP DOMINATING</string>
+    <string name="celebration_default_title">UNSTOPPABLE STREAK!</string>
+    <string name="celebration_default_desc">You reached a %1$d prediction winning streak! Climbing the neural ranks rapidly.</string>
+    <string name="syncing_telemetry_progress">SYNCING NEURAL TELEMETRY • %1$d%%</string>
+    <string name="auth_slogan">Predict. Compete. Dominate.</string>
+    <string name="btn_continue_google">Continue with Google</string>
 
     <!-- Ad & Monetization -->
     <string name="ad_sponsor_label">Ad</string>

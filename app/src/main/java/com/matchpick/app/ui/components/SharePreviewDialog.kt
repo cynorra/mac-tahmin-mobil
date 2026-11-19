@@ -110,7 +110,7 @@ fun SharePreviewDialog(
                     ) {
                         Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Story", style = MaterialTheme.typography.labelMedium)
+                        Text(stringResource(R.string.btn_share_story), style = MaterialTheme.typography.labelMedium)
                     }
 
                     // WhatsApp
@@ -135,7 +135,7 @@ fun SharePreviewDialog(
                     ) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("WhatsApp", style = MaterialTheme.typography.labelMedium)
+                        Text(stringResource(R.string.btn_share_whatsapp), style = MaterialTheme.typography.labelMedium)
                     }
 
                     // Diğer (Generic Share Sheet)
