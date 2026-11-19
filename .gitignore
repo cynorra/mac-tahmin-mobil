@@ -22,3 +22,5 @@ code_sections_detailed.json
 chat_transcript.txt
 *.py
 !scripts/*.py
+screenshot_*.png
+uidump.xml
