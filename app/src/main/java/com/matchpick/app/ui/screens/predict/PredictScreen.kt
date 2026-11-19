@@ -160,8 +160,8 @@ fun PredictScreen(
         ) { paddingValues ->
             if (isWideScreen) {
                 // Responsive Dual-Pane View for Wide / Landscape Screens
-                var activeFixture by remember { mutableStateOf<FixtureEntity?>(null) }
-                val currentFixture = activeFixture ?: filteredFixtures.firstOrNull()
+                var activeFixtureId by remember { mutableStateOf<String?>(null) }
+                val currentFixture = filteredFixtures.find { it.id == activeFixtureId } ?: filteredFixtures.firstOrNull()
 
                 Row(
                     modifier = Modifier
@@ -188,7 +188,7 @@ fun PredictScreen(
                                 onPickSelected = { pick -> onPredictSelected(fixture.id, pick) },
                                 onShare = { onShareClicked(fixture) },
                                 isSelectedInMasterDetail = currentFixture?.id == fixture.id,
-                                onCardClicked = { activeFixture = fixture }
+                                onCardClicked = { activeFixtureId = fixture.id }
                             )
                         }
                     }
@@ -256,10 +256,9 @@ fun FixtureCard(
     }
 
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .clickable(enabled = onCardClicked != null) { onCardClicked?.invoke() },
+        onClick = { onCardClicked?.invoke() },
+        modifier = modifier.fillMaxWidth(),
+        enabled = onCardClicked != null,
         shape = RoundedCornerShape(20.dp),
         color = Color(0xFF0E1424),
         border = cardBorder,
@@ -416,25 +415,25 @@ fun FixtureCard(
                 OddsButton(
                     choice = stringResource(R.string.pick_home),
                     odds = fixture.oddsHome,
-                    isSelected = fixture.userPick == stringResource(R.string.pick_home),
+                    isSelected = fixture.userPick == "1" || fixture.userPick == "HOME",
                     isEnabled = !fixture.isLocked,
-                    onClick = { onPickSelected(it) },
+                    onClick = { onPickSelected("1") },
                     modifier = Modifier.weight(1f)
                 )
                 OddsButton(
                     choice = stringResource(R.string.pick_draw),
                     odds = fixture.oddsDraw,
-                    isSelected = fixture.userPick == stringResource(R.string.pick_draw),
+                    isSelected = fixture.userPick == "X" || fixture.userPick == "DRAW",
                     isEnabled = !fixture.isLocked,
-                    onClick = { onPickSelected(it) },
+                    onClick = { onPickSelected("X") },
                     modifier = Modifier.weight(1f)
                 )
                 OddsButton(
                     choice = stringResource(R.string.pick_away),
                     odds = fixture.oddsAway,
-                    isSelected = fixture.userPick == stringResource(R.string.pick_away),
+                    isSelected = fixture.userPick == "2" || fixture.userPick == "AWAY",
                     isEnabled = !fixture.isLocked,
-                    onClick = { onPickSelected(it) },
+                    onClick = { onPickSelected("2") },
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -457,10 +456,9 @@ private fun OddsButton(
     val border = if (isSelected) BorderStroke(1.dp, Color(0xFF00F59B)) else BorderStroke(1.dp, Color(0x2264748B))
 
     Surface(
-        modifier = modifier
-            .height(52.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .clickable(enabled = isEnabled) { onClick(choice) },
+        onClick = { onClick(choice) },
+        modifier = modifier.height(52.dp),
+        enabled = isEnabled,
         shape = RoundedCornerShape(14.dp),
         color = bgColor,
         border = border,
@@ -641,25 +639,25 @@ private fun TacticalInsightPanel(
                     OddsButton(
                         choice = "1",
                         odds = fixture.oddsHome,
-                        isSelected = fixture.userPick == "HOME",
+                        isSelected = fixture.userPick == "1" || fixture.userPick == "HOME",
                         isEnabled = !fixture.isLocked,
-                        onClick = { onPickSelected("HOME") },
+                        onClick = { onPickSelected("1") },
                         modifier = Modifier.weight(1f)
                     )
                     OddsButton(
                         choice = "X",
                         odds = fixture.oddsDraw,
-                        isSelected = fixture.userPick == "DRAW",
+                        isSelected = fixture.userPick == "X" || fixture.userPick == "DRAW",
                         isEnabled = !fixture.isLocked,
-                        onClick = { onPickSelected("DRAW") },
+                        onClick = { onPickSelected("X") },
                         modifier = Modifier.weight(1f)
                     )
                     OddsButton(
                         choice = "2",
                         odds = fixture.oddsAway,
-                        isSelected = fixture.userPick == "AWAY",
+                        isSelected = fixture.userPick == "2" || fixture.userPick == "AWAY",
                         isEnabled = !fixture.isLocked,
-                        onClick = { onPickSelected("AWAY") },
+                        onClick = { onPickSelected("2") },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -677,6 +675,8 @@ private fun TacticalInsightPanel(
                     color = Color(0xFF041B11)
                 )
             }
+
+            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }

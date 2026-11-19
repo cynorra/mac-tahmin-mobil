@@ -49,7 +49,13 @@ class PredictViewModel @Inject constructor(
         }
     }
 
-    fun makePrediction(fixtureId: String, pick: String) {
+    fun makePrediction(fixtureId: String, rawPick: String) {
+        val pick = when (rawPick) {
+            "HOME" -> "1"
+            "DRAW" -> "X"
+            "AWAY" -> "2"
+            else -> rawPick
+        }
         val uid = auth.currentUser?.uid ?: "demo_user"
         val matchedFixture = _uiState.value.fixtures.find { it.id == fixtureId }
         val odds = when (pick) {

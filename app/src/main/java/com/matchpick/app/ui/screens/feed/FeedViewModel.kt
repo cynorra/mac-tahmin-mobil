@@ -98,7 +98,7 @@ class FeedViewModel @Inject constructor(
         if (content.isBlank()) return
         val user = auth.currentUser
         val authorId = user?.uid ?: "guest_${System.currentTimeMillis() % 10000}"
-        val authorName = user?.displayName ?: "Misafir Analist"
+        val authorName = user?.displayName ?: if (Locale.getDefault().language == "tr") "Misafir Analist" else "Guest Analyst"
         val authorPhoto = user?.photoUrl?.toString() ?: ""
         val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
