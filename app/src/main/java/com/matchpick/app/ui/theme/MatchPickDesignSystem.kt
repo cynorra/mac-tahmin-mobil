@@ -10,115 +10,158 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * 2026+ MatchPick Cyber-Sports Spatial Glass Design System
+ * MatchPick Luxury Sports Design System (Inspired by Apple Sports, FotMob Pro & Ezan Vakti Pro)
+ * Focused, disciplined, breathing hierarchy with obsidian glass and athletic pitch emerald.
  */
 object MatchPickPalette {
-    val DeepObsidian = Color(0xFF04070E)
-    val MidnightVoid = Color(0xFF070B14)
-    val SurfaceDark = Color(0xFF0C1222)
-    val SurfaceElevated = Color(0xFF131C33)
-    val SurfaceGlass = Color(0xFF17233E)
+    // Canvas & Surfaces
+    val DeepObsidian = Color(0xFF070A10)
+    val SurfaceDark = Color(0xFF0E1422)
+    val SurfaceElevated = Color(0xFF141C2E)
+    val SurfaceGlass = Color(0xFF192238)
+    val SurfaceInteractive = Color(0xFF1E2942)
 
-    val NeonEmerald = Color(0xFF00F59B)
-    val EmeraldGlow = Color(0xFF00FFAA)
-    val EmeraldDeep = Color(0xFF06281C)
-    val ElectricCyan = Color(0xFF00E5FF)
-    val CyanDeep = Color(0xFF04222C)
+    // Primary Athletic Accents
+    val NeonEmerald = Color(0xFF00E676)
+    val EmeraldGlow = Color(0xFF69F0AE)
+    val EmeraldDeep = Color(0xFF062B1A)
+    val EmeraldSubtle = Color(0xFF093822)
 
-    val NeuralViolet = Color(0xFFA855F7)
-    val NeuralMagenta = Color(0xFFEC4899)
-    val NeuralDeep = Color(0xFF1C1036)
+    // Supporting Functional Colors (Intentional, never over-saturated)
+    val ElectricCyan = Color(0xFF06B6D4)
+    val CyanDeep = Color(0xFF082736)
 
-    val VipGold = Color(0xFFFFB800)
-    val VipAmber = Color(0xFFFF7A00)
-    val VipDeep = Color(0xFF281A05)
+    val NeuralViolet = Color(0xFF6366F1)
+    val NeuralDeep = Color(0xFF181836)
 
-    val CrimsonLive = Color(0xFFFF2E54)
+    val VipGold = Color(0xFFF59E0B)
+    val VipAmber = Color(0xFFD97706)
+    val VipDeep = Color(0xFF2B1D06)
+
+    val CrimsonLive = Color(0xFFEF4444)
+
+    // Typography & Neutrals
     val TextPrimary = Color(0xFFF8FAFC)
     val TextSecondary = Color(0xFF94A3B8)
     val TextMuted = Color(0xFF64748B)
-    val BorderSubtle = Color(0x2864748B)
 
-    val HeroCardGradient = Brush.linearGradient(
+    // Micro-Borders (Apple Glass style: light catches the edge at 8-12% opacity)
+    val BorderSubtle = Color(0x18FFFFFF)
+    val BorderMedium = Color(0x28FFFFFF)
+    val BorderEmerald = Color(0xFF00E676)
+
+    // Gradients - Subtle and Luxurious
+    val HeroCardGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFF0D232A),
-            Color(0xFF111830),
-            Color(0xFF191233)
+            Color(0xFF152238),
+            Color(0xFF0F1727)
         )
     )
 
     val GlassCardGradient = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFF141E36),
-            Color(0xFF0A0F1D)
+            Color(0xFF121A2A),
+            Color(0xFF0E1422)
         )
     )
 
-    val NeonBrandGradient = Brush.linearGradient(
+    val NeonBrandGradient = Brush.horizontalGradient(
         colors = listOf(NeonEmerald, ElectricCyan)
+    )
+
+    val SelectedOddsGradient = Brush.verticalGradient(
+        colors = listOf(
+            Color(0xFF00E676),
+            Color(0xFF00C853)
+        )
     )
 
     val VipCrownGradient = Brush.linearGradient(
         colors = listOf(VipGold, VipAmber)
     )
 
-    val NeuralAiGradient = Brush.linearGradient(
+    val NeuralAiGradient = Brush.horizontalGradient(
         colors = listOf(NeuralViolet, ElectricCyan)
     )
 }
 
 val MatchPickDarkColorScheme = darkColorScheme(
     primary = MatchPickPalette.NeonEmerald,
-    onPrimary = Color(0xFF02180E),
+    onPrimary = Color(0xFF031A0E),
     primaryContainer = MatchPickPalette.EmeraldDeep,
-    onPrimaryContainer = Color(0xFF6BFFB8),
+    onPrimaryContainer = Color(0xFF69F0AE),
     secondary = MatchPickPalette.ElectricCyan,
-    onSecondary = Color(0xFF001F26),
+    onSecondary = Color(0xFF031E2B),
     secondaryContainer = MatchPickPalette.CyanDeep,
-    onSecondaryContainer = Color(0xFF6BF0FF),
+    onSecondaryContainer = Color(0xFF67E8F9),
     tertiary = MatchPickPalette.NeuralViolet,
     background = MatchPickPalette.DeepObsidian,
     surface = MatchPickPalette.SurfaceDark,
     surfaceVariant = MatchPickPalette.SurfaceElevated,
-    outline = MatchPickPalette.TextMuted,
-    outlineVariant = Color(0xFF22304A)
+    outline = MatchPickPalette.BorderSubtle,
+    outlineVariant = Color(0xFF1E293B)
 )
 
 val MatchPickTypography = Typography(
     headlineLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Black,
-        fontSize = 28.sp,
-        letterSpacing = (-0.5).sp
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        letterSpacing = (-0.3).sp,
+        color = MatchPickPalette.TextPrimary
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        letterSpacing = (-0.2).sp,
+        color = MatchPickPalette.TextPrimary
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Black,
-        fontSize = 20.sp,
-        letterSpacing = 0.2.sp
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 17.sp,
+        letterSpacing = 0.1.sp,
+        color = MatchPickPalette.TextPrimary
     ),
     titleMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 16.sp,
-        letterSpacing = 0.15.sp
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 15.sp,
+        letterSpacing = 0.1.sp,
+        color = MatchPickPalette.TextPrimary
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Normal,
+        fontSize = 15.sp,
+        lineHeight = 22.sp,
+        color = MatchPickPalette.TextPrimary
     ),
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp,
+        lineHeight = 19.sp,
+        color = MatchPickPalette.TextSecondary
+    ),
+    labelLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 13.sp,
+        letterSpacing = 0.2.sp
     ),
     labelMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 12.sp,
-        letterSpacing = 0.4.sp
+        letterSpacing = 0.3.sp
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 11.sp,
-        letterSpacing = 0.3.sp
+        fontWeight = FontWeight.Medium,
+        fontSize = 10.sp,
+        letterSpacing = 0.3.sp,
+        color = MatchPickPalette.TextMuted
     )
 )

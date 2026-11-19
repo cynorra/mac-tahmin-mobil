@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,215 +66,119 @@ fun CommunityFeedScreen(
         }
     }
 
-    Scaffold(
-        containerColor = MatchPickPalette.DeepObsidian,
-        topBar = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color(0xFF0A1426), MatchPickPalette.DeepObsidian)
-                        )
-                    )
-                    .statusBarsPadding()
-            ) {
-                Row(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MatchPickPalette.DeepObsidian)
+            .statusBarsPadding()
+    ) {
+        // Top Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .size(36.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(MatchPickPalette.NeonEmerald),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MatchPickPalette.NeonBrandGradient),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "💬", fontSize = 19.sp)
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.nav_feed),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-                            Text(
-                                text = stringResource(R.string.feed_trending_matches),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MatchPickPalette.ElectricCyan,
-                                fontSize = 10.sp
-                            )
-                        }
-                    }
-
-                    // 2026+ Segmented Pill Switcher (Global / Local)
-                    Surface(
-                        shape = RoundedCornerShape(18.dp),
-                        color = Color(0xFF0E1629),
-                        border = BorderStroke(1.dp, Color(0x2864748B))
-                    ) {
-                        Row(modifier = Modifier.padding(3.dp)) {
-                            listOf(
-                                Triple(0, R.string.tab_global, "GLOBAL"),
-                                Triple(1, R.string.tab_local, "TR")
-                            ).forEach { (idx, labelRes, regionCode) ->
-                                val active = selectedTab == idx
-                                Surface(
-                                    shape = RoundedCornerShape(15.dp),
-                                    color = if (active) MatchPickPalette.NeonEmerald else Color.Transparent,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(15.dp))
-                                        .clickable {
-                                            selectedTab = idx
-                                            onRegionSelected(regionCode)
-                                        }
-                                ) {
-                                    Text(
-                                        text = stringResource(labelRes),
-                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Black,
-                                        color = if (active) Color(0xFF03170E) else MatchPickPalette.TextSecondary
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    Text(text = "💬", fontSize = 18.sp)
                 }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text(
+                        text = stringResource(R.string.nav_feed),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextPrimary
+                    )
+                    Text(
+                        text = stringResource(R.string.feed_trending_matches),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MatchPickPalette.TextSecondary
+                    )
+                }
+            }
 
-                // Trending Derby Tags Strip
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(trendingTags) { tag ->
+            // Segmented Switcher (Global / Local)
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = MatchPickPalette.SurfaceElevated,
+                border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+            ) {
+                Row(modifier = Modifier.padding(3.dp)) {
+                    listOf(
+                        Triple(0, R.string.tab_global, "GLOBAL"),
+                        Triple(1, R.string.tab_local, "TR")
+                    ).forEach { (idx, labelRes, regionCode) ->
+                        val active = selectedTab == idx
                         Surface(
                             shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF111A2E),
-                            border = BorderStroke(1.dp, Color(0x2800E5FF)),
+                            color = if (active) MatchPickPalette.NeonEmerald else Color.Transparent,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
                                 .clickable {
-                                    if (!postInput.contains(tag)) {
-                                        postInput = if (postInput.isBlank()) "$tag " else "$postInput $tag "
-                                    }
+                                    selectedTab = idx
+                                    onRegionSelected(regionCode)
                                 }
                         ) {
                             Text(
-                                text = tag,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                                text = stringResource(labelRes),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MatchPickPalette.ElectricCyan,
-                                fontSize = 11.sp
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-            }
-        },
-        bottomBar = {
-            Surface(
-                color = Color(0xFF0A101F),
-                border = BorderStroke(
-                    1.dp,
-                    Brush.linearGradient(
-                        listOf(Color(0x3300F59B), Color(0x2200E5FF))
-                    )
-                ),
-                modifier = Modifier.fillMaxWidth().navigationBarsPadding()
-            ) {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    errorMessage?.let {
-                        Text(
-                            text = it,
-                            color = MatchPickPalette.CrimsonLive,
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(bottom = 6.dp)
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        TextField(
-                            value = postInput,
-                            onValueChange = {
-                                postInput = it
-                                errorMessage = null
-                            },
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.post_input_hint),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MatchPickPalette.TextMuted
-                                )
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(24.dp)),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color(0xFF131D34),
-                                unfocusedContainerColor = Color(0xFF131D34),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
-                            maxLines = 3
-                        )
-
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        IconButton(
-                            onClick = {
-                                val validation = ClientContentModerator.validatePost(postInput)
-                                if (validation is ModerationResult.Invalid) {
-                                    errorMessage = validation.reason
-                                } else if (postInput.isNotBlank()) {
-                                    onSendPost(postInput.trim())
-                                    postInput = ""
-                                    errorMessage = null
-                                }
-                            },
-                            enabled = postInput.isNotBlank(),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (postInput.isNotBlank()) {
-                                        MatchPickPalette.NeonBrandGradient
-                                    } else {
-                                        Brush.linearGradient(listOf(Color(0xFF1E293B), Color(0xFF1E293B)))
-                                    }
-                                )
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Send,
-                                contentDescription = stringResource(R.string.btn_publish),
-                                tint = if (postInput.isNotBlank()) Color(0xFF03170E) else MatchPickPalette.TextMuted
+                                color = if (active) Color(0xFF031A0E) else MatchPickPalette.TextSecondary
                             )
                         }
                     }
                 }
             }
         }
-    ) { paddingValues ->
+
+        // Trending Tags Strip
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(trendingTags) { tag ->
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MatchPickPalette.SurfaceDark,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable {
+                            if (!postInput.contains(tag)) {
+                                postInput = if (postInput.isBlank()) "$tag " else "$postInput $tag "
+                            }
+                        }
+                ) {
+                    Text(
+                        text = tag,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = MatchPickPalette.TextSecondary,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+        }
+
+        // Feed Posts Stream
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(
                 items = posts,
@@ -287,10 +190,94 @@ fun CommunityFeedScreen(
                 )
 
                 if (index > 0 && index % 4 == 0) {
-                    AdaptiveBannerAd(
-                        adUnitId = adUnitId,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AdaptiveBannerAd(adUnitId = adUnitId)
+                    }
+                }
+            }
+        }
+
+        // Clean Post Input Bar (Floats above system nav bar)
+        Surface(
+            color = MatchPickPalette.SurfaceDark,
+            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = MatchPickPalette.CrimsonLive,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = postInput,
+                        onValueChange = {
+                            postInput = it
+                            errorMessage = null
+                        },
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.post_input_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MatchPickPalette.TextMuted
+                            )
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MatchPickPalette.SurfaceElevated,
+                            unfocusedContainerColor = MatchPickPalette.SurfaceElevated,
+                            focusedTextColor = MatchPickPalette.TextPrimary,
+                            unfocusedTextColor = MatchPickPalette.TextPrimary,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    IconButton(
+                        onClick = {
+                            val trimmed = postInput.trim()
+                            if (trimmed.isNotBlank()) {
+                                when (val mod = ClientContentModerator.validatePost(trimmed)) {
+                                    is ModerationResult.Valid -> {
+                                        onSendPost(trimmed)
+                                        postInput = ""
+                                        errorMessage = null
+                                    }
+                                    is ModerationResult.Invalid -> {
+                                        errorMessage = mod.reason
+                                    }
+                                }
+                            }
+                        },
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(MatchPickPalette.NeonEmerald)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Send,
+                            contentDescription = stringResource(R.string.btn_publish),
+                            tint = Color(0xFF031A0E),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }
@@ -305,23 +292,17 @@ fun PostCard(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(18.dp),
         color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(
-            1.dp,
-            Brush.linearGradient(
-                listOf(Color(0x3300F59B), Color(0x15FFFFFF), Color(0x2200E5FF))
-            )
-        ),
-        shadowElevation = 6.dp
+        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MatchPickPalette.GlassCardGradient)
-                .padding(16.dp)
+                .padding(14.dp)
         ) {
-            // Author row with Verified Analyst Badge
+            // Author row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -329,20 +310,15 @@ fun PostCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        modifier = Modifier.size(44.dp),
+                        modifier = Modifier.size(38.dp),
                         shape = CircleShape,
-                        color = Color(0xFF19243D),
-                        border = BorderStroke(
-                            1.5.dp,
-                            Brush.linearGradient(
-                                listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)
-                            )
-                        )
+                        color = MatchPickPalette.SurfaceElevated,
+                        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                     ) {
                         AsyncImage(
                             model = post.authorPhotoUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
                             contentDescription = post.authorName,
-                            modifier = Modifier.fillMaxSize().padding(3.dp).clip(CircleShape)
+                            modifier = Modifier.fillMaxSize().padding(2.dp).clip(CircleShape)
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
@@ -351,19 +327,19 @@ fun PostCard(
                             Text(
                                 text = post.authorName,
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color.White
+                                fontWeight = FontWeight.Bold,
+                                color = MatchPickPalette.TextPrimary
                             )
-                            Spacer(modifier = Modifier.width(5.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
                             Icon(
                                 imageVector = Icons.Default.Verified,
                                 contentDescription = null,
-                                tint = MatchPickPalette.ElectricCyan,
-                                modifier = Modifier.size(14.dp)
+                                tint = MatchPickPalette.NeonEmerald,
+                                modifier = Modifier.size(13.dp)
                             )
                         }
                         Text(
-                            text = "${post.timestampFormatted} • PRO ANALYST",
+                            text = post.timestampFormatted,
                             style = MaterialTheme.typography.labelSmall,
                             color = MatchPickPalette.TextMuted,
                             fontSize = 10.sp
@@ -371,92 +347,65 @@ fun PostCard(
                     }
                 }
 
-                // Like Capsule Button
+                // Like Button
                 Surface(
                     onClick = onLike,
-                    shape = RoundedCornerShape(14.dp),
-                    color = if (post.isLiked) Color(0xFF2D1220) else Color(0xFF141E33),
+                    shape = RoundedCornerShape(10.dp),
+                    color = if (post.isLiked) Color(0xFF26101B) else MatchPickPalette.SurfaceElevated,
                     border = BorderStroke(
-                        1.dp,
-                        if (post.isLiked) MatchPickPalette.CrimsonLive else Color(0x2864748B)
+                        0.5.dp,
+                        if (post.isLiked) MatchPickPalette.CrimsonLive.copy(alpha = 0.5f) else MatchPickPalette.BorderSubtle
                     )
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val heartColor by animateColorAsState(
-                            targetValue = if (post.isLiked) MatchPickPalette.CrimsonLive else MatchPickPalette.TextSecondary,
-                            label = "heartColor"
-                        )
                         Icon(
                             imageVector = if (post.isLiked) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Like",
-                            tint = heartColor,
-                            modifier = Modifier.size(15.dp)
+                            contentDescription = null,
+                            tint = if (post.isLiked) MatchPickPalette.CrimsonLive else MatchPickPalette.TextMuted,
+                            modifier = Modifier.size(14.dp)
                         )
-                        Spacer(modifier = Modifier.width(5.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "${post.likesCount}",
                             style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Black,
-                            color = if (post.isLiked) MatchPickPalette.CrimsonLive else Color.White
+                            fontWeight = FontWeight.Bold,
+                            color = if (post.isLiked) MatchPickPalette.CrimsonLive else MatchPickPalette.TextSecondary
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            // Attached Prediction Badge
+            post.attachedPrediction?.let { pick ->
+                Spacer(modifier = Modifier.height(10.dp))
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MatchPickPalette.EmeraldDeep,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
+                ) {
+                    Text(
+                        text = "🎯 $pick",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.NeonEmerald,
+                        fontSize = 10.sp
+                    )
+                }
+            }
 
-            // Post Content
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Post Text
             Text(
                 text = post.text,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFFE2E8F0),
-                lineHeight = 21.sp
+                color = MatchPickPalette.TextPrimary,
+                lineHeight = 20.sp
             )
-
-            // Attached Holographic Prediction Ticket
-            post.attachedPrediction?.let { pick ->
-                Spacer(modifier = Modifier.height(12.dp))
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFF0A281E),
-                    border = BorderStroke(
-                        1.dp,
-                        Brush.linearGradient(
-                            listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)
-                        )
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "🎯", fontSize = 13.sp)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = pick,
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Black,
-                                color = MatchPickPalette.NeonEmerald
-                            )
-                        }
-                        Text(
-                            text = "VERIFIED PICK",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Black,
-                            color = MatchPickPalette.ElectricCyan
-                        )
-                    }
-                }
-            }
         }
     }
 }

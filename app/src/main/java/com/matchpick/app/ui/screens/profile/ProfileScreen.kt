@@ -20,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -47,376 +46,351 @@ fun ProfileScreen(
 ) {
     var isAmoledTheme by remember { mutableStateOf(true) }
 
-    Scaffold(
-        containerColor = MatchPickPalette.DeepObsidian,
-        topBar = {
-            Row(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MatchPickPalette.DeepObsidian)
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Top Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.profile_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MatchPickPalette.TextPrimary
+            )
+
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MatchPickPalette.EmeraldDeep,
+                border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = null,
+                        tint = MatchPickPalette.NeonEmerald,
+                        modifier = Modifier.size(13.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.profile_tier_badge),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp,
+                        color = MatchPickPalette.NeonEmerald
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // Luxury Player Passport Card
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            color = MatchPickPalette.SurfaceDark,
+            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color(0xFF0A1426), MatchPickPalette.DeepObsidian)
-                        )
-                    )
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .background(MatchPickPalette.GlassCardGradient)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = stringResource(R.string.profile_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Black,
-                    color = Color.White
-                )
-
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF191233),
-                    border = BorderStroke(1.dp, MatchPickPalette.NeuralViolet)
+                    modifier = Modifier.size(80.dp),
+                    shape = CircleShape,
+                    color = MatchPickPalette.SurfaceElevated,
+                    border = BorderStroke(1.5.dp, MatchPickPalette.NeonEmerald)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AutoAwesome,
-                            contentDescription = null,
-                            tint = Color(0xFFD8B4FE),
-                            modifier = Modifier.size(13.dp)
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Text(
-                            text = stringResource(R.string.profile_tier_badge),
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 10.sp,
-                            color = Color(0xFFE9D5FF)
-                        )
-                    }
-                }
-            }
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // 2026+ Holographic Player Passport Card
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(26.dp),
-                color = MatchPickPalette.SurfaceDark,
-                border = BorderStroke(
-                    1.4.dp,
-                    Brush.linearGradient(
-                        listOf(
-                            MatchPickPalette.NeonEmerald,
-                            MatchPickPalette.ElectricCyan,
-                            MatchPickPalette.NeuralViolet
-                        )
+                    AsyncImage(
+                        model = avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
+                        contentDescription = userName,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp)
+                            .clip(CircleShape)
                     )
-                ),
-                shadowElevation = 10.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(Color(0xFF15223C), Color(0xFF0A101F))
-                            )
-                        )
-                        .padding(22.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Surface(
-                            modifier = Modifier.size(94.dp),
-                            shape = CircleShape,
-                            color = Color(0xFF0B291D),
-                            border = BorderStroke(
-                                2.5.dp,
-                                Brush.linearGradient(
-                                    listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)
-                                )
-                            ),
-                            shadowElevation = 8.dp
-                        ) {
-                            AsyncImage(
-                                model = avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
-                                contentDescription = userName,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(5.dp)
-                                    .clip(CircleShape)
-                            )
-                        }
-                    }
+                }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = userName,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Black,
-                            color = Color.White
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Icon(
-                            imageVector = Icons.Default.Verified,
-                            contentDescription = null,
-                            tint = MatchPickPalette.NeonEmerald,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = userEmail,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MatchPickPalette.TextSecondary
+                        text = userName,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextPrimary
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // XP Level Progress Bar
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "SEASON PASS • LVL 14",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Black,
-                                color = MatchPickPalette.ElectricCyan,
-                                fontSize = 10.sp
-                            )
-                            Text(
-                                text = "$totalPoints / 500 XP",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MatchPickPalette.NeonEmerald,
-                                fontSize = 10.sp
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(6.dp))
-                        LinearProgressIndicator(
-                            progress = { (totalPoints.toFloat() / 500f).coerceIn(0.25f, 0.92f) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(7.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = MatchPickPalette.NeonEmerald,
-                            trackColor = Color(0xFF1E293B)
-                        )
-                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Icon(
+                        imageVector = Icons.Default.Verified,
+                        contentDescription = null,
+                        tint = MatchPickPalette.NeonEmerald,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 2x2 Spatial Bento Telemetry Grid
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                StatCard(
-                    title = stringResource(R.string.stat_points),
-                    value = "$totalPoints PTS",
-                    valueColor = MatchPickPalette.NeonEmerald,
-                    modifier = Modifier.weight(1f)
+                Text(
+                    text = userEmail,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MatchPickPalette.TextSecondary
                 )
-                StatCard(
-                    title = stringResource(R.string.stat_streak),
-                    value = "🔥 $currentStreak",
-                    valueColor = MatchPickPalette.VipGold,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                StatCard(
-                    title = stringResource(R.string.stat_best),
-                    value = "🏆 $bestStreak",
-                    valueColor = Color(0xFFD8B4FE),
-                    modifier = Modifier.weight(1f)
-                )
-                StatCard(
-                    title = stringResource(R.string.profile_accuracy_label),
-                    value = "⚡ 84.2%",
-                    valueColor = MatchPickPalette.ElectricCyan,
-                    modifier = Modifier.weight(1f)
-                )
-            }
 
-            Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-            // Spatial Glass Settings Vault
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                color = MatchPickPalette.SurfaceDark,
-                border = BorderStroke(1.dp, Color(0x2864748B)),
-                shadowElevation = 6.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MatchPickPalette.GlassCardGradient)
-                        .padding(18.dp)
-                ) {
-                    SettingsRow(
-                        icon = Icons.Default.Notifications,
-                        title = stringResource(R.string.settings_notifications_title),
-                        subtitle = stringResource(R.string.settings_notifications_subtitle)
-                    ) {
-                        Switch(
-                            checked = isNotificationsEnabled,
-                            onCheckedChange = onToggleNotifications,
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFF041B11),
-                                checkedTrackColor = MatchPickPalette.NeonEmerald,
-                                uncheckedThumbColor = MatchPickPalette.TextSecondary,
-                                uncheckedTrackColor = Color(0xFF1E293B)
-                            )
-                        )
-                    }
-
-                    HorizontalDivider(
-                        color = Color(0x1864748B),
-                        modifier = Modifier.padding(vertical = 14.dp)
-                    )
-
-                    SettingsRow(
-                        icon = Icons.Default.Language,
-                        title = stringResource(R.string.settings_language_title),
-                        subtitle = stringResource(if (currentLanguage == "tr") R.string.language_tr_active else R.string.language_en_active)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(if (currentLanguage == "en") MatchPickPalette.NeonEmerald else Color(0xFF19243A))
-                                    .clickable { onChangeLanguage("en") }
-                                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "EN",
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 12.sp,
-                                    color = if (currentLanguage == "en") Color(0xFF03170E) else MatchPickPalette.TextSecondary
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(if (currentLanguage == "tr") MatchPickPalette.NeonEmerald else Color(0xFF19243A))
-                                    .clickable { onChangeLanguage("tr") }
-                                    .padding(horizontal = 14.dp, vertical = 8.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "TR",
-                                    fontWeight = FontWeight.Black,
-                                    fontSize = 12.sp,
-                                    color = if (currentLanguage == "tr") Color(0xFF03170E) else MatchPickPalette.TextSecondary
-                                )
-                            }
-                        }
-                    }
-
-                    HorizontalDivider(
-                        color = Color(0x1864748B),
-                        modifier = Modifier.padding(vertical = 14.dp)
-                    )
-
-                    SettingsRow(
-                        icon = Icons.Default.DarkMode,
-                        title = stringResource(R.string.settings_dark_mode_title),
-                        subtitle = stringResource(R.string.settings_dark_mode_subtitle)
-                    ) {
-                        Switch(
-                            checked = isAmoledTheme,
-                            onCheckedChange = { isAmoledTheme = it },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color(0xFF041B11),
-                                checkedTrackColor = MatchPickPalette.NeonEmerald,
-                                uncheckedThumbColor = MatchPickPalette.TextSecondary,
-                                uncheckedTrackColor = Color(0xFF1E293B)
-                            )
-                        )
-                    }
-
-                    HorizontalDivider(
-                        color = Color(0x1864748B),
-                        modifier = Modifier.padding(vertical = 14.dp)
-                    )
-
+                // XP Progress Bar
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.Logout,
-                                contentDescription = null,
-                                tint = MatchPickPalette.CrimsonLive
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "SEASON PASS • LVL 14",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.ElectricCyan,
+                            fontSize = 10.sp
+                        )
+                        Text(
+                            text = "$totalPoints / 500 XP",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.NeonEmerald,
+                            fontSize = 10.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    LinearProgressIndicator(
+                        progress = { (totalPoints.toFloat() / 500f).coerceIn(0.25f, 0.92f) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .clip(RoundedCornerShape(3.dp)),
+                        color = MatchPickPalette.NeonEmerald,
+                        trackColor = MatchPickPalette.SurfaceElevated
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        // 2x2 Clean Bento Stats Grid
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            StatCard(
+                title = stringResource(R.string.stat_points),
+                value = "$totalPoints PTS",
+                valueColor = MatchPickPalette.NeonEmerald,
+                modifier = Modifier.weight(1f)
+            )
+            StatCard(
+                title = stringResource(R.string.stat_streak),
+                value = "🔥 $currentStreak",
+                valueColor = MatchPickPalette.VipGold,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            StatCard(
+                title = stringResource(R.string.stat_best),
+                value = "🏆 $bestStreak",
+                valueColor = MatchPickPalette.TextPrimary,
+                modifier = Modifier.weight(1f)
+            )
+            StatCard(
+                title = stringResource(R.string.profile_accuracy_label),
+                value = "⚡ 84.2%",
+                valueColor = MatchPickPalette.ElectricCyan,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Settings Container (Apple HIG grouped list)
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            color = MatchPickPalette.SurfaceDark,
+            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MatchPickPalette.GlassCardGradient)
+                    .padding(16.dp)
+            ) {
+                SettingsRow(
+                    icon = Icons.Default.Notifications,
+                    title = stringResource(R.string.settings_notifications_title),
+                    subtitle = stringResource(R.string.settings_notifications_subtitle)
+                ) {
+                    Switch(
+                        checked = isNotificationsEnabled,
+                        onCheckedChange = onToggleNotifications,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color(0xFF031A0E),
+                            checkedTrackColor = MatchPickPalette.NeonEmerald,
+                            uncheckedThumbColor = MatchPickPalette.TextSecondary,
+                            uncheckedTrackColor = MatchPickPalette.SurfaceElevated
+                        )
+                    )
+                }
+
+                HorizontalDivider(
+                    color = MatchPickPalette.BorderSubtle,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                SettingsRow(
+                    icon = Icons.Default.Language,
+                    title = stringResource(R.string.settings_language_title),
+                    subtitle = stringResource(if (currentLanguage == "tr") R.string.language_tr_active else R.string.language_en_active)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (currentLanguage == "en") MatchPickPalette.NeonEmerald else MatchPickPalette.SurfaceElevated)
+                                .clickable { onChangeLanguage("en") }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Text(
-                                text = stringResource(R.string.btn_logout),
-                                style = MaterialTheme.typography.bodyLarge,
+                                text = "EN",
                                 fontWeight = FontWeight.Bold,
-                                color = MatchPickPalette.CrimsonLive
+                                fontSize = 12.sp,
+                                color = if (currentLanguage == "en") Color(0xFF031A0E) else MatchPickPalette.TextSecondary
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (currentLanguage == "tr") MatchPickPalette.NeonEmerald else MatchPickPalette.SurfaceElevated)
+                                .clickable { onChangeLanguage("tr") }
+                                .padding(horizontal = 12.dp, vertical = 6.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "TR",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                color = if (currentLanguage == "tr") Color(0xFF031A0E) else MatchPickPalette.TextSecondary
                             )
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                HorizontalDivider(
+                    color = MatchPickPalette.BorderSubtle,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                SettingsRow(
+                    icon = Icons.Default.DarkMode,
+                    title = stringResource(R.string.settings_dark_mode_title),
+                    subtitle = stringResource(R.string.settings_dark_mode_subtitle)
+                ) {
+                    Switch(
+                        checked = isAmoledTheme,
+                        onCheckedChange = { isAmoledTheme = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color(0xFF031A0E),
+                            checkedTrackColor = MatchPickPalette.NeonEmerald,
+                            uncheckedThumbColor = MatchPickPalette.TextSecondary,
+                            uncheckedTrackColor = MatchPickPalette.SurfaceElevated
+                        )
+                    )
+                }
+
+                HorizontalDivider(
+                    color = MatchPickPalette.BorderSubtle,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { }
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                        contentDescription = null,
+                        tint = MatchPickPalette.CrimsonLive,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = stringResource(R.string.btn_logout),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MatchPickPalette.CrimsonLive
+                    )
+                }
+            }
         }
+
+        Spacer(modifier = Modifier.height(72.dp))
     }
 }
 
 @Composable
-private fun StatCard(title: String, value: String, valueColor: Color, modifier: Modifier = Modifier) {
+private fun StatCard(
+    title: String,
+    value: String,
+    valueColor: Color,
+    modifier: Modifier = Modifier
+) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(1.dp, valueColor.copy(alpha = 0.35f)),
-        shadowElevation = 4.dp
+        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
     ) {
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .background(MatchPickPalette.GlassCardGradient)
-                .padding(vertical = 14.dp, horizontal = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(14.dp)
         ) {
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Black,
-                color = valueColor
-            )
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
-                color = MatchPickPalette.TextSecondary,
-                fontSize = 11.sp,
-                maxLines = 1
+                color = MatchPickPalette.TextMuted,
+                fontSize = 11.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = valueColor
             )
         }
     }
@@ -427,7 +401,7 @@ private fun SettingsRow(
     icon: ImageVector,
     title: String,
     subtitle: String,
-    action: @Composable () -> Unit
+    trailingContent: @Composable () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -439,16 +413,17 @@ private fun SettingsRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(
-                modifier = Modifier.size(38.dp),
+                modifier = Modifier.size(36.dp),
                 shape = RoundedCornerShape(10.dp),
-                color = Color(0xFF15223A)
+                color = MatchPickPalette.SurfaceElevated,
+                border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
                         tint = MatchPickPalette.NeonEmerald,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
@@ -457,17 +432,16 @@ private fun SettingsRow(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White
+                    fontWeight = FontWeight.SemiBold,
+                    color = MatchPickPalette.TextPrimary
                 )
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MatchPickPalette.TextSecondary,
-                    fontSize = 10.sp
+                    color = MatchPickPalette.TextSecondary
                 )
             }
         }
-        action()
+        trailingContent()
     }
 }

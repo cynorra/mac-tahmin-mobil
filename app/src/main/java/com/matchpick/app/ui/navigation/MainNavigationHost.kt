@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import com.matchpick.app.R
@@ -172,18 +173,9 @@ fun MainNavigationHost(
             containerColor = MatchPickPalette.DeepObsidian,
             bottomBar = {
                 Surface(
-                    color = Color(0xFF080D1A),
-                    border = BorderStroke(
-                        1.dp,
-                        Brush.horizontalGradient(
-                            listOf(
-                                Color(0x4400F59B),
-                                Color(0x3300E5FF),
-                                Color(0x44A855F7)
-                            )
-                        )
-                    ),
-                    shadowElevation = 20.dp
+                    color = MatchPickPalette.SurfaceDark,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
+                    shadowElevation = 8.dp
                 ) {
                     NavigationBar(
                         containerColor = Color.Transparent,
@@ -192,7 +184,7 @@ fun MainNavigationHost(
                         items.forEach { screen ->
                             val isSelected = currentRoute == screen.route
                             val iconScale by animateFloatAsState(
-                                targetValue = if (isSelected) 1.18f else 1.0f,
+                                targetValue = if (isSelected) 1.08f else 1.0f,
                                 animationSpec = spring(
                                     dampingRatio = Spring.DampingRatioMediumBouncy,
                                     stiffness = Spring.StiffnessMedium
@@ -203,34 +195,35 @@ fun MainNavigationHost(
                             NavigationBarItem(
                                 icon = {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        if (isSelected) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .width(18.dp)
-                                                    .height(2.5.dp)
-                                                    .clip(RoundedCornerShape(2.dp))
-                                                    .background(MatchPickPalette.NeonBrandGradient)
-                                            )
-                                            Spacer(modifier = Modifier.height(3.dp))
-                                        }
                                         Icon(
                                             screen.icon,
                                             contentDescription = null,
                                             modifier = Modifier.scale(iconScale),
-                                            tint = if (isSelected) MatchPickPalette.NeonEmerald else Color(0xFF64748B)
+                                            tint = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
                                         )
+                                        if (isSelected) {
+                                            Spacer(modifier = Modifier.height(3.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .width(12.dp)
+                                                    .height(2.dp)
+                                                    .clip(RoundedCornerShape(1.dp))
+                                                    .background(MatchPickPalette.NeonEmerald)
+                                            )
+                                        }
                                     }
                                 },
                                 label = {
                                     Text(
                                         text = stringResource(screen.titleRes),
-                                        fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
-                                        color = if (isSelected) MatchPickPalette.NeonEmerald else Color(0xFF94A3B8)
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted,
+                                        fontSize = 11.sp
                                     )
                                 },
                                 selected = isSelected,
                                 colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = Color(0xFF0A2E20)
+                                    indicatorColor = Color.Transparent
                                 ),
                                 onClick = {
                                     if (currentRoute != screen.route) {

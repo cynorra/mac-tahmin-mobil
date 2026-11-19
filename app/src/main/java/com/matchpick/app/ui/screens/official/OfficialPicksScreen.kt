@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -91,104 +90,88 @@ fun OfficialPicksScreen(
     val context = LocalContext.current
     val activity = context as? Activity
 
-    Scaffold(
-        containerColor = MatchPickPalette.DeepObsidian,
-        topBar = {
-            Column(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MatchPickPalette.DeepObsidian)
+            .statusBarsPadding()
+    ) {
+        // Luxury Top Bar
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color(0xFF141024), MatchPickPalette.DeepObsidian)
-                        )
-                    )
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MatchPickPalette.VipCrownGradient),
+                contentAlignment = Alignment.Center
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(MatchPickPalette.VipCrownGradient),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "👑", fontSize = 20.sp)
-                        }
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = stringResource(R.string.vip_header_title),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Black,
-                                color = Color.White
-                            )
-                            Text(
-                                text = stringResource(R.string.vip_header_subtitle),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MatchPickPalette.TextSecondary,
-                                fontSize = 11.sp
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // 2026+ Neural Accuracy Holographic Banner
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFF15122A),
-                    border = BorderStroke(
-                        1.dp,
-                        Brush.linearGradient(
-                            listOf(MatchPickPalette.VipGold, MatchPickPalette.NeuralViolet, MatchPickPalette.NeonEmerald)
-                        )
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                tint = MatchPickPalette.VipGold,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.vip_accuracy_banner),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color(0xFFFDE68A)
-                            )
-                        }
-                        Icon(
-                            imageVector = Icons.Default.Verified,
-                            contentDescription = null,
-                            tint = MatchPickPalette.NeonEmerald,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
+                Text(text = "👑", fontSize = 18.sp)
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = stringResource(R.string.vip_header_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MatchPickPalette.TextPrimary
+                )
+                Text(
+                    text = stringResource(R.string.vip_header_subtitle),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MatchPickPalette.TextSecondary
+                )
             }
         }
-    ) { paddingValues ->
+
+        // Rolling Accuracy Banner (Clean Amber/Emerald Luxury)
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = MatchPickPalette.VipDeep,
+            border = BorderStroke(0.5.dp, MatchPickPalette.VipGold.copy(alpha = 0.5f))
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.AutoAwesome,
+                        contentDescription = null,
+                        tint = MatchPickPalette.VipGold,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.vip_accuracy_banner),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFFFDE68A)
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Default.Verified,
+                    contentDescription = null,
+                    tint = MatchPickPalette.NeonEmerald,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             items(picks, key = { it.fixtureId }) { pickItem ->
                 VipPickCard(
@@ -198,9 +181,12 @@ fun OfficialPicksScreen(
                             rewardedAdController.showAd(act) {
                                 onUnlockPick(pickItem.fixtureId)
                             }
-                        } ?: onUnlockPick(pickItem.fixtureId)
+                        }
                     }
                 )
+            }
+            item {
+                Spacer(modifier = Modifier.height(72.dp))
             }
         }
     }
@@ -212,36 +198,25 @@ fun VipPickCard(
     onUnlock: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderBrush = if (pick.isVipLocked) {
-        Brush.linearGradient(
-            listOf(MatchPickPalette.VipGold, MatchPickPalette.NeuralViolet, Color(0x33FFB800))
-        )
+    val cardBorder = if (pick.isVipLocked) {
+        BorderStroke(0.5.dp, MatchPickPalette.VipGold.copy(alpha = 0.35f))
     } else {
-        Brush.linearGradient(
-            listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)
-        )
-    }
-
-    val cardBgBrush = if (pick.isVipLocked) {
-        Brush.verticalGradient(listOf(Color(0xFF17132E), Color(0xFF0B0F1E)))
-    } else {
-        Brush.verticalGradient(listOf(Color(0xFF0E2326), Color(0xFF0A1120)))
+        BorderStroke(0.8.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.6f))
     }
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
         color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(1.4.dp, borderBrush),
-        shadowElevation = 10.dp
+        border = cardBorder
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(cardBgBrush)
-                .padding(18.dp)
+                .background(MatchPickPalette.GlassCardGradient)
+                .padding(16.dp)
         ) {
-            // Top Badges & League Info
+            // Top Badges & League
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -249,20 +224,20 @@ fun VipPickCard(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        shape = RoundedCornerShape(10.dp),
-                        color = Color(0xFF281A05),
-                        border = BorderStroke(1.dp, MatchPickPalette.VipGold)
+                        shape = RoundedCornerShape(8.dp),
+                        color = MatchPickPalette.VipDeep,
+                        border = BorderStroke(0.5.dp, MatchPickPalette.VipGold)
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "👑", fontSize = 11.sp)
+                            Text(text = "👑", fontSize = 10.sp)
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = stringResource(R.string.hot_pick_badge),
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Black,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 10.sp,
                                 color = MatchPickPalette.VipGold
                             )
@@ -272,32 +247,32 @@ fun VipPickCard(
                     Text(
                         text = pick.leagueName,
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         color = MatchPickPalette.TextSecondary
                     )
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (pick.isVipLocked) Color(0xFF1E1436) else Color(0xFF0A2E20),
+                    shape = RoundedCornerShape(10.dp),
+                    color = if (pick.isVipLocked) MatchPickPalette.SurfaceElevated else MatchPickPalette.EmeraldDeep,
                     border = BorderStroke(
-                        1.dp,
-                        if (pick.isVipLocked) MatchPickPalette.NeuralViolet else MatchPickPalette.NeonEmerald
+                        0.5.dp,
+                        if (pick.isVipLocked) MatchPickPalette.BorderSubtle else MatchPickPalette.NeonEmerald
                     )
                 ) {
                     Text(
                         text = if (pick.isVipLocked) "%${pick.confidenceRate} ${stringResource(R.string.confidence_rate_label)}" else stringResource(R.string.vip_unlocked_badge),
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Black,
-                        color = if (pick.isVipLocked) Color(0xFFD8B4FE) else MatchPickPalette.NeonEmerald
+                        fontWeight = FontWeight.Bold,
+                        color = if (pick.isVipLocked) MatchPickPalette.TextPrimary else MatchPickPalette.NeonEmerald
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // Teams Arena Showcase
+            // Teams Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -308,36 +283,37 @@ fun VipPickCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Surface(
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier.size(44.dp),
                         shape = CircleShape,
-                        color = Color(0xFF17223B),
-                        border = BorderStroke(1.2.dp, MatchPickPalette.VipGold.copy(alpha = 0.5f))
+                        color = MatchPickPalette.SurfaceElevated,
+                        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                     ) {
                         AsyncImage(
                             model = pick.homeLogo,
                             contentDescription = pick.homeTeam,
-                            modifier = Modifier.fillMaxSize().padding(7.dp)
+                            modifier = Modifier.fillMaxSize().padding(6.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = pick.homeTeam,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White
+                        fontWeight = FontWeight.SemiBold,
+                        color = MatchPickPalette.TextPrimary
                     )
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = Color(0xFF1A243B)
+                    shape = RoundedCornerShape(8.dp),
+                    color = MatchPickPalette.SurfaceElevated,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                 ) {
                     Text(
                         text = stringResource(R.string.versus),
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Black,
-                        color = MatchPickPalette.VipGold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextSecondary,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                     )
                 }
 
@@ -349,21 +325,21 @@ fun VipPickCard(
                     Text(
                         text = pick.awayTeam,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MatchPickPalette.TextPrimary,
                         textAlign = TextAlign.End
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Surface(
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier.size(44.dp),
                         shape = CircleShape,
-                        color = Color(0xFF17223B),
-                        border = BorderStroke(1.2.dp, MatchPickPalette.ElectricCyan.copy(alpha = 0.5f))
+                        color = MatchPickPalette.SurfaceElevated,
+                        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                     ) {
                         AsyncImage(
                             model = pick.awayLogo,
                             contentDescription = pick.awayTeam,
-                            modifier = Modifier.fillMaxSize().padding(7.dp)
+                            modifier = Modifier.fillMaxSize().padding(6.dp)
                         )
                     }
                 }
@@ -371,7 +347,7 @@ fun VipPickCard(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Neural Confidence Bar
+            // Confidence Indicator
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -384,125 +360,93 @@ fun VipPickCard(
                         fontSize = 10.sp
                     )
                     Text(
-                        text = "${pick.confidenceRate}% Neural Confidence",
+                        text = "${pick.confidenceRate}% AI Confidence",
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.ExtraBold,
+                        fontWeight = FontWeight.Bold,
                         color = if (pick.isVipLocked) MatchPickPalette.VipGold else MatchPickPalette.NeonEmerald,
                         fontSize = 10.sp
                     )
                 }
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 LinearProgressIndicator(
                     progress = { (pick.confidenceRate / 100f).coerceIn(0.1f, 1f) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp)),
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp)),
                     color = if (pick.isVipLocked) MatchPickPalette.VipGold else MatchPickPalette.NeonEmerald,
-                    trackColor = Color(0xFF1E293B)
+                    trackColor = MatchPickPalette.SurfaceElevated
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            // Unlocked Content vs Cyber-Vault Locked Button with Smooth Morphing
-            androidx.compose.animation.AnimatedContent(
-                targetState = pick.isVipLocked,
-                label = "vipVaultUnlockTransition"
-            ) { locked ->
-                if (locked) {
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFF12182B),
-                        border = BorderStroke(1.dp, Color(0x33FFB800)),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+            // Unlock / Details Section
+            if (pick.isVipLocked) {
+                Button(
+                    onClick = onUnlock,
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MatchPickPalette.VipGold
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = null,
+                        tint = Color(0xFF03180D),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.rewarded_unlock_pick),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF03180D)
+                    )
+                }
+            } else {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MatchPickPalette.EmeraldDeep,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "🔒 ${stringResource(R.string.vip_vault_locked_hint)}",
+                                text = stringResource(R.string.analysis_reason_label),
                                 style = MaterialTheme.typography.labelSmall,
-                                color = Color(0xFFFDE68A),
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MatchPickPalette.NeonEmerald
                             )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Button(
-                                onClick = onUnlock,
-                                modifier = Modifier.fillMaxWidth().height(48.dp),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MatchPickPalette.VipGold
-                                )
-                            ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
-                                    imageVector = Icons.Default.Lock,
+                                    imageVector = Icons.Default.CheckCircle,
                                     contentDescription = null,
-                                    tint = Color(0xFF041B11),
-                                    modifier = Modifier.size(18.dp)
+                                    tint = MatchPickPalette.NeonEmerald,
+                                    modifier = Modifier.size(14.dp)
                                 )
-                                Spacer(modifier = Modifier.width(8.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = stringResource(R.string.rewarded_unlock_pick),
-                                    fontWeight = FontWeight.Black,
-                                    color = Color(0xFF041B11)
-                                )
-                            }
-                        }
-                    }
-                } else {
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFF09261C),
-                        border = BorderStroke(1.2.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.6f))
-                    ) {
-                        Column(modifier = Modifier.padding(14.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.analysis_reason_label),
-                                    style = MaterialTheme.typography.labelSmall,
+                                    text = pick.recommendedPick,
+                                    style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     color = MatchPickPalette.NeonEmerald
                                 )
-                                Surface(
-                                    shape = RoundedCornerShape(8.dp),
-                                    color = Color(0xFF051A12),
-                                    border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.CheckCircle,
-                                            contentDescription = null,
-                                            tint = MatchPickPalette.NeonEmerald,
-                                            modifier = Modifier.size(14.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(5.dp))
-                                        Text(
-                                            text = pick.recommendedPick,
-                                            style = MaterialTheme.typography.labelMedium,
-                                            fontWeight = FontWeight.Black,
-                                            color = MatchPickPalette.NeonEmerald
-                                        )
-                                    }
-                                }
                             }
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(
-                                text = pick.analysisReason,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color(0xFFE2E8F0),
-                                lineHeight = 19.sp
-                            )
                         }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = pick.analysisReason,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MatchPickPalette.TextPrimary,
+                            lineHeight = 18.sp
+                        )
                     }
                 }
             }

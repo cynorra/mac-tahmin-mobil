@@ -17,7 +17,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
@@ -52,143 +51,132 @@ fun LeaderboardScreen(
 ) {
     val clipboardManager = LocalClipboardManager.current
 
-    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MatchPickPalette.DeepObsidian)
+    ) {
         val isWideScreen = maxWidth >= 600.dp
 
-        Scaffold(
-            containerColor = MatchPickPalette.DeepObsidian,
-            topBar = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(Color(0xFF141128), MatchPickPalette.DeepObsidian)
-                            )
-                        )
-                        .statusBarsPadding()
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+        ) {
+            // Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(MatchPickPalette.VipCrownGradient),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(MatchPickPalette.VipCrownGradient),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = "🏆", fontSize = 20.sp)
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.leaderboard_title),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Black,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = stringResource(R.string.leaderboard_podium_title),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MatchPickPalette.TextSecondary,
-                                    fontSize = 11.sp
-                                )
-                            }
-                        }
-
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF1A1432),
-                            border = BorderStroke(1.dp, MatchPickPalette.VipGold.copy(alpha = 0.5f))
-                        ) {
-                            Text(
-                                text = "SEASON 26",
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Black,
-                                color = MatchPickPalette.VipGold,
-                                fontSize = 10.sp
-                            )
-                        }
+                        Text(text = "🏆", fontSize = 18.sp)
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = stringResource(R.string.leaderboard_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.TextPrimary
+                        )
+                        Text(
+                            text = stringResource(R.string.leaderboard_podium_title),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MatchPickPalette.TextSecondary
+                        )
                     }
                 }
-            },
-            bottomBar = {
-                // 2026+ Sticky Holographic User Position Bar
+
                 Surface(
-                    color = Color(0xFF0B1324),
-                    border = BorderStroke(
-                        1.2.dp,
-                        Brush.linearGradient(
-                            listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)
-                        )
-                    ),
-                    modifier = Modifier.fillMaxWidth().navigationBarsPadding(),
-                    shadowElevation = 12.dp
+                    shape = RoundedCornerShape(8.dp),
+                    color = MatchPickPalette.VipDeep,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.VipGold)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = Color(0xFF0A2E20),
-                                border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald)
-                            ) {
-                                Text(
-                                    text = "#${currentUser.rank}",
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Black,
-                                    color = MatchPickPalette.NeonEmerald
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.your_position_label),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = Color.White
-                                )
-                                Text(
-                                    text = "🔥 ${currentUser.streak} ${stringResource(R.string.streak_label)}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MatchPickPalette.VipGold,
-                                    fontSize = 10.sp
-                                )
-                            }
-                        }
-                        Text(
-                            text = stringResource(R.string.points_label, currentUser.points),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Black,
-                            color = MatchPickPalette.NeonEmerald
-                        )
-                    }
+                    Text(
+                        text = "SEASON 26",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.VipGold
+                    )
                 }
             }
-        ) { paddingValues ->
+
+            // User's Position Banner (Integrated Top Sticky)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                shape = RoundedCornerShape(14.dp),
+                color = MatchPickPalette.EmeraldDeep,
+                border = BorderStroke(0.8.dp, MatchPickPalette.NeonEmerald)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MatchPickPalette.NeonEmerald
+                        ) {
+                            Text(
+                                text = "#${currentUser.rank}",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF031A0E)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.your_position_label),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MatchPickPalette.TextPrimary
+                            )
+                            Text(
+                                text = "🔥 ${currentUser.streak} ${stringResource(R.string.streak_label)}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MatchPickPalette.VipGold
+                            )
+                        }
+                    }
+                    Text(
+                        text = stringResource(R.string.points_label, currentUser.points),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.NeonEmerald
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
             if (isWideScreen) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     LazyColumn(
-                        modifier = Modifier.weight(1.1f).fillMaxHeight(),
-                        contentPadding = PaddingValues(vertical = 8.dp),
+                        modifier = Modifier.weight(1.15f).fillMaxHeight(),
+                        contentPadding = PaddingValues(bottom = 80.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         itemsIndexed(topUsers, key = { _, user -> user.userId }) { _, item ->
@@ -197,8 +185,8 @@ fun LeaderboardScreen(
                     }
 
                     Column(
-                        modifier = Modifier.weight(0.9f).fillMaxHeight().padding(vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        modifier = Modifier.weight(0.85f).fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         ReferralHubCard(
                             referralCode = referralCode,
@@ -216,10 +204,8 @@ fun LeaderboardScreen(
                 }
             } else {
                 LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     item {
@@ -242,6 +228,10 @@ fun LeaderboardScreen(
                     itemsIndexed(topUsers.drop(3), key = { _, user -> user.userId }) { _, item ->
                         LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
                     }
+
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
+                    }
                 }
             }
         }
@@ -257,25 +247,15 @@ fun ReferralHubCard(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(18.dp),
         color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(
-            1.2.dp,
-            Brush.linearGradient(
-                listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan, MatchPickPalette.NeuralViolet)
-            )
-        ),
-        shadowElevation = 8.dp
+        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF132238), Color(0xFF0A101E))
-                    )
-                )
-                .padding(18.dp)
+                .background(MatchPickPalette.GlassCardGradient)
+                .padding(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -283,66 +263,65 @@ fun ReferralHubCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "🎁", fontSize = 18.sp)
+                    Text(text = "🎁", fontSize = 16.sp)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.referral_title),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextPrimary
                     )
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = Color(0xFF0A2E20),
-                    border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald)
+                    shape = RoundedCornerShape(6.dp),
+                    color = MatchPickPalette.EmeraldDeep,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
                 ) {
                     Text(
                         text = "+50 PTS",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
                         color = MatchPickPalette.NeonEmerald
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.referral_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MatchPickPalette.TextSecondary,
                 lineHeight = 18.sp
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFF0C1426),
-                    border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.5f)),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MatchPickPalette.SurfaceElevated,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
                     modifier = Modifier.weight(1f)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 11.dp),
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = referralCode,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Black,
+                            fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.NeonEmerald,
-                            letterSpacing = 1.5.sp
+                            letterSpacing = 1.sp
                         )
                         Text(
-                            text = "VIP CODE",
+                            text = "KOD",
                             style = MaterialTheme.typography.labelSmall,
-                            fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MatchPickPalette.ElectricCyan
+                            color = MatchPickPalette.TextMuted
                         )
                     }
                 }
@@ -350,28 +329,30 @@ fun ReferralHubCard(
                 IconButton(
                     onClick = onCopy,
                     modifier = Modifier
-                        .size(46.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF16223A))
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MatchPickPalette.SurfaceElevated)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ContentCopy,
                         contentDescription = stringResource(R.string.btn_copy),
-                        tint = MatchPickPalette.NeonEmerald
+                        tint = MatchPickPalette.TextPrimary,
+                        modifier = Modifier.size(18.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
                     onClick = onShare,
                     modifier = Modifier
-                        .size(46.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(MatchPickPalette.NeonBrandGradient)
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MatchPickPalette.NeonEmerald)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = stringResource(R.string.btn_share),
-                        tint = Color(0xFF03170E)
+                        tint = Color(0xFF031A0E),
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
@@ -387,47 +368,37 @@ fun PodiumSection(topThree: List<LeaderboardUserUiModel>) {
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(18.dp),
         color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(
-            1.dp,
-            Brush.linearGradient(
-                listOf(Color(0x44FFB800), Color(0x2200E5FF))
-            )
-        ),
-        shadowElevation = 8.dp
+        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF16132E), Color(0xFF0B101E))
-                    )
-                )
-                .padding(horizontal = 12.dp, vertical = 18.dp),
+                .background(MatchPickPalette.GlassCardGradient)
+                .padding(horizontal = 12.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.Bottom
         ) {
             PodiumPillar(
                 user = second,
                 rank = 2,
-                height = 112.dp,
-                pillarColor = Color(0xFF38BDF8),
+                height = 96.dp,
+                pillarColor = Color(0xFF94A3B8),
                 crown = "🥈"
             )
             PodiumPillar(
                 user = first,
                 rank = 1,
-                height = 148.dp,
+                height = 124.dp,
                 pillarColor = MatchPickPalette.VipGold,
                 crown = "👑"
             )
             PodiumPillar(
                 user = third,
                 rank = 3,
-                height = 94.dp,
-                pillarColor = Color(0xFFF97316),
+                height = 84.dp,
+                pillarColor = Color(0xFFD97706),
                 crown = "🥉"
             )
         }
@@ -444,65 +415,53 @@ fun PodiumPillar(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(98.dp)
+        modifier = Modifier.width(92.dp)
     ) {
-        Text(text = crown, fontSize = if (rank == 1) 24.sp else 20.sp)
+        Text(text = crown, fontSize = if (rank == 1) 20.sp else 16.sp)
         Spacer(modifier = Modifier.height(4.dp))
         Surface(
-            modifier = Modifier.size(if (rank == 1) 56.dp else 48.dp),
+            modifier = Modifier.size(if (rank == 1) 48.dp else 42.dp),
             shape = CircleShape,
-            color = Color(0xFF162035),
-            border = BorderStroke(2.dp, pillarColor),
-            shadowElevation = 6.dp
+            color = MatchPickPalette.SurfaceElevated,
+            border = BorderStroke(1.5.dp, pillarColor)
         ) {
             AsyncImage(
                 model = user.avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
                 contentDescription = user.name,
-                modifier = Modifier.fillMaxSize().padding(3.dp).clip(CircleShape)
+                modifier = Modifier.fillMaxSize().padding(6.dp)
             )
         }
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = user.name,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.White,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            color = MatchPickPalette.TextPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Text(
             text = "${user.points} PTS",
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
             color = MatchPickPalette.NeonEmerald,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Black
+            fontSize = 10.sp
         )
-        Spacer(modifier = Modifier.height(8.dp))
-        Box(
+        Spacer(modifier = Modifier.height(6.dp))
+        Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(height)
-                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(pillarColor, pillarColor.copy(alpha = 0.25f))
-                    )
-                ),
-            contentAlignment = Alignment.Center
+                .width(64.dp)
+                .height(height),
+            shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+            color = MatchPickPalette.SurfaceElevated,
+            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = "#$rank",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF04101C)
-                )
-                Text(
-                    text = "🔥 ${user.streak}",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF04101C).copy(alpha = 0.85f),
-                    fontSize = 10.sp
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = pillarColor
                 )
             }
         }
@@ -512,76 +471,81 @@ fun PodiumPillar(
 @Composable
 fun LeaderboardRow(
     user: LeaderboardUserUiModel,
-    isCurrentUser: Boolean = false,
+    isCurrentUser: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val border = if (isCurrentUser) {
-        BorderStroke(1.4.dp, MatchPickPalette.NeonEmerald)
-    } else {
-        BorderStroke(1.dp, Color(0x2264748B))
-    }
+    val borderColor = if (isCurrentUser) MatchPickPalette.NeonEmerald else MatchPickPalette.BorderSubtle
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        color = if (isCurrentUser) Color(0xFF0C2224) else MatchPickPalette.SurfaceDark,
-        border = border,
-        shadowElevation = if (isCurrentUser) 6.dp else 2.dp
+        shape = RoundedCornerShape(14.dp),
+        color = if (isCurrentUser) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceDark,
+        border = BorderStroke(if (isCurrentUser) 1.dp else 0.5.dp, borderColor)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "#${user.rank}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Black,
-                color = if (isCurrentUser) MatchPickPalette.NeonEmerald else MatchPickPalette.TextSecondary,
-                modifier = Modifier.width(38.dp)
-            )
-            Surface(
-                modifier = Modifier.size(42.dp),
-                shape = CircleShape,
-                color = Color(0xFF19233A),
-                border = BorderStroke(
-                    1.dp,
-                    if (isCurrentUser) MatchPickPalette.NeonEmerald else Color(0x3364748B)
-                )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
             ) {
-                AsyncImage(
-                    model = user.avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
-                    contentDescription = user.name,
-                    modifier = Modifier.fillMaxSize().padding(3.dp).clip(CircleShape)
+                Text(
+                    text = "#${user.rank}",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isCurrentUser) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted,
+                    modifier = Modifier.width(32.dp)
                 )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = user.name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.Verified,
-                        contentDescription = null,
-                        tint = MatchPickPalette.ElectricCyan,
-                        modifier = Modifier.size(13.dp)
+                Surface(
+                    modifier = Modifier.size(36.dp),
+                    shape = CircleShape,
+                    color = MatchPickPalette.SurfaceElevated,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+                ) {
+                    AsyncImage(
+                        model = user.avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
+                        contentDescription = user.name,
+                        modifier = Modifier.fillMaxSize().padding(5.dp)
                     )
                 }
-                Text(
-                    text = "🔥 ${user.streak} ${stringResource(R.string.streak_label)} • ${user.country}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MatchPickPalette.VipGold,
-                    fontSize = 11.sp
-                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = user.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MatchPickPalette.TextPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (user.rank <= 3) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.Verified,
+                                contentDescription = null,
+                                tint = MatchPickPalette.NeonEmerald,
+                                modifier = Modifier.size(13.dp)
+                            )
+                        }
+                    }
+                    Text(
+                        text = "🔥 ${user.streak} Seri • ${user.country}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MatchPickPalette.TextSecondary,
+                        fontSize = 10.sp
+                    )
+                }
             }
+
             Text(
-                text = stringResource(R.string.points_label, user.points),
+                text = "${user.points} Puan",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Black,
+                fontWeight = FontWeight.Bold,
                 color = MatchPickPalette.NeonEmerald
             )
         }
