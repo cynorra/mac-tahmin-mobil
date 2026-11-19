@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.matchpick.app",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7A:0F:85:CF:45:53:5E:20:A6:AB:69:8B:C1:DF:92:49:43:25:3F:82:38:51:D6:48:47:1A:B3:57:32"
+      ]
+    }
+  }
+]

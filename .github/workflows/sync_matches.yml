@@ -1,0 +1,29 @@
+name: MatchPick Free Sync & Push Engine
+
+on:
+  schedule:
+    - cron: '0 8,13,17,22 * * *' # UTC saatleri (Her gün 4 periyot)
+  workflow_dispatch:
+
+jobs:
+  sync_and_calculate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install firebase-admin requests
+
+      - name: Run Match Sync & Scoring Script
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SPORTS_API_KEY: ${{ secrets.SPORTS_API_KEY }}
+        run: |
+          python scripts/sync_engine.py

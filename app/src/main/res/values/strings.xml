@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">MatchPick</string>
+    <string name="nav_predict">Predict</string>
+    <string name="nav_feed">Community</string>
+    <string name="nav_official">App Picks</string>
+    <string name="nav_leaderboard">Ranks</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="tab_global">Global</string>
+    <string name="tab_local">Local (US)</string>
+    <string name="versus">VS</string>
+    <string name="pick_home">1</string>
+    <string name="pick_draw">X</string>
+    <string name="pick_away">2</string>
+
+    <string name="app_pick_badge">App Pick: %1$s (%2$d%% Win Rate)</string>
+    <string name="match_locked">Predictions Locked</string>
+    <string name="streak_label">Streak</string>
+    <string name="points_label">%1$d PTS</string>
+
+    <string name="share_match_title">MatchPick Prediction Challenge</string>
+    <string name="share_match_body">I predicted %1$s vs %2$s! Think you can beat my streak? Download MatchPick with my ref code %3$s: %4$s</string>
+    <string name="share_card_cta">Predict &amp; Win on MatchPick</string>
+    <string name="ref_code_copied">Referral code copied!</string>
+
+    <string name="post_input_hint">What\'s your take on today\'s fixtures?</string>
+    <string name="btn_publish">Post</string>
+    <string name="moderation_error_profanity">Your post contains inappropriate language or spam patterns.</string>
+    <string name="rewarded_unlock_pick">Watch Ad to Unlock Pro Pick</string>
+</resources>

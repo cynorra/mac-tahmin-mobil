@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">MatchPick</string>
+    <string name="nav_predict">Tahminler</string>
+    <string name="nav_feed">Topluluk</string>
+    <string name="nav_official">Günün Bankoları</string>
+    <string name="nav_leaderboard">Sıralama</string>
+    <string name="nav_profile">Profil</string>
+
+    <string name="tab_global">Global</string>
+    <string name="tab_local">Yerel (TR)</string>
+    <string name="versus">VS</string>
+    <string name="pick_home">1</string>
+    <string name="pick_draw">X</string>
+    <string name="pick_away">2</string>
+
+    <string name="app_pick_badge">Uygulama Tahmini: %1$s (%% %2$d Güven)</string>
+    <string name="match_locked">Tahminlere Kapandı</string>
+    <string name="streak_label">Seri</string>
+    <string name="points_label">%1$d Puan</string>
+
+    <string name="share_match_title">MatchPick Tahmin Meydan Okuması</string>
+    <string name="share_match_body">%1$s - %2$s maçını tahmin ettim! Serime meydan okuyabilir misin? %3$s referans kodumla MatchPick\'e katıl: %4$s</string>
+    <string name="share_card_cta">MatchPick\'te Tahmin Et ve Kazan</string>
+    <string name="ref_code_copied">Referans kodu kopyalandı!</string>
+
+    <string name="post_input_hint">Bugünkü maçlar hakkında ne düşünüyorsun?</string>
+    <string name="btn_publish">Paylaş</string>
+    <string name="moderation_error_profanity">Gönderiniz uygunsuz ifadeler veya spam kalıpları içeriyor.</string>
+    <string name="rewarded_unlock_pick">Reklam İzle &amp; Analizi Aç</string>
+</resources>

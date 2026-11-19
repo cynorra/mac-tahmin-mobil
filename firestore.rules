@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Kullanıcı profili: Sadece kendi profilini güncelleyebilir, puanları sadece Cloud Functions yazar
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId 
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['total_points', 'current_streak']);
+    }
+
+    // Tahminler: Maç başlamadan önce yazılmalı
+    match /predictions/{predictionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null 
+                    && request.resource.data.user_id == request.auth.uid
+                    && request.time < get(/databases/$(database)/documents/fixtures/$(request.resource.data.fixture_id)).data.match_date_utc;
+      allow update, delete: if false; // Tahmin bir kez kilitlendikten sonra değiştirilemez
+    }
+
+    // Fikstürler: Sadece backend/admin günceller
+    match /fixtures/{fixtureId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}
