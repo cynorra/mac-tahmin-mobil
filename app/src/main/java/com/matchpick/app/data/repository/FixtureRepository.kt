@@ -22,7 +22,11 @@ class FixtureRepository @Inject constructor(
 ) {
 
     fun getFixtures(countryCode: String): Flow<List<FixtureEntity>> {
-        return fixtureDao.getFixturesByRegion(countryCode).flowOn(Dispatchers.IO)
+        return fixtureDao.getAllFixtures().flowOn(Dispatchers.IO)
+    }
+
+    fun getFixturesByLeague(leagueId: String): Flow<List<FixtureEntity>> {
+        return fixtureDao.getFixturesByLeague(leagueId).flowOn(Dispatchers.IO)
     }
 
     suspend fun savePrediction(fixtureId: String, pick: String, userId: String) = withContext(Dispatchers.IO) {
@@ -62,6 +66,7 @@ class FixtureRepository @Inject constructor(
                         homeTeamLogo = raw["homeTeamLogo"] as? String ?: "",
                         awayTeamName = raw["awayTeamName"] as? String ?: "",
                         awayTeamLogo = raw["awayTeamLogo"] as? String ?: "",
+                        stadiumName = raw["stadiumName"] as? String ?: "",
                         matchTimestamp = (raw["matchTimestamp"] as? Number)?.toLong() ?: 0L,
                         officialPick = raw["officialPick"] as? String,
                         officialConfidence = (raw["officialConfidence"] as? Number)?.toInt() ?: 0,

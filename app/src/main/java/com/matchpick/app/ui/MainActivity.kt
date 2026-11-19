@@ -111,13 +111,20 @@ class MainActivity : ComponentActivity() {
 }
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF10B981),
-    surface = Color(0xFF0F172A),
-    background = Color(0xFF020617)
+    primary = Color(0xFF00F59B),
+    onPrimary = Color(0xFF041B11),
+    primaryContainer = Color(0xFF0B291D),
+    onPrimaryContainer = Color(0xFF6BFFB8),
+    secondary = Color(0xFF00E5FF),
+    onSecondary = Color(0xFF001F26),
+    secondaryContainer = Color(0xFF003640),
+    onSecondaryContainer = Color(0xFF6BF0FF),
+    tertiary = Color(0xFF8B5CF6),
+    background = Color(0xFF070B14),
+    surface = Color(0xFF0E1424),
+    surfaceVariant = Color(0xFF162035),
+    outline = Color(0xFF64748B),
+    outlineVariant = Color(0xFF26334D)
 )
 
-private val LightColors = lightColorScheme(
-    primary = Color(0xFF059669),
-    surface = Color(0xFFFFFFFF),
-    background = Color(0xFFF8FAFC)
-)
+private val LightColors = DarkColors // 2026+ dark-first sports app default

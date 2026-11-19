@@ -1,30 +1,92 @@
 <resources>
     <string name="app_name">MatchPick</string>
-    <string name="nav_predict">Predict</string>
+    <string name="app_tagline">Next-Gen Football Predictions &amp; Community</string>
+
+    <!-- Navigation -->
+    <string name="nav_predict">Predictions</string>
     <string name="nav_feed">Community</string>
-    <string name="nav_official">App Picks</string>
+    <string name="nav_official">VIP Bankos</string>
     <string name="nav_leaderboard">Ranks</string>
     <string name="nav_profile">Profile</string>
 
-    <string name="tab_global">Global</string>
-    <string name="tab_local">Local (US)</string>
+    <!-- Categories & Leagues -->
+    <string name="league_all">All Matches</string>
+    <string name="league_ucl">Champions League</string>
+    <string name="league_epl">Premier League</string>
+    <string name="league_laliga">La Liga</string>
+    <string name="league_superlig">Süper Lig</string>
+    <string name="league_seriea">Serie A</string>
+    <string name="league_bundesliga">Bundesliga</string>
+
+    <!-- Match Card Details -->
     <string name="versus">VS</string>
     <string name="pick_home">1</string>
     <string name="pick_draw">X</string>
     <string name="pick_away">2</string>
-
-    <string name="app_pick_badge">App Pick: %1$s (%2$d%% Win Rate)</string>
+    <string name="odds_label">Odds: %1$.2f</string>
+    <string name="crowd_votes">Crowd Votes</string>
+    <string name="ai_confidence">%1$d%% Win Rate</string>
+    <string name="app_pick_badge">AI Pick: %1$s (%2$d%% Win Rate)</string>
+    <string name="match_status_live">LIVE</string>
+    <string name="match_status_upcoming">Upcoming</string>
+    <string name="match_status_finished">FT</string>
     <string name="match_locked">Predictions Locked</string>
+    <string name="prediction_saved">Prediction recorded for %1$s!</string>
+
+    <!-- Header Stats -->
     <string name="streak_label">Streak</string>
     <string name="points_label">%1$d PTS</string>
+    <string name="win_rate_label">Win Rate</string>
 
+    <!-- VIP / App Picks -->
+    <string name="vip_header_title">VIP Pro Predictions</string>
+    <string name="vip_header_subtitle">Curated high-confidence match insights powered by neural analytics.</string>
+    <string name="hot_pick_badge">HOT PICK</string>
+    <string name="rewarded_unlock_pick">Watch Ad to Unlock Pro Pick</string>
+    <string name="vip_unlocked_badge">PRO UNLOCKED</string>
+    <string name="analysis_reason_label">Tactical Analysis</string>
+    <string name="confidence_rate_label">Confidence</string>
+
+    <!-- Community Feed -->
+    <string name="tab_global">Global Feed</string>
+    <string name="tab_local">Local Feed</string>
+    <string name="post_input_hint">Share your tactical take on today\'s fixtures...</string>
+    <string name="btn_publish">Post</string>
+    <string name="post_likes_count">%1$d likes</string>
+    <string name="moderation_error_profanity">Your post contains inappropriate language or spam patterns.</string>
+    <string name="post_success">Your post is live in the community!</string>
+
+    <!-- Leaderboard & Referral -->
+    <string name="leaderboard_title">Global Standings</string>
+    <string name="leaderboard_podium_title">Top Predictors This Season</string>
+    <string name="referral_title">Invite Friends &amp; Earn 50 PTS</string>
+    <string name="referral_desc">Get +50 PTS for every friend who joins with your code. They receive +25 PTS immediately!</string>
+    <string name="btn_copy">Copy</string>
+    <string name="btn_share">Share</string>
+    <string name="ref_code_copied">Referral code copied to clipboard!</string>
+    <string name="your_position_label">Your Position</string>
+
+    <!-- Profile & Settings -->
+    <string name="profile_title">My Profile</string>
+    <string name="stat_points">Total Points</string>
+    <string name="stat_streak">Current Streak</string>
+    <string name="stat_best">Best Streak</string>
+    <string name="settings_notifications_title">Match Reminders</string>
+    <string name="settings_notifications_subtitle">Kickoff alerts and daily prediction digest</string>
+    <string name="settings_language_title">Application Language</string>
+    <string name="settings_dark_mode_title">AMOLED Dark Theme</string>
+    <string name="settings_dark_mode_subtitle">Optimized for high-contrast OLED displays</string>
+    <string name="btn_logout">Log Out</string>
+
+    <!-- Social Share Modal -->
     <string name="share_match_title">MatchPick Prediction Challenge</string>
     <string name="share_match_body">I predicted %1$s vs %2$s! Think you can beat my streak? Download MatchPick with my ref code %3$s: %4$s</string>
     <string name="share_card_cta">Predict &amp; Win on MatchPick</string>
-    <string name="ref_code_copied">Referral code copied!</string>
+    <string name="btn_share_story">Story</string>
+    <string name="btn_share_whatsapp">WhatsApp</string>
+    <string name="btn_share_general">Share</string>
 
-    <string name="post_input_hint">What\'s your take on today\'s fixtures?</string>
-    <string name="btn_publish">Post</string>
-    <string name="moderation_error_profanity">Your post contains inappropriate language or spam patterns.</string>
-    <string name="rewarded_unlock_pick">Watch Ad to Unlock Pro Pick</string>
+    <!-- Ad & Monetization -->
+    <string name="ad_sponsor_label">Ad</string>
+    <string name="ad_loading_reward">Loading rewarded ad...</string>
 </resources>

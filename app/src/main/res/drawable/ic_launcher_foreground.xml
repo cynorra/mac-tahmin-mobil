@@ -1,9 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <path
-      android:fillColor="#10B981"
-      android:pathData="M54,24 A30,30 0 1,0 54,84 A30,30 0 1,0 54,24 Z M54,34 L62,48 L76,48 L65,58 L69,72 L54,62 L39,72 L43,58 L32,48 L46,48 Z"/>
+
+    <!-- Outer Ambient Glow -->
+    <path
+        android:fillColor="#1A00F59B"
+        android:pathData="M54,20 A34,34 0 1,0 54,88 A34,34 0 1,0 54,20 Z" />
+
+    <!-- Neon Emerald Shield / Crest Ring -->
+    <path
+        android:strokeColor="#00F59B"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,26 C68,26 80,38 80,54 C80,70 68,82 54,82 C40,82 28,70 28,54 C28,38 40,26 54,26" />
+
+    <!-- Geometric Soccer Ball Facets -->
+    <!-- Center Pentagon -->
+    <path
+        android:fillColor="#00F59B"
+        android:pathData="M54,44 L62,50 L59,60 L49,60 L46,50 Z" />
+
+    <!-- Upper Seams to Edge -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M54,44 L54,34" />
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M62,50 L72,46" />
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M59,60 L68,70" />
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M49,60 L40,70" />
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M46,50 L36,46" />
+
+    <!-- Outer Pentagonal Nodes -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,34 L48,27 L60,27 Z" />
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M72,46 L78,40 L80,52 Z" />
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M36,46 L28,52 L30,40 Z" />
+
+    <!-- Upward Predictive Strike Arrow (Dynamic Neon Lightning) -->
+    <path
+        android:fillColor="#FFB800"
+        android:pathData="M56,22 L51,33 L57,33 L52,43 L63,31 L57,31 Z" />
+
+    <!-- Premium Star Sparkle at Top -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,16 L55.5,20 L59.5,21.5 L55.5,23 L54,27 L52.5,23 L48.5,21.5 L52.5,20 Z" />
 </vector>
