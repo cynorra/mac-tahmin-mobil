@@ -65,6 +65,7 @@
     <string name="btn_copy">Copy</string>
     <string name="btn_share">Share</string>
     <string name="ref_code_copied">Referral code copied to clipboard!</string>
+    <string name="share_referral_text">Join me on MatchPick with my referral code %1$s to get +25 bonus points! Download: https://matchpick.app</string>
     <string name="your_position_label">Your Position</string>
 
     <!-- Profile & Settings -->

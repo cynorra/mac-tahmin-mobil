@@ -65,6 +65,7 @@
     <string name="btn_copy">Kopyala</string>
     <string name="btn_share">Paylaş</string>
     <string name="ref_code_copied">Referans kodu panoya kopyalandı!</string>
+    <string name="share_referral_text">%1$s referans kodumla MatchPick\'e katıl, anında +25 bonus puan kazan! İndir: https://matchpick.app</string>
     <string name="your_position_label">Sıralaman</string>
 
     <!-- Profile & Settings -->

@@ -26,7 +26,12 @@ class FeedViewModel @Inject constructor(
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(FeedUiState())
+    private val _uiState = MutableStateFlow(
+        FeedUiState(
+            posts = getDefaultPosts("GLOBAL"),
+            currentRegion = "GLOBAL"
+        )
+    )
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
     init {
@@ -35,9 +40,10 @@ class FeedViewModel @Inject constructor(
 
     fun loadFeed(region: String) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val posts = fetchPostsFromFirestore(region)
-            _uiState.update { it.copy(posts = posts, isLoading = false, currentRegion = region) }
+            _uiState.update { it.copy(isLoading = true, currentRegion = region) }
+            val fetchedPosts = fetchPostsFromFirestore(region)
+            val finalPosts = fetchedPosts.ifEmpty { getDefaultPosts(region) }
+            _uiState.update { it.copy(posts = finalPosts, isLoading = false) }
         }
     }
 
@@ -55,9 +61,9 @@ class FeedViewModel @Inject constructor(
             }
 
             val snapshot = query.get().await()
-            val currentUid = auth.currentUser?.uid ?: ""
+            val currentUid = auth.currentUser?.uid ?: "guest_user"
 
-            snapshot.documents.mapNotNull { doc ->
+            val list = snapshot.documents.mapNotNull { doc ->
                 val id = doc.id
                 val authorName = doc.getString("authorName") ?: "User"
                 val authorPhoto = doc.getString("authorPhoto") ?: ""
@@ -80,62 +86,157 @@ class FeedViewModel @Inject constructor(
                     attachedPrediction = attachedPick
                 )
             }
-        } catch (e: Exception) {
+            list
+        } catch (_: Exception) {
             emptyList()
         }
     }
 
     fun publishPost(content: String, attachedPick: String? = null) {
-        val user = auth.currentUser ?: return
-        viewModelScope.launch(Dispatchers.IO) {
-            val postMap = hashMapOf(
-                "authorId" to user.uid,
-                "authorName" to (user.displayName ?: "Striker_${user.uid.take(4)}"),
-                "authorPhoto" to (user.photoUrl?.toString() ?: ""),
-                "text" to content,
-                "region" to _uiState.value.currentRegion,
-                "attachedPick" to attachedPick,
-                "likesCount" to 0L,
-                "likedBy" to emptyList<String>(),
-                "createdAt" to FieldValue.serverTimestamp()
-            )
+        if (content.isBlank()) return
+        val user = auth.currentUser
+        val authorId = user?.uid ?: "guest_${System.currentTimeMillis() % 10000}"
+        val authorName = user?.displayName ?: "Misafir Analist"
+        val authorPhoto = user?.photoUrl?.toString() ?: ""
+        val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
-            firestore.collection("feed_posts").add(postMap).await()
-            loadFeed(_uiState.value.currentRegion) // Listeyi tazele
+        val newPost = PostUiModel(
+            id = "local_${System.currentTimeMillis()}",
+            authorName = authorName,
+            authorPhotoUrl = authorPhoto,
+            text = content,
+            timestampFormatted = formattedTime,
+            likesCount = 0,
+            isLiked = false,
+            attachedPrediction = attachedPick
+        )
+
+        // Optimistic UI update: hemen en üste ekle
+        _uiState.update { it.copy(posts = listOf(newPost) + it.posts) }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val postMap = hashMapOf(
+                    "authorId" to authorId,
+                    "authorName" to authorName,
+                    "authorPhoto" to authorPhoto,
+                    "text" to content,
+                    "region" to _uiState.value.currentRegion,
+                    "attachedPick" to attachedPick,
+                    "likesCount" to 0L,
+                    "likedBy" to emptyList<String>(),
+                    "createdAt" to FieldValue.serverTimestamp()
+                )
+                firestore.collection("feed_posts").add(postMap).await()
+            } catch (_: Exception) {
+                // UI durumu zaten eklendi
+            }
         }
     }
 
     fun toggleLike(postId: String) {
-        val uid = auth.currentUser?.uid ?: return
+        val uid = auth.currentUser?.uid ?: "guest_user"
+        val currentPost = _uiState.value.posts.find { it.id == postId } ?: return
+        val isNowLiked = !currentPost.isLiked
+        val delta = if (isNowLiked) 1 else -1
+
+        // Optimistic update
+        _uiState.update { state ->
+            state.copy(posts = state.posts.map {
+                if (it.id == postId) it.copy(
+                    isLiked = isNowLiked,
+                    likesCount = (it.likesCount + delta).coerceAtLeast(0)
+                ) else it
+            })
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            val postRef = firestore.collection("feed_posts").document(postId)
-            val currentPost = _uiState.value.posts.find { it.id == postId } ?: return@launch
-            
-            val isNowLiked = !currentPost.isLiked
-            val delta = if (isNowLiked) 1L else -1L
-
-            // UI'da anında göster (Optimistic Update)
-            _uiState.update { state ->
-                state.copy(posts = state.posts.map {
-                    if (it.id == postId) it.copy(
-                        isLiked = isNowLiked,
-                        likesCount = (it.likesCount + delta).toInt().coerceAtLeast(0)
-                    ) else it
-                })
+            try {
+                val postRef = firestore.collection("feed_posts").document(postId)
+                if (isNowLiked) {
+                    postRef.update(
+                        "likesCount", FieldValue.increment(1L),
+                        "likedBy", FieldValue.arrayUnion(uid)
+                    ).await()
+                } else {
+                    postRef.update(
+                        "likesCount", FieldValue.increment(-1L),
+                        "likedBy", FieldValue.arrayRemove(uid)
+                    ).await()
+                }
+            } catch (_: Exception) {
+                // Misafir veya offline modunda yerel durum korunur
             }
+        }
+    }
 
-            // Firestore senkronizasyonu
-            if (isNowLiked) {
-                postRef.update(
-                    "likesCount", FieldValue.increment(1L),
-                    "likedBy", FieldValue.arrayUnion(uid)
-                ).await()
-            } else {
-                postRef.update(
-                    "likesCount", FieldValue.increment(-1L),
-                    "likedBy", FieldValue.arrayRemove(uid)
-                ).await()
-            }
+    private fun getDefaultPosts(region: String): List<PostUiModel> {
+        return if (region == "TR") {
+            listOf(
+                PostUiModel(
+                    id = "tr_feed_1",
+                    authorName = "Burak K.",
+                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png",
+                    text = "Beşiktaş - Trabzonspor derbisinde Semih Kılıçsoy ilk 11 başlıyor. Karşılıklı Gol Var (KG Var) oranı 1.78 kaçmaz! 🔥",
+                    timestampFormatted = "14:20",
+                    likesCount = 28,
+                    isLiked = false,
+                    attachedPrediction = "Beşiktaş vs Trabzonspor -> KG Var"
+                ),
+                PostUiModel(
+                    id = "tr_feed_2",
+                    authorName = "Rıdvan Taktik",
+                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8695.png",
+                    text = "Fenerbahçe Kadıköy'de müthiş baskıyla başlıyor. İlk yarı 1.5 Üst taktiği banko duruyor.",
+                    timestampFormatted = "13:45",
+                    likesCount = 34,
+                    isLiked = true,
+                    attachedPrediction = "Fenerbahçe vs Adana Demirspor -> İY 1.5 Üst"
+                ),
+                PostUiModel(
+                    id = "tr_feed_3",
+                    authorName = "Aslan Yüreği",
+                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png",
+                    text = "Galatasaray deplasmanda Osimhen ve Icardi ikilisiyle yine gol şov yapacaktır. Maç Sonucu 2 & 2.5 Üst!",
+                    timestampFormatted = "12:10",
+                    likesCount = 56,
+                    isLiked = false,
+                    attachedPrediction = "Sivasspor vs Galatasaray -> 2 & 2.5 Üst"
+                )
+            )
+        } else {
+            listOf(
+                PostUiModel(
+                    id = "global_feed_1",
+                    authorName = "Liam Tactical",
+                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
+                    text = "Arsenal vs Man City title race battle. Rice and Rodri midfield duel will decide the whole match tempo. Under 2.5 goals looks very sharp.",
+                    timestampFormatted = "15:45",
+                    likesCount = 42,
+                    isLiked = false,
+                    attachedPrediction = "Arsenal vs Manchester City -> Under 2.5"
+                ),
+                PostUiModel(
+                    id = "global_feed_2",
+                    authorName = "Carlos Madrid",
+                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
+                    text = "El Clásico at Bernabéu! Vini Jr and Bellingham always deliver in big matches. Expecting early goals.",
+                    timestampFormatted = "14:10",
+                    likesCount = 68,
+                    isLiked = true,
+                    attachedPrediction = "Real Madrid vs FC Barcelona -> 1X & Over 2.5"
+                ),
+                PostUiModel(
+                    id = "global_feed_3",
+                    authorName = "Marco Interista",
+                    authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8636.png",
+                    text = "Inter Milan solid defense at San Siro: Clean sheet for Sommer is highly probable against Juventus.",
+                    timestampFormatted = "11:30",
+                    likesCount = 31,
+                    isLiked = false,
+                    attachedPrediction = "Inter Milan vs Juventus -> 1"
+                )
+            )
         }
     }
 }

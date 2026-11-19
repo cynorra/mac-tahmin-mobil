@@ -49,6 +49,7 @@ fun CommunityFeedScreen(
     onSendPost: (String) -> Unit,
     onLikePost: (String) -> Unit,
     adUnitId: String,
+    onRegionSelected: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var postInput by remember { mutableStateOf("") }
@@ -101,7 +102,10 @@ fun CommunityFeedScreen(
                 ) {
                     Tab(
                         selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
+                        onClick = {
+                            selectedTab = 0
+                            onRegionSelected("GLOBAL")
+                        },
                         text = {
                             Text(
                                 text = stringResource(R.string.tab_global),
@@ -112,7 +116,10 @@ fun CommunityFeedScreen(
                     )
                     Tab(
                         selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
+                        onClick = {
+                            selectedTab = 1
+                            onRegionSelected("TR")
+                        },
                         text = {
                             Text(
                                 text = stringResource(R.string.tab_local),

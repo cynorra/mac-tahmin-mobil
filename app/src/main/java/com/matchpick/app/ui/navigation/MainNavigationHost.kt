@@ -195,43 +195,11 @@ fun MainNavigationHost(
                 )
             }
             composable(Screen.Feed.route) {
-                val realFeedPosts = listOf(
-                    PostUiModel(
-                        id = "feed_1",
-                        authorName = "Burak K.",
-                        authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png",
-                        text = "Galatasaray - Fenerbahçe derbisi için tahminleriniz nedir? RAMS Park'ta Osimhen çok formda, KG Var & 2.5 Üst banko bence! 🔥",
-                        timestampFormatted = "14:20",
-                        likesCount = 28,
-                        isLiked = false,
-                        attachedPrediction = "Galatasaray vs Fenerbahçe -> 1"
-                    ),
-                    PostUiModel(
-                        id = "feed_2",
-                        authorName = "Liam Tactical",
-                        authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png",
-                        text = "Arsenal vs Man City title race battle. Rice and Rodri midfield duel will decide the whole match tempo.",
-                        timestampFormatted = "15:45",
-                        likesCount = 19,
-                        isLiked = true,
-                        attachedPrediction = "Arsenal vs Manchester City -> X"
-                    ),
-                    PostUiModel(
-                        id = "feed_3",
-                        authorName = "Carlos Madrid",
-                        authorPhotoUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
-                        text = "El Clásico at Bernabéu! Vini Jr and Bellingham always deliver in big matches. Expecting early goals.",
-                        timestampFormatted = "16:10",
-                        likesCount = 42,
-                        isLiked = false,
-                        attachedPrediction = "Real Madrid vs FC Barcelona -> 1X"
-                    )
-                )
-
                 CommunityFeedScreen(
-                    posts = feedState.posts.ifEmpty { realFeedPosts },
+                    posts = feedState.posts,
                     onSendPost = { text -> feedViewModel.publishPost(text) },
                     onLikePost = { id -> feedViewModel.toggleLike(id) },
+                    onRegionSelected = { region -> feedViewModel.loadFeed(region) },
                     adUnitId = adUnitId
                 )
             }
@@ -247,19 +215,23 @@ fun MainNavigationHost(
                 )
             }
             composable(Screen.Leaderboard.route) {
-                val realLeaderboard = listOf(
-                    LeaderboardUserUiModel(1, "u1", "Cem Yılmaz", "https://images.fotmob.com/image_resources/logo/teamlogo/8637.png", 1840, 11, "TR"),
-                    LeaderboardUserUiModel(2, "u2", "David Beckham", "https://images.fotmob.com/image_resources/logo/teamlogo/9825.png", 1650, 9, "GB"),
-                    LeaderboardUserUiModel(3, "u3", "Hakan Şükür", "https://images.fotmob.com/image_resources/logo/teamlogo/8695.png", 1480, 8, "TR"),
-                    LeaderboardUserUiModel(4, "u4", "Marcus Rashford", "https://images.fotmob.com/image_resources/logo/teamlogo/8456.png", 1250, 6, "GLOBAL"),
-                    LeaderboardUserUiModel(5, "u5", "Eren Şimşir", "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png", if (predictState.points > 0) predictState.points else 140, maxOf(predictState.streak, 3), "TR")
-                )
-
                 LeaderboardScreen(
-                    topUsers = leaderboardState.topUsers.ifEmpty { realLeaderboard },
-                    currentUser = if (leaderboardState.currentUser.points > 0) leaderboardState.currentUser else realLeaderboard[4],
-                    referralCode = leaderboardState.referralCode.ifEmpty { "MATCH2026" },
-                    onShareReferral = {}
+                    topUsers = leaderboardState.topUsers,
+                    currentUser = leaderboardState.currentUser,
+                    referralCode = leaderboardState.referralCode,
+                    onShareReferral = { code ->
+                        try {
+                            val sendIntent = android.content.Intent().apply {
+                                action = android.content.Intent.ACTION_SEND
+                                putExtra(android.content.Intent.EXTRA_TEXT, localizedContext.getString(R.string.share_referral_text, code))
+                                type = "text/plain"
+                            }
+                            val shareIntent = android.content.Intent.createChooser(sendIntent, null).apply {
+                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            localizedContext.startActivity(shareIntent)
+                        } catch (_: Exception) {}
+                    }
                 )
             }
             composable(Screen.Profile.route) {
