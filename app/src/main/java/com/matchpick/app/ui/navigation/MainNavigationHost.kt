@@ -1,13 +1,40 @@
 package com.matchpick.app.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
@@ -16,9 +43,7 @@ import com.matchpick.app.core.analytics.AnalyticsTracker
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.screens.feed.CommunityFeedScreen
 import com.matchpick.app.ui.screens.feed.FeedViewModel
-import com.matchpick.app.ui.screens.feed.PostUiModel
 import com.matchpick.app.ui.screens.leaderboard.LeaderboardScreen
-import com.matchpick.app.ui.screens.leaderboard.LeaderboardUserUiModel
 import com.matchpick.app.ui.screens.leaderboard.LeaderboardViewModel
 import com.matchpick.app.ui.screens.official.OfficialPickUiModel
 import com.matchpick.app.ui.screens.official.OfficialPicksScreen
@@ -26,6 +51,7 @@ import com.matchpick.app.ui.screens.official.RewardedAdController
 import com.matchpick.app.ui.screens.predict.PredictScreen
 import com.matchpick.app.ui.screens.predict.PredictViewModel
 import com.matchpick.app.ui.screens.profile.ProfileScreen
+import com.matchpick.app.ui.theme.MatchPickPalette
 
 sealed class Screen(val route: String, val titleRes: Int, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     data object Predict : Screen("predict", R.string.nav_predict, Icons.Default.SportsSoccer)
@@ -49,6 +75,7 @@ fun MainNavigationHost(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val haptics = LocalHapticFeedback.current
 
     val predictState by predictViewModel.uiState.collectAsState()
     val feedState by feedViewModel.uiState.collectAsState()
@@ -123,6 +150,8 @@ fun MainNavigationHost(
         Screen.Leaderboard,
         Screen.Profile
     )
+    val routeOrder = remember { items.mapIndexed { index, screen -> screen.route to index }.toMap() }
+
     val context = androidx.compose.ui.platform.LocalContext.current
     val locale = java.util.Locale(currentLanguage)
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
@@ -140,151 +169,228 @@ fun MainNavigationHost(
         androidx.compose.ui.platform.LocalContext provides localizedContext
     ) {
         Scaffold(
-        containerColor = Color(0xFF04070E),
-        bottomBar = {
-            androidx.compose.material3.Surface(
-                color = Color(0xFF080D1A),
-                border = androidx.compose.foundation.BorderStroke(
-                    1.dp,
-                    androidx.compose.ui.graphics.Brush.horizontalGradient(
-                        listOf(
-                            Color(0x3300F59B),
-                            Color(0x2200E5FF),
-                            Color(0x33A855F7)
+            containerColor = MatchPickPalette.DeepObsidian,
+            bottomBar = {
+                Surface(
+                    color = Color(0xFF080D1A),
+                    border = BorderStroke(
+                        1.dp,
+                        Brush.horizontalGradient(
+                            listOf(
+                                Color(0x4400F59B),
+                                Color(0x3300E5FF),
+                                Color(0x44A855F7)
+                            )
                         )
-                    )
-                ),
-                shadowElevation = 16.dp
-            ) {
-                NavigationBar(
-                    containerColor = Color.Transparent,
-                    tonalElevation = 0.dp
+                    ),
+                    shadowElevation = 20.dp
                 ) {
-                    items.forEach { screen ->
-                        val isSelected = currentRoute == screen.route
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    screen.icon,
-                                    contentDescription = null,
-                                    tint = if (isSelected) Color(0xFF00F59B) else Color(0xFF64748B)
-                                )
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(screen.titleRes),
-                                    fontWeight = if (isSelected) androidx.compose.ui.text.font.FontWeight.Black else androidx.compose.ui.text.font.FontWeight.Medium,
-                                    color = if (isSelected) Color(0xFF00F59B) else Color(0xFF94A3B8)
-                                )
-                            },
-                            selected = isSelected,
-                            colors = NavigationBarItemDefaults.colors(
-                                indicatorColor = Color(0xFF0A2E20)
-                            ),
-                            onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                    NavigationBar(
+                        containerColor = Color.Transparent,
+                        tonalElevation = 0.dp
+                    ) {
+                        items.forEach { screen ->
+                            val isSelected = currentRoute == screen.route
+                            val iconScale by animateFloatAsState(
+                                targetValue = if (isSelected) 1.18f else 1.0f,
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessMedium
+                                ),
+                                label = "navIconScale"
+                            )
+
+                            NavigationBarItem(
+                                icon = {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        if (isSelected) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .width(18.dp)
+                                                    .height(2.5.dp)
+                                                    .clip(RoundedCornerShape(2.dp))
+                                                    .background(MatchPickPalette.NeonBrandGradient)
+                                            )
+                                            Spacer(modifier = Modifier.height(3.dp))
+                                        }
+                                        Icon(
+                                            screen.icon,
+                                            contentDescription = null,
+                                            modifier = Modifier.scale(iconScale),
+                                            tint = if (isSelected) MatchPickPalette.NeonEmerald else Color(0xFF64748B)
+                                        )
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
+                                },
+                                label = {
+                                    Text(
+                                        text = stringResource(screen.titleRes),
+                                        fontWeight = if (isSelected) FontWeight.Black else FontWeight.Medium,
+                                        color = if (isSelected) MatchPickPalette.NeonEmerald else Color(0xFF94A3B8)
+                                    )
+                                },
+                                selected = isSelected,
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = Color(0xFF0A2E20)
+                                ),
+                                onClick = {
+                                    if (currentRoute != screen.route) {
+                                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        navController.navigate(screen.route) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Predict.route,
-            modifier = modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Predict.route) {
-                PredictScreen(
-                    fixtures = predictState.fixtures,
-                    userStreak = predictState.streak,
-                    userPoints = predictState.points,
-                    onPredictSelected = { id, pick ->
-                        predictViewModel.makePrediction(id, pick)
-                    },
-                    onShareClicked = onShareFixture
-                )
-            }
-            composable(Screen.Feed.route) {
-                CommunityFeedScreen(
-                    posts = feedState.posts,
-                    onSendPost = { text -> feedViewModel.publishPost(text) },
-                    onLikePost = { id -> feedViewModel.toggleLike(id) },
-                    onRegionSelected = { region -> feedViewModel.loadFeed(region) },
-                    adUnitId = adUnitId
-                )
-            }
-            composable(Screen.Official.route) {
-                OfficialPicksScreen(
-                    picks = officialPicks,
-                    rewardedAdController = rewardedAdController,
-                    onUnlockPick = { id ->
-                        val unlockedPick = officialPicks.find { it.fixtureId == id }
-                        analyticsTracker.logVipPickUnlocked(
-                            fixtureId = id,
-                            recommendedPick = unlockedPick?.recommendedPick ?: "",
-                            confidence = unlockedPick?.confidenceRate ?: 80
-                        )
-                        officialPicks = officialPicks.map {
-                            if (it.fixtureId == id) it.copy(isVipLocked = false) else it
-                        }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Predict.route,
+                modifier = modifier.padding(innerPadding),
+                enterTransition = {
+                    val fromIdx = routeOrder[initialState.destination.route] ?: 0
+                    val toIdx = routeOrder[targetState.destination.route] ?: 0
+                    val direction = if (toIdx >= fromIdx) {
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    } else {
+                        AnimatedContentTransitionScope.SlideDirection.Right
                     }
-                )
-            }
-            composable(Screen.Leaderboard.route) {
-                LeaderboardScreen(
-                    topUsers = leaderboardState.topUsers,
-                    currentUser = leaderboardState.currentUser,
-                    referralCode = leaderboardState.referralCode,
-                    onCopyReferral = { code ->
-                        analyticsTracker.logReferralAction("clipboard_copy", code)
-                    },
-                    onShareReferral = { code ->
-                        analyticsTracker.logReferralAction("native_share", code)
-                        try {
-                            val sendIntent = android.content.Intent().apply {
-                                action = android.content.Intent.ACTION_SEND
-                                putExtra(android.content.Intent.EXTRA_TEXT, localizedContext.getString(R.string.share_referral_text, code))
-                                type = "text/plain"
-                            }
-                            val shareIntent = android.content.Intent.createChooser(sendIntent, null).apply {
-                                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            localizedContext.startActivity(shareIntent)
-                        } catch (_: Exception) {}
+                    slideIntoContainer(
+                        towards = direction,
+                        animationSpec = tween(320, easing = FastOutSlowInEasing),
+                        initialOffset = { it / 6 }
+                    ) + fadeIn(
+                        animationSpec = tween(280, easing = FastOutSlowInEasing)
+                    ) + scaleIn(
+                        initialScale = 0.96f,
+                        animationSpec = tween(320, easing = FastOutSlowInEasing)
+                    )
+                },
+                exitTransition = {
+                    val fromIdx = routeOrder[initialState.destination.route] ?: 0
+                    val toIdx = routeOrder[targetState.destination.route] ?: 0
+                    val direction = if (toIdx >= fromIdx) {
+                        AnimatedContentTransitionScope.SlideDirection.Left
+                    } else {
+                        AnimatedContentTransitionScope.SlideDirection.Right
                     }
-                )
-            }
-            composable(Screen.Profile.route) {
-                ProfileScreen(
-                    userName = "Eren Şimşir",
-                    userEmail = "eren@matchpick.app",
-                    avatarUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
-                    currentStreak = maxOf(predictState.streak, 3),
-                    bestStreak = maxOf(predictState.streak, 8),
-                    totalPoints = if (predictState.points > 0) predictState.points else 140,
-                    isNotificationsEnabled = isNotificationsEnabled,
-                    onToggleNotifications = { isNotificationsEnabled = it },
-                    currentLanguage = currentLanguage,
-                    onChangeLanguage = { lang ->
-                        currentLanguage = lang
-                        analyticsTracker.logLanguageSwitched(lang)
-                        try {
-                            androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
-                                androidx.core.os.LocaleListCompat.forLanguageTags(lang)
+                    slideOutOfContainer(
+                        towards = direction,
+                        animationSpec = tween(260, easing = FastOutSlowInEasing),
+                        targetOffset = { it / 7 }
+                    ) + fadeOut(
+                        animationSpec = tween(220, easing = FastOutSlowInEasing)
+                    ) + scaleOut(
+                        targetScale = 0.96f,
+                        animationSpec = tween(260, easing = FastOutSlowInEasing)
+                    )
+                }
+            ) {
+                composable(Screen.Predict.route) {
+                    PredictScreen(
+                        fixtures = predictState.fixtures,
+                        userStreak = predictState.streak,
+                        userPoints = predictState.points,
+                        onPredictSelected = { id, pick ->
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            predictViewModel.makePrediction(id, pick)
+                        },
+                        onShareClicked = onShareFixture
+                    )
+                }
+                composable(Screen.Feed.route) {
+                    CommunityFeedScreen(
+                        posts = feedState.posts,
+                        onSendPost = { text ->
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            feedViewModel.publishPost(text)
+                        },
+                        onLikePost = { id ->
+                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            feedViewModel.toggleLike(id)
+                        },
+                        onRegionSelected = { region -> feedViewModel.loadFeed(region) },
+                        adUnitId = adUnitId
+                    )
+                }
+                composable(Screen.Official.route) {
+                    OfficialPicksScreen(
+                        picks = officialPicks,
+                        rewardedAdController = rewardedAdController,
+                        onUnlockPick = { id ->
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            val unlockedPick = officialPicks.find { it.fixtureId == id }
+                            analyticsTracker.logVipPickUnlocked(
+                                fixtureId = id,
+                                recommendedPick = unlockedPick?.recommendedPick ?: "",
+                                confidence = unlockedPick?.confidenceRate ?: 80
                             )
-                        } catch (_: Exception) {}
-                    }
-                )
+                            officialPicks = officialPicks.map {
+                                if (it.fixtureId == id) it.copy(isVipLocked = false) else it
+                            }
+                        }
+                    )
+                }
+                composable(Screen.Leaderboard.route) {
+                    LeaderboardScreen(
+                        topUsers = leaderboardState.topUsers,
+                        currentUser = leaderboardState.currentUser,
+                        referralCode = leaderboardState.referralCode,
+                        onCopyReferral = { code ->
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            analyticsTracker.logReferralAction("clipboard_copy", code)
+                        },
+                        onShareReferral = { code ->
+                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            analyticsTracker.logReferralAction("native_share", code)
+                            try {
+                                val sendIntent = android.content.Intent().apply {
+                                    action = android.content.Intent.ACTION_SEND
+                                    putExtra(android.content.Intent.EXTRA_TEXT, localizedContext.getString(R.string.share_referral_text, code))
+                                    type = "text/plain"
+                                }
+                                val shareIntent = android.content.Intent.createChooser(sendIntent, null).apply {
+                                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                localizedContext.startActivity(shareIntent)
+                            } catch (_: Exception) {}
+                        }
+                    )
+                }
+                composable(Screen.Profile.route) {
+                    ProfileScreen(
+                        userName = "Eren Şimşir",
+                        userEmail = "eren@matchpick.app",
+                        avatarUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
+                        currentStreak = maxOf(predictState.streak, 3),
+                        bestStreak = maxOf(predictState.streak, 8),
+                        totalPoints = if (predictState.points > 0) predictState.points else 140,
+                        isNotificationsEnabled = isNotificationsEnabled,
+                        onToggleNotifications = {
+                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            isNotificationsEnabled = it
+                        },
+                        currentLanguage = currentLanguage,
+                        onChangeLanguage = { lang ->
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                            currentLanguage = lang
+                            analyticsTracker.logLanguageSwitched(lang)
+                            try {
+                                androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
+                                    androidx.core.os.LocaleListCompat.forLanguageTags(lang)
+                                )
+                            } catch (_: Exception) {}
+                        }
+                    )
+                }
             }
         }
     }
-}
 }

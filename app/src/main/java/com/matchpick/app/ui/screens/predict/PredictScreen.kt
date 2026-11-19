@@ -297,16 +297,30 @@ fun FixtureCard(
     isSelectedInMasterDetail: Boolean = false,
     onCardClicked: (() -> Unit)? = null
 ) {
+    val infiniteTransition = rememberInfiniteTransition(label = "cardShimmer")
+    val shimmerOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2800, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmerSweep"
+    )
+
     val cardBorder = when {
         isSelectedInMasterDetail -> BorderStroke(1.8.dp, MatchPickPalette.NeonEmerald)
         isSpotlightMatch -> BorderStroke(
-            1.4.dp,
+            1.6.dp,
             Brush.linearGradient(
-                listOf(
+                colors = listOf(
                     MatchPickPalette.NeonEmerald,
                     MatchPickPalette.ElectricCyan,
-                    MatchPickPalette.NeuralViolet
-                )
+                    MatchPickPalette.NeuralViolet,
+                    MatchPickPalette.NeonEmerald
+                ),
+                start = androidx.compose.ui.geometry.Offset(shimmerOffset - 400f, 0f),
+                end = androidx.compose.ui.geometry.Offset(shimmerOffset + 400f, 400f)
             )
         )
         else -> BorderStroke(
@@ -319,20 +333,33 @@ fun FixtureCard(
 
     val cardBrush = if (isSpotlightMatch) {
         Brush.verticalGradient(
-            listOf(Color(0xFF132238), Color(0xFF0E162B), Color(0xFF0A0F1D))
+            listOf(Color(0xFF14253D), Color(0xFF0E162B), Color(0xFF0A0F1D))
         )
     } else {
         MatchPickPalette.GlassCardGradient
     }
 
+    var appeared by remember { mutableStateOf(false) }
+    val cardEnterScale by animateFloatAsState(
+        targetValue = if (appeared) 1f else 0.94f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMediumLow
+        ),
+        label = "cardEnterScale"
+    )
+    LaunchedEffect(Unit) { appeared = true }
+
     Surface(
         onClick = { onCardClicked?.invoke() },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .scale(cardEnterScale),
         enabled = onCardClicked != null,
         shape = RoundedCornerShape(24.dp),
         color = MatchPickPalette.SurfaceDark,
         border = cardBorder,
-        shadowElevation = if (isSpotlightMatch) 12.dp else 6.dp
+        shadowElevation = if (isSpotlightMatch) 14.dp else 6.dp
     ) {
         Column(
             modifier = Modifier

@@ -6,25 +6,37 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matchpick.app.core.ads.AdMobManager
 import com.matchpick.app.core.analytics.AnalyticsTracker
+import com.matchpick.app.core.feedback.FeedbackManager
 import com.matchpick.app.core.performance.FrameRateMonitor
 import com.matchpick.app.core.social.SocialShareManager
 import com.matchpick.app.core.sync.DailySyncWorker
 import com.matchpick.app.data.local.FixtureEntity
+import com.matchpick.app.ui.components.CelebrationDialog
 import com.matchpick.app.ui.components.SharePreviewDialog
 import com.matchpick.app.ui.navigation.MainNavigationHost
+import com.matchpick.app.ui.screens.auth.CinematicSplashIntro
 import com.matchpick.app.ui.screens.feed.FeedViewModel
 import com.matchpick.app.ui.screens.leaderboard.LeaderboardViewModel
 import com.matchpick.app.ui.screens.official.RewardedAdController
 import com.matchpick.app.ui.screens.predict.PredictViewModel
+import com.matchpick.app.ui.theme.MatchPickDarkColorScheme
+import com.matchpick.app.ui.theme.MatchPickPalette
+import com.matchpick.app.ui.theme.MatchPickTypography
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,6 +47,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var analyticsTracker: AnalyticsTracker
     @Inject lateinit var frameRateMonitor: FrameRateMonitor
     @Inject lateinit var rewardedAdController: RewardedAdController
+    @Inject lateinit var feedbackManager: FeedbackManager
 
     private val predictViewModel: PredictViewModel by viewModels()
     private val feedViewModel: FeedViewModel by viewModels()
@@ -75,42 +88,86 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val isDark = isSystemInDarkTheme()
             val predictState by predictViewModel.uiState.collectAsStateWithLifecycle()
             val leaderboardState by leaderboardViewModel.uiState.collectAsStateWithLifecycle()
 
+            var showCinematicSplash by rememberSaveable { mutableStateOf(true) }
             var sharingFixture by remember { mutableStateOf<FixtureEntity?>(null) }
+            var celebratedStreak by rememberSaveable { mutableIntStateOf(3) }
+            var activeStreakModal by remember { mutableStateOf<Int?>(null) }
+
+            // Her 3 tahmin serisinde (6, 9, 12...) 2026+ Holografik Kutlama Modali ve Haptic Tetikle
+            LaunchedEffect(predictState.streak) {
+                val current = predictState.streak
+                if (current > celebratedStreak && current % 3 == 0) {
+                    celebratedStreak = current
+                    activeStreakModal = current
+                    try {
+                        feedbackManager.playWinFeedback()
+                    } catch (_: Exception) {}
+                }
+            }
 
             MaterialTheme(
-                colorScheme = com.matchpick.app.ui.theme.MatchPickDarkColorScheme,
-                typography = com.matchpick.app.ui.theme.MatchPickTypography
+                colorScheme = MatchPickDarkColorScheme,
+                typography = MatchPickTypography
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = com.matchpick.app.ui.theme.MatchPickPalette.DeepObsidian
+                    color = MatchPickPalette.DeepObsidian
                 ) {
-                    MainNavigationHost(
-                        adUnitId = "ca-app-pub-3940256099942544/6300978111",
-                        predictViewModel = predictViewModel,
-                        feedViewModel = feedViewModel,
-                        leaderboardViewModel = leaderboardViewModel,
-                        rewardedAdController = rewardedAdController,
-                        analyticsTracker = analyticsTracker,
-                        onShareFixture = { fixture ->
-                            sharingFixture = fixture
-                        }
-                    )
-
-                    // Sosyal Paylaşım Açılır Penceresi
-                    sharingFixture?.let { fixture ->
-                        SharePreviewDialog(
-                            fixture = fixture,
-                            userPick = fixture.userPick ?: "1",
-                            streakCount = predictState.streak,
-                            referralCode = leaderboardState.referralCode.ifEmpty { "MATCH2026" },
-                            shareManager = socialShareManager,
-                            onDismiss = { sharingFixture = null }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        MainNavigationHost(
+                            adUnitId = "ca-app-pub-3940256099942544/6300978111",
+                            predictViewModel = predictViewModel,
+                            feedViewModel = feedViewModel,
+                            leaderboardViewModel = leaderboardViewModel,
+                            rewardedAdController = rewardedAdController,
+                            analyticsTracker = analyticsTracker,
+                            onShareFixture = { fixture ->
+                                sharingFixture = fixture
+                            }
                         )
+
+                        // Sosyal Paylaşım Açılır Penceresi
+                        sharingFixture?.let { fixture ->
+                            SharePreviewDialog(
+                                fixture = fixture,
+                                userPick = fixture.userPick ?: "1",
+                                streakCount = predictState.streak,
+                                referralCode = leaderboardState.referralCode.ifEmpty { "MATCH2026" },
+                                shareManager = socialShareManager,
+                                onDismiss = { sharingFixture = null }
+                            )
+                        }
+
+                        // Seri Kilometre Taşı Kutlama Penceresi
+                        activeStreakModal?.let { milestone ->
+                            CelebrationDialog(
+                                title = "UNSTOPPABLE STREAK!",
+                                message = "Üst üste $milestone maç tahmin serisine ulaştın! Nöral analist sıralamasında hızla yükseliyorsun.",
+                                streakCount = milestone,
+                                onClaimReward = { activeStreakModal = null }
+                            )
+                        }
+
+                        // 2026+ Sinematik Holografik Açılış Ekranı (Cold Boot Intro)
+                        AnimatedVisibility(
+                            visible = showCinematicSplash,
+                            enter = fadeIn(animationSpec = tween(200)),
+                            exit = fadeOut(
+                                animationSpec = tween(480, easing = FastOutSlowInEasing)
+                            ) + scaleOut(
+                                targetScale = 1.12f,
+                                animationSpec = tween(480, easing = FastOutSlowInEasing)
+                            )
+                        ) {
+                            CinematicSplashIntro(
+                                onFinished = {
+                                    showCinematicSplash = false
+                                }
+                            )
+                        }
                     }
                 }
             }

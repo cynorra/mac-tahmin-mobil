@@ -405,99 +405,104 @@ fun VipPickCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Unlocked Content vs Cyber-Vault Locked Button
-            if (pick.isVipLocked) {
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF12182B),
-                    border = BorderStroke(1.dp, Color(0x33FFB800)),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+            // Unlocked Content vs Cyber-Vault Locked Button with Smooth Morphing
+            androidx.compose.animation.AnimatedContent(
+                targetState = pick.isVipLocked,
+                label = "vipVaultUnlockTransition"
+            ) { locked ->
+                if (locked) {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color(0xFF12182B),
+                        border = BorderStroke(1.dp, Color(0x33FFB800)),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = "🔒 ${stringResource(R.string.vip_vault_locked_hint)}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color(0xFFFDE68A),
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            onClick = onUnlock,
-                            modifier = Modifier.fillMaxWidth().height(48.dp),
-                            shape = RoundedCornerShape(14.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MatchPickPalette.VipGold
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Lock,
-                                contentDescription = null,
-                                tint = Color(0xFF041B11),
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.rewarded_unlock_pick),
-                                fontWeight = FontWeight.Black,
-                                color = Color(0xFF041B11)
-                            )
-                        }
-                    }
-                }
-            } else {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFF09261C),
-                    border = BorderStroke(1.2.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.6f))
-                ) {
-                    Column(modifier = Modifier.padding(14.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = stringResource(R.string.analysis_reason_label),
+                                text = "🔒 ${stringResource(R.string.vip_vault_locked_hint)}",
                                 style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = MatchPickPalette.NeonEmerald
+                                color = Color(0xFFFDE68A),
+                                fontWeight = FontWeight.Bold
                             )
-                            Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = Color(0xFF051A12),
-                                border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald)
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Button(
+                                onClick = onUnlock,
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
+                                shape = RoundedCornerShape(14.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MatchPickPalette.VipGold
+                                )
                             ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.CheckCircle,
-                                        contentDescription = null,
-                                        tint = MatchPickPalette.NeonEmerald,
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(5.dp))
-                                    Text(
-                                        text = pick.recommendedPick,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Black,
-                                        color = MatchPickPalette.NeonEmerald
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = Color(0xFF041B11),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = stringResource(R.string.rewarded_unlock_pick),
+                                    fontWeight = FontWeight.Black,
+                                    color = Color(0xFF041B11)
+                                )
                             }
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = pick.analysisReason,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFFE2E8F0),
-                            lineHeight = 19.sp
-                        )
+                    }
+                } else {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color(0xFF09261C),
+                        border = BorderStroke(1.2.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.6f))
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.analysis_reason_label),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MatchPickPalette.NeonEmerald
+                                )
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = Color(0xFF051A12),
+                                    border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CheckCircle,
+                                            contentDescription = null,
+                                            tint = MatchPickPalette.NeonEmerald,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Text(
+                                            text = pick.recommendedPick,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Black,
+                                            color = MatchPickPalette.NeonEmerald
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = pick.analysisReason,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color(0xFFE2E8F0),
+                                lineHeight = 19.sp
+                            )
+                        }
                     }
                 }
             }
