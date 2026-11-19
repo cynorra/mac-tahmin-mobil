@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdMobManager
 import com.matchpick.app.core.analytics.AnalyticsTracker
 import com.matchpick.app.core.feedback.FeedbackManager
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
         frameRateMonitor.startMonitoring(this)
 
         // AdMob Interstitial'ı belleğe al (Geçişlerde 0 ms bekleme)
-        AdMobManager.loadInterstitial(this, "ca-app-pub-3940256099942544/1033173712")
+        AdMobManager.loadInterstitial(this, AdConfig.INTERSTITIAL_AD_UNIT_ID)
 
         // WorkManager periyodik senkronizasyon planla
         DailySyncWorker.schedule(this)
@@ -118,7 +119,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         MainNavigationHost(
-                            adUnitId = "ca-app-pub-3940256099942544/6300978111",
+                            adUnitId = AdConfig.BANNER_AD_UNIT_ID,
                             predictViewModel = predictViewModel,
                             feedViewModel = feedViewModel,
                             leaderboardViewModel = leaderboardViewModel,

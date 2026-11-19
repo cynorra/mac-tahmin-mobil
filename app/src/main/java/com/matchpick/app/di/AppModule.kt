@@ -6,6 +6,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.firestore.FirebaseFirestore
+import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.social.SocialShareManager
 import com.matchpick.app.data.local.FixtureDao
 import com.matchpick.app.data.local.MatchPickDatabase
@@ -74,7 +75,7 @@ object AppModule {
     @Singleton
     fun provideRewardedAdController(@ApplicationContext context: Context): RewardedAdController {
         return RewardedAdController(context).apply {
-            loadAd("ca-app-pub-3940256099942544/5224354917")
+            loadAd(AdConfig.REWARDED_AD_UNIT_ID)
         }
     }
 }

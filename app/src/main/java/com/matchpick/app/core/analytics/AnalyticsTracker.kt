@@ -3,6 +3,7 @@ package com.matchpick.app.core.analytics
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.matchpick.app.core.ads.AdConfig
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -55,7 +56,7 @@ class AnalyticsTracker @Inject constructor(
         fixtureId: String,
         recommendedPick: String = "",
         confidence: Int = 0,
-        adUnitId: String = "ca-app-pub-3940256099942544/5224354917"
+        adUnitId: String = AdConfig.REWARDED_AD_UNIT_ID
     ) {
         val bundle = Bundle().apply {
             putString("fixture_id", fixtureId)
