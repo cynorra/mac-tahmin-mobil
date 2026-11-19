@@ -108,7 +108,11 @@ fun MainNavigationHost(
     }
 
     var isNotificationsEnabled by remember { mutableStateOf(true) }
-    var currentLanguage by remember { mutableStateOf("tr") }
+    val initialLang = try {
+        val tags = androidx.appcompat.app.AppCompatDelegate.getApplicationLocales().toLanguageTags()
+        if (tags.startsWith("en", ignoreCase = true)) "en" else "tr"
+    } catch (_: Exception) { "tr" }
+    var currentLanguage by remember { mutableStateOf(initialLang) }
 
     val items = listOf(
         Screen.Predict,
@@ -117,8 +121,23 @@ fun MainNavigationHost(
         Screen.Leaderboard,
         Screen.Profile
     )
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val locale = java.util.Locale(currentLanguage)
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
+    val localizedConfig = remember(currentLanguage, configuration) {
+        android.content.res.Configuration(configuration).apply {
+            setLocale(locale)
+        }
+    }
+    val localizedContext = remember(currentLanguage, context) {
+        context.createConfigurationContext(localizedConfig)
+    }
 
-    Scaffold(
+    CompositionLocalProvider(
+        androidx.compose.ui.platform.LocalConfiguration provides localizedConfig,
+        androidx.compose.ui.platform.LocalContext provides localizedContext
+    ) {
+        Scaffold(
         containerColor = Color(0xFF070B14),
         bottomBar = {
             NavigationBar(
@@ -254,9 +273,17 @@ fun MainNavigationHost(
                     isNotificationsEnabled = isNotificationsEnabled,
                     onToggleNotifications = { isNotificationsEnabled = it },
                     currentLanguage = currentLanguage,
-                    onChangeLanguage = { currentLanguage = it }
+                    onChangeLanguage = { lang ->
+                        currentLanguage = lang
+                        try {
+                            androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
+                                androidx.core.os.LocaleListCompat.forLanguageTags(lang)
+                            )
+                        } catch (_: Exception) {}
+                    }
                 )
             }
         }
     }
+}
 }

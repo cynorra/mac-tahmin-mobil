@@ -46,6 +46,7 @@
     <string name="vip_unlocked_badge">KİLİT AÇILDI</string>
     <string name="analysis_reason_label">Taktiksel Maç Analizi</string>
     <string name="confidence_rate_label">Kazanma İhtimali</string>
+    <string name="tactical_metrics_fallback">Yüksek hassasiyetli taktiksel metrikler, dengeli ve kontra atak fırsatlarının belirleyici olacağı bir mücadeleye işaret ediyor.</string>
 
     <!-- Community Feed -->
     <string name="tab_global">Global Akış</string>
@@ -74,6 +75,8 @@
     <string name="settings_notifications_title">Maç Hatırlatıcıları</string>
     <string name="settings_notifications_subtitle">Başlama düdüğü ve tahmin bildirimleri</string>
     <string name="settings_language_title">Uygulama Dili</string>
+    <string name="language_tr_active">Türkçe aktif</string>
+    <string name="language_en_active">İngilizce aktif</string>
     <string name="settings_dark_mode_title">AMOLED Koyu Tema</string>
     <string name="settings_dark_mode_subtitle">OLED ekranlar için optimize edilmiş derin siyahlar</string>
     <string name="btn_logout">Çıkış Yap</string>

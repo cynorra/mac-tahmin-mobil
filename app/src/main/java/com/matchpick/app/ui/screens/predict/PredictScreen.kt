@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -173,7 +175,7 @@ fun PredictScreen(
                         modifier = Modifier
                             .weight(1.1f)
                             .fillMaxHeight(),
-                        contentPadding = PaddingValues(vertical = 8.dp),
+                        contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(
@@ -602,8 +604,9 @@ private fun TacticalInsightPanel(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(20.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column {
                 Text(
@@ -614,7 +617,7 @@ private fun TacticalInsightPanel(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = fixture.aiAnalysis.ifEmpty { "High-precision tactical metrics suggest a balanced encounter with decisive counter-attack opportunities." },
+                    text = fixture.aiAnalysis.ifEmpty { stringResource(R.string.tactical_metrics_fallback) },
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFFCBD5E1),
                     lineHeight = 22.sp
@@ -626,8 +629,39 @@ private fun TacticalInsightPanel(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "AI Confidence", color = Color(0xFF94A3B8))
+                    Text(text = stringResource(R.string.confidence_rate_label), color = Color(0xFF94A3B8))
                     Text(text = "${fixture.officialConfidence}%", color = Color(0xFF00F59B), fontWeight = FontWeight.Bold)
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OddsButton(
+                        choice = "1",
+                        odds = fixture.oddsHome,
+                        isSelected = fixture.userPick == "HOME",
+                        isEnabled = !fixture.isLocked,
+                        onClick = { onPickSelected("HOME") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OddsButton(
+                        choice = "X",
+                        odds = fixture.oddsDraw,
+                        isSelected = fixture.userPick == "DRAW",
+                        isEnabled = !fixture.isLocked,
+                        onClick = { onPickSelected("DRAW") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OddsButton(
+                        choice = "2",
+                        odds = fixture.oddsAway,
+                        isSelected = fixture.userPick == "AWAY",
+                        isEnabled = !fixture.isLocked,
+                        onClick = { onPickSelected("AWAY") },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
 

@@ -2,15 +2,16 @@ package com.matchpick.app.ui.screens.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -183,45 +184,39 @@ fun ProfileScreen(
                     SettingsRow(
                         icon = Icons.Default.Language,
                         title = stringResource(R.string.settings_language_title),
-                        subtitle = if (currentLanguage == "tr") "Türkçe aktif" else "English active"
+                        subtitle = stringResource(if (currentLanguage == "tr") R.string.language_tr_active else R.string.language_en_active)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Surface(
+                            Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (currentLanguage == "en") Color(0xFF00F59B) else Color(0xFF1E293B)),
-                                color = if (currentLanguage == "en") Color(0xFF00F59B) else Color(0xFF1E293B),
-                                shape = RoundedCornerShape(8.dp)
+                                    .background(if (currentLanguage == "en") Color(0xFF00F59B) else Color(0xFF1E293B))
+                                    .clickable { onChangeLanguage("en") }
+                                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                TextButton(
-                                    onClick = { onChangeLanguage("en") },
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = "EN",
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (currentLanguage == "en") Color(0xFF041B11) else Color(0xFF94A3B8)
-                                    )
-                                }
+                                Text(
+                                    text = "EN",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (currentLanguage == "en") Color(0xFF041B11) else Color(0xFF94A3B8)
+                                )
                             }
                             Spacer(modifier = Modifier.width(6.dp))
-                            Surface(
+                            Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (currentLanguage == "tr") Color(0xFF00F59B) else Color(0xFF1E293B)),
-                                color = if (currentLanguage == "tr") Color(0xFF00F59B) else Color(0xFF1E293B),
-                                shape = RoundedCornerShape(8.dp)
+                                    .background(if (currentLanguage == "tr") Color(0xFF00F59B) else Color(0xFF1E293B))
+                                    .clickable { onChangeLanguage("tr") }
+                                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                TextButton(
-                                    onClick = { onChangeLanguage("tr") },
-                                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                                ) {
-                                    Text(
-                                        text = "TR",
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (currentLanguage == "tr") Color(0xFF041B11) else Color(0xFF94A3B8)
-                                    )
-                                }
+                                Text(
+                                    text = "TR",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    color = if (currentLanguage == "tr") Color(0xFF041B11) else Color(0xFF94A3B8)
+                                )
                             }
                         }
                     }
@@ -262,7 +257,7 @@ fun ProfileScreen(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.Logout,
+                                imageVector = Icons.AutoMirrored.Filled.Logout,
                                 contentDescription = null,
                                 tint = Color(0xFFEF4444)
                             )

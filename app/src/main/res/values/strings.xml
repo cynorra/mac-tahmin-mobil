@@ -46,6 +46,7 @@
     <string name="vip_unlocked_badge">PRO UNLOCKED</string>
     <string name="analysis_reason_label">Tactical Analysis</string>
     <string name="confidence_rate_label">Confidence</string>
+    <string name="tactical_metrics_fallback">High-precision tactical metrics suggest a balanced encounter with decisive counter-attack opportunities.</string>
 
     <!-- Community Feed -->
     <string name="tab_global">Global Feed</string>
@@ -74,6 +75,8 @@
     <string name="settings_notifications_title">Match Reminders</string>
     <string name="settings_notifications_subtitle">Kickoff alerts and daily prediction digest</string>
     <string name="settings_language_title">Application Language</string>
+    <string name="language_tr_active">Turkish active</string>
+    <string name="language_en_active">English active</string>
     <string name="settings_dark_mode_title">AMOLED Dark Theme</string>
     <string name="settings_dark_mode_subtitle">Optimized for high-contrast OLED displays</string>
     <string name="btn_logout">Log Out</string>
