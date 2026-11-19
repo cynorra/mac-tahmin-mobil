@@ -1,7 +1,10 @@
 import os
 from PIL import Image, ImageDraw
 
-SRC_PATH = r"C:\Users\erens\.gemini\antigravity\brain\609df8b2-ff21-4bb0-90c8-fa1ef179f38c\matchpick_pro_icon_v2_1795118803017.jpg"
+import sys
+
+DEFAULT_ICON = os.path.join(os.path.dirname(__file__), "..", "app", "src", "main", "ic_launcher-playstore.png")
+SRC_PATH = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("ICON_SRC", DEFAULT_ICON)
 RES_DIR = os.path.join(os.path.dirname(__file__), "..", "app", "src", "main", "res")
 
 # Target densities and sizes for Android launcher icons

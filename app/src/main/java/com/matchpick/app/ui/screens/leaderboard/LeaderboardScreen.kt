@@ -512,11 +512,22 @@ fun PodiumPillar(
             color = MatchPickPalette.SurfaceElevated,
             border = BorderStroke(1.5.dp, pillarColor)
         ) {
-            AsyncImage(
-                model = user.avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
-                contentDescription = user.name,
-                modifier = Modifier.fillMaxSize().padding(6.dp)
-            )
+            if (user.avatarUrl.isNotBlank()) {
+                AsyncImage(
+                    model = user.avatarUrl,
+                    contentDescription = user.name,
+                    modifier = Modifier.fillMaxSize().padding(6.dp)
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = user.name.firstOrNull()?.uppercase() ?: "A",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = pillarColor
+                    )
+                }
+            }
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -593,11 +604,22 @@ fun LeaderboardRow(
                     color = MatchPickPalette.SurfaceElevated,
                     border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                 ) {
-                    AsyncImage(
-                        model = user.avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
-                        contentDescription = user.name,
-                        modifier = Modifier.fillMaxSize().padding(5.dp)
-                    )
+                    if (user.avatarUrl.isNotBlank()) {
+                        AsyncImage(
+                            model = user.avatarUrl,
+                            contentDescription = user.name,
+                            modifier = Modifier.fillMaxSize().padding(5.dp)
+                        )
+                    } else {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = user.name.firstOrNull()?.uppercase() ?: "A",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MatchPickPalette.NeonEmerald
+                            )
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Column {

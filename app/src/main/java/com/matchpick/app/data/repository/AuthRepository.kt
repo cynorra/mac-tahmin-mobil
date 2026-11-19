@@ -80,7 +80,7 @@ class AuthRepository(
                     val response: ReferrerDetails = referrerClient.installReferrer
                     val referrerUrl = response.installReferrer
                     val decoded = URLDecoder.decode(referrerUrl, StandardCharsets.UTF_8.name())
-                    // URL formatı: utm_source=google-play&ref_code=EREN123
+                    // URL formatı: utm_source=google-play&ref_code=PRO2026
                     val params = decoded.split("&").associate {
                         val parts = it.split("=")
                         if (parts.size == 2) parts[0] to parts[1] else "" to ""

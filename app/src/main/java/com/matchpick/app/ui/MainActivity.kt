@@ -78,13 +78,13 @@ class MainActivity : ComponentActivity() {
                     val uid = res.user?.uid ?: "anonymous_user"
                     analyticsTracker.logUserSessionStarted(uid, isGuest = true)
                 }.addOnFailureListener {
-                    analyticsTracker.logUserSessionStarted("guest_user", isGuest = true)
+                    analyticsTracker.logUserSessionStarted("anonymous_guest", isGuest = true)
                 }
             } catch (_: Exception) {
-                analyticsTracker.logUserSessionStarted("guest_user", isGuest = true)
+                analyticsTracker.logUserSessionStarted("anonymous_guest", isGuest = true)
             }
         } else {
-            val uid = auth.currentUser?.uid ?: "user"
+            val uid = auth.currentUser?.uid ?: "anonymous_guest"
             analyticsTracker.logUserSessionStarted(uid, isGuest = auth.currentUser?.isAnonymous == true)
         }
 
@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
 
             var showCinematicSplash by rememberSaveable { mutableStateOf(true) }
             var sharingFixture by remember { mutableStateOf<FixtureEntity?>(null) }
-            var celebratedStreak by rememberSaveable { mutableIntStateOf(3) }
+            var celebratedStreak by rememberSaveable { mutableIntStateOf(0) }
             var activeStreakModal by remember { mutableStateOf<Int?>(null) }
 
             // Her 3 tahmin serisinde (6, 9, 12...) 2026+ Holografik Kutlama Modali ve Haptic Tetikle

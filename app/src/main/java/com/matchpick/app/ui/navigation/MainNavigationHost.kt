@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
+import com.google.firebase.auth.FirebaseAuth
 import com.matchpick.app.R
 import com.matchpick.app.core.analytics.AnalyticsTracker
 import com.matchpick.app.data.local.FixtureEntity
@@ -331,13 +332,23 @@ fun MainNavigationHost(
                     )
                 }
                 composable(Screen.Profile.route) {
+                    val firebaseUser = remember { FirebaseAuth.getInstance().currentUser }
+                    val resolvedName = firebaseUser?.displayName?.takeIf { it.isNotBlank() }
+                        ?: firebaseUser?.email?.substringBefore("@")?.takeIf { it.isNotBlank() }
+                        ?: if (java.util.Locale.getDefault().language == "tr") "Misafir Analist" else "Guest Analyst"
+                    val resolvedEmail = firebaseUser?.email?.takeIf { it.isNotBlank() }
+                        ?: if (firebaseUser?.isAnonymous == true) {
+                            if (java.util.Locale.getDefault().language == "tr") "Misafir Oturumu" else "Guest Session"
+                        } else "analyst@matchpick.app"
+                    val resolvedAvatar = firebaseUser?.photoUrl?.toString().orEmpty()
+
                     ProfileScreen(
-                        userName = "Eren Şimşir",
-                        userEmail = "eren@matchpick.app",
-                        avatarUrl = "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png",
-                        currentStreak = maxOf(predictState.streak, 3),
-                        bestStreak = maxOf(predictState.streak, 8),
-                        totalPoints = if (predictState.points > 0) predictState.points else 140,
+                        userName = resolvedName,
+                        userEmail = resolvedEmail,
+                        avatarUrl = resolvedAvatar,
+                        currentStreak = predictState.streak,
+                        bestStreak = maxOf(predictState.streak, leaderboardState.currentUser.streak),
+                        totalPoints = predictState.points,
                         isNotificationsEnabled = isNotificationsEnabled,
                         onToggleNotifications = {
                             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)

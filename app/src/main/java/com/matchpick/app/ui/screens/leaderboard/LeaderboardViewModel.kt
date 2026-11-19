@@ -27,11 +27,11 @@ class LeaderboardViewModel @Inject constructor(
             topUsers = emptyList(),
             currentUser = LeaderboardUserUiModel(
                 rank = 1,
-                userId = "current_user",
+                userId = "",
                 name = "Me",
                 avatarUrl = "",
-                points = 140,
-                streak = 3,
+                points = 0L,
+                streak = 0,
                 country = "GLOBAL"
             ),
             referralCode = "MATCH2026"
@@ -69,13 +69,26 @@ class LeaderboardViewModel @Inject constructor(
         currentPhoto: String
     ): Pair<List<LeaderboardUserUiModel>, LeaderboardUserUiModel> =
         withContext(Dispatchers.IO) {
+            var userPoints = 0L
+            var userStreak = 0
+
+            if (currentUid.isNotEmpty()) {
+                try {
+                    val userDoc = firestore.collection("users").document(currentUid).get().await()
+                    if (userDoc.exists()) {
+                        userPoints = userDoc.getLong("totalPoints") ?: 0L
+                        userStreak = userDoc.getLong("currentStreak")?.toInt() ?: 0
+                    }
+                } catch (_: Exception) {}
+            }
+
             val defaultCurrent = LeaderboardUserUiModel(
                 rank = 1,
-                userId = if (currentUid.isNotEmpty()) currentUid else "current_user",
+                userId = currentUid,
                 name = currentName,
                 avatarUrl = currentPhoto,
-                points = 140,
-                streak = 3,
+                points = userPoints,
+                streak = userStreak,
                 country = "GLOBAL"
             )
 
@@ -95,7 +108,7 @@ class LeaderboardViewModel @Inject constructor(
                 val mappedList = snapshot.documents.mapIndexed { index, doc ->
                     val rank = index + 1
                     val uid = doc.getString("uid") ?: doc.id
-                    val name = doc.getString("displayName") ?: "Striker #$rank"
+                    val name = doc.getString("displayName") ?: "Analyst #$rank"
                     val avatar = doc.getString("photoUrl") ?: ""
                     val points = doc.getLong("totalPoints") ?: 0L
                     val streak = doc.getLong("currentStreak")?.toInt() ?: 0
@@ -127,6 +140,6 @@ class LeaderboardViewModel @Inject constructor(
 data class LeaderboardUiState(
     val isLoading: Boolean = false,
     val topUsers: List<LeaderboardUserUiModel> = emptyList(),
-    val currentUser: LeaderboardUserUiModel = LeaderboardUserUiModel(1, "", "", "", 140, 3, "GLOBAL"),
+    val currentUser: LeaderboardUserUiModel = LeaderboardUserUiModel(1, "", "", "", 0L, 0, "GLOBAL"),
     val referralCode: String = "MATCH2026"
 )

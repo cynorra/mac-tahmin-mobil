@@ -62,7 +62,7 @@ class FeedViewModel @Inject constructor(
             }
 
             val snapshot = query.get().await()
-            val currentUid = auth.currentUser?.uid ?: "guest_user"
+            val currentUid = auth.currentUser?.uid.orEmpty()
 
             val list = snapshot.documents.mapNotNull { doc ->
                 val id = doc.id
@@ -137,7 +137,8 @@ class FeedViewModel @Inject constructor(
     }
 
     fun toggleLike(postId: String) {
-        val uid = auth.currentUser?.uid ?: "guest_user"
+        val uid = auth.currentUser?.uid.orEmpty()
+        if (uid.isEmpty()) return
         val currentPost = _uiState.value.posts.find { it.id == postId } ?: return
         val isNowLiked = !currentPost.isLiked
         val delta = if (isNowLiked) 1 else -1

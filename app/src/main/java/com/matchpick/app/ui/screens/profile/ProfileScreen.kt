@@ -121,14 +121,28 @@ fun ProfileScreen(
                     color = MatchPickPalette.SurfaceElevated,
                     border = BorderStroke(1.5.dp, MatchPickPalette.NeonEmerald)
                 ) {
-                    AsyncImage(
-                        model = avatarUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
-                        contentDescription = userName,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(4.dp)
-                            .clip(CircleShape)
-                    )
+                    if (avatarUrl.isNotBlank()) {
+                        AsyncImage(
+                            model = avatarUrl,
+                            contentDescription = userName,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(4.dp)
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = userName.firstOrNull()?.uppercase() ?: "A",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.Black,
+                                color = MatchPickPalette.NeonEmerald
+                            )
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))

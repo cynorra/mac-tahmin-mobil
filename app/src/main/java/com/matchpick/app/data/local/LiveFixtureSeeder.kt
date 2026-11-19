@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MockDataSeeder @Inject constructor(
+class LiveFixtureSeeder @Inject constructor(
     @ApplicationContext private val context: Context,
     private val fixtureDao: FixtureDao
 ) {
@@ -15,7 +15,7 @@ class MockDataSeeder @Inject constructor(
      * Seeds Room local database with real fixtures from assets/fixtures_live.json
      * populated by the sports API engine (TheSportsDB). Zero fake or mock fixtures.
      */
-    suspend fun populateDemoFixturesIfEmpty() {
+    suspend fun seedLiveFixturesIfEmpty() {
         if (fixtureDao.getFixtureCount() > 0) return
 
         try {

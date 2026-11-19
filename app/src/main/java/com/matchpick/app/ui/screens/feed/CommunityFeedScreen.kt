@@ -366,11 +366,25 @@ fun PostCard(
                         color = MatchPickPalette.SurfaceElevated,
                         border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                     ) {
-                        AsyncImage(
-                            model = post.authorPhotoUrl.ifEmpty { "https://images.fotmob.com/image_resources/logo/teamlogo/8633.png" },
-                            contentDescription = post.authorName,
-                            modifier = Modifier.fillMaxSize().padding(2.dp).clip(CircleShape)
-                        )
+                        if (post.authorPhotoUrl.isNotBlank()) {
+                            AsyncImage(
+                                model = post.authorPhotoUrl,
+                                contentDescription = post.authorName,
+                                modifier = Modifier.fillMaxSize().padding(2.dp).clip(CircleShape)
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = post.authorName.firstOrNull()?.uppercase() ?: "A",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MatchPickPalette.NeonEmerald
+                                )
+                            }
+                        }
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {

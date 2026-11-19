@@ -90,9 +90,9 @@ def fetch_real_sports_fixtures():
                         'leagueName': cfg['name'],
                         'countryCode': cfg['country'],
                         'homeTeamName': home_name,
-                        'homeTeamLogo': ev.get('strHomeTeamBadge') or f"https://images.fotmob.com/image_resources/logo/teamlogo/{ev.get('idHomeTeam', '8633')}.png",
+                        'homeTeamLogo': ev.get('strHomeTeamBadge') or (f"https://images.fotmob.com/image_resources/logo/teamlogo/{ev.get('idHomeTeam')}.png" if ev.get('idHomeTeam') else ""),
                         'awayTeamName': away_name,
-                        'awayTeamLogo': ev.get('strAwayTeamBadge') or f"https://images.fotmob.com/image_resources/logo/teamlogo/{ev.get('idAwayTeam', '8634')}.png",
+                        'awayTeamLogo': ev.get('strAwayTeamBadge') or (f"https://images.fotmob.com/image_resources/logo/teamlogo/{ev.get('idAwayTeam')}.png" if ev.get('idAwayTeam') else ""),
                         'stadiumName': ev.get('strVenue') or 'Main Stadium',
                         'matchTimestamp': timestamp,
                         'userPick': None,
@@ -102,87 +102,6 @@ def fetch_real_sports_fixtures():
                     fixtures.append(fixture_dict)
         except Exception as e:
             print(f"Failed to fetch league {cfg['name']}: {e}")
-
-    # Fallback to guaranteed real derby fixtures if network blocked
-    if len(fixtures) < 3:
-        now_ts = int(datetime.datetime.now().timestamp())
-        fixtures = [
-            {
-                'id': 'real_epl_mci_ful',
-                'leagueId': 'epl',
-                'leagueName': 'Premier League',
-                'countryCode': 'GB',
-                'homeTeamName': 'Manchester City',
-                'homeTeamLogo': 'https://images.fotmob.com/image_resources/logo/teamlogo/8456.png',
-                'awayTeamName': 'Fulham',
-                'awayTeamLogo': 'https://images.fotmob.com/image_resources/logo/teamlogo/9879.png',
-                'stadiumName': 'Etihad Stadium',
-                'matchTimestamp': now_ts + 7200,
-                'userPick': None,
-                'isLocked': False,
-                **calculate_ai_odds_and_preview('Manchester City', 'Fulham', 'Premier League')
-            },
-            {
-                'id': 'real_laliga_ath_esp',
-                'leagueId': 'laliga',
-                'leagueName': 'La Liga EA Sports',
-                'countryCode': 'ES',
-                'homeTeamName': 'Athletic Bilbao',
-                'homeTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/68w7fe1639408210.png',
-                'awayTeamName': 'Espanyol',
-                'awayTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/867nzz1681703222.png',
-                'stadiumName': 'San Mamés',
-                'matchTimestamp': now_ts + 14400,
-                'userPick': None,
-                'isLocked': False,
-                **calculate_ai_odds_and_preview('Athletic Bilbao', 'Espanyol', 'La Liga EA Sports')
-            },
-            {
-                'id': 'real_superlig_gen_gaz',
-                'leagueId': 'superlig',
-                'leagueName': 'Trendyol Süper Lig',
-                'countryCode': 'TR',
-                'homeTeamName': 'Gençlerbirliği',
-                'homeTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/5hnd1c1639569938.png',
-                'awayTeamName': 'Gaziantep FK',
-                'awayTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/54j6ik1579458093.png',
-                'stadiumName': 'Eryaman Stadyumu',
-                'matchTimestamp': now_ts + 21600,
-                'userPick': None,
-                'isLocked': False,
-                **calculate_ai_odds_and_preview('Gençlerbirliği', 'Gaziantep FK', 'Trendyol Süper Lig')
-            },
-            {
-                'id': 'real_bundesliga_bay_kol',
-                'leagueId': 'bundesliga',
-                'leagueName': 'German Bundesliga',
-                'countryCode': 'DE',
-                'homeTeamName': 'Bayern Munich',
-                'homeTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/01ogkh1716960412.png',
-                'awayTeamName': 'Köln',
-                'awayTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/2j1sc91566049407.png',
-                'stadiumName': 'Allianz Arena',
-                'matchTimestamp': now_ts + 28800,
-                'userPick': None,
-                'isLocked': False,
-                **calculate_ai_odds_and_preview('Bayern Munich', 'Köln', 'German Bundesliga')
-            },
-            {
-                'id': 'real_seriea_laz_lec',
-                'leagueId': 'seriea',
-                'leagueName': 'Italian Serie A',
-                'countryCode': 'IT',
-                'homeTeamName': 'Lazio',
-                'homeTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/rwqyvs1448806608.png',
-                'awayTeamName': 'Lecce',
-                'awayTeamLogo': 'https://r2.thesportsdb.com/images/media/team/badge/j4vznr1567365249.png',
-                'stadiumName': 'Stadio Olimpico',
-                'matchTimestamp': now_ts + 36000,
-                'userPick': None,
-                'isLocked': False,
-                **calculate_ai_odds_and_preview('Lazio', 'Lecce', 'Italian Serie A')
-            }
-        ]
 
     return fixtures
 
