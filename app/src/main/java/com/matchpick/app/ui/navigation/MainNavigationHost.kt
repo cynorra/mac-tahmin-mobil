@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import com.matchpick.app.R
+import com.matchpick.app.core.analytics.AnalyticsTracker
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.screens.feed.CommunityFeedScreen
 import com.matchpick.app.ui.screens.feed.FeedViewModel
@@ -41,6 +42,7 @@ fun MainNavigationHost(
     feedViewModel: FeedViewModel,
     leaderboardViewModel: LeaderboardViewModel,
     rewardedAdController: RewardedAdController,
+    analyticsTracker: AnalyticsTracker,
     onShareFixture: (FixtureEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -208,6 +210,12 @@ fun MainNavigationHost(
                     picks = officialPicks,
                     rewardedAdController = rewardedAdController,
                     onUnlockPick = { id ->
+                        val unlockedPick = officialPicks.find { it.fixtureId == id }
+                        analyticsTracker.logVipPickUnlocked(
+                            fixtureId = id,
+                            recommendedPick = unlockedPick?.recommendedPick ?: "",
+                            confidence = unlockedPick?.confidenceRate ?: 80
+                        )
                         officialPicks = officialPicks.map {
                             if (it.fixtureId == id) it.copy(isVipLocked = false) else it
                         }
@@ -219,7 +227,11 @@ fun MainNavigationHost(
                     topUsers = leaderboardState.topUsers,
                     currentUser = leaderboardState.currentUser,
                     referralCode = leaderboardState.referralCode,
+                    onCopyReferral = { code ->
+                        analyticsTracker.logReferralAction("clipboard_copy", code)
+                    },
                     onShareReferral = { code ->
+                        analyticsTracker.logReferralAction("native_share", code)
                         try {
                             val sendIntent = android.content.Intent().apply {
                                 action = android.content.Intent.ACTION_SEND
@@ -247,6 +259,7 @@ fun MainNavigationHost(
                     currentLanguage = currentLanguage,
                     onChangeLanguage = { lang ->
                         currentLanguage = lang
+                        analyticsTracker.logLanguageSwitched(lang)
                         try {
                             androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(
                                 androidx.core.os.LocaleListCompat.forLanguageTags(lang)

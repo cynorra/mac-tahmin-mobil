@@ -45,6 +45,7 @@ fun LeaderboardScreen(
     currentUser: LeaderboardUserUiModel,
     referralCode: String,
     onShareReferral: (String) -> Unit,
+    onCopyReferral: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val clipboardManager = LocalClipboardManager.current
@@ -160,7 +161,10 @@ fun LeaderboardScreen(
                     ) {
                         ReferralHubCard(
                             referralCode = referralCode,
-                            onCopy = { clipboardManager.setText(AnnotatedString(referralCode)) },
+                            onCopy = {
+                                clipboardManager.setText(AnnotatedString(referralCode))
+                                onCopyReferral(referralCode)
+                            },
                             onShare = { onShareReferral(referralCode) }
                         )
 
@@ -182,7 +186,10 @@ fun LeaderboardScreen(
                     item {
                         ReferralHubCard(
                             referralCode = referralCode,
-                            onCopy = { clipboardManager.setText(AnnotatedString(referralCode)) },
+                            onCopy = {
+                                clipboardManager.setText(AnnotatedString(referralCode))
+                                onCopyReferral(referralCode)
+                            },
                             onShare = { onShareReferral(referralCode) }
                         )
                     }

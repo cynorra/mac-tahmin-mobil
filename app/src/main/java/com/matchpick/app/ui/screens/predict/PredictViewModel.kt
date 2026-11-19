@@ -12,13 +12,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.matchpick.app.core.analytics.AnalyticsTracker
 import javax.inject.Inject
 
 @HiltViewModel
 class PredictViewModel @Inject constructor(
     private val repository: FixtureRepository,
     private val mockDataSeeder: MockDataSeeder,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PredictUiState())
@@ -49,11 +51,31 @@ class PredictViewModel @Inject constructor(
 
     fun makePrediction(fixtureId: String, pick: String) {
         val uid = auth.currentUser?.uid ?: "demo_user"
+        val matchedFixture = _uiState.value.fixtures.find { it.id == fixtureId }
+        val odds = when (pick) {
+            "1" -> matchedFixture?.oddsHome?.toDouble() ?: 2.10
+            "X" -> matchedFixture?.oddsDraw?.toDouble() ?: 3.30
+            "2" -> matchedFixture?.oddsAway?.toDouble() ?: 3.20
+            else -> 2.10
+        }
+
+        analyticsTracker.logPredictionSubmitted(
+            fixtureId = fixtureId,
+            pick = pick,
+            odds = odds,
+            league = matchedFixture?.leagueName ?: _uiState.value.selectedCountry
+        )
+        analyticsTracker.logPointsEarned(10L, "prediction_submission")
+
         viewModelScope.launch {
             repository.savePrediction(fixtureId, pick, uid)
             _uiState.update { state ->
+                val newStreak = state.streak + 1
+                if (newStreak % 3 == 0) {
+                    analyticsTracker.logStreakMilestone(newStreak)
+                }
                 state.copy(
-                    streak = state.streak + 1,
+                    streak = newStreak,
                     points = state.points + 10,
                     fixtures = state.fixtures.map {
                         if (it.id == fixtureId) it.copy(userPick = pick) else it

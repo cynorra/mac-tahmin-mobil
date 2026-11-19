@@ -18,12 +18,14 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.matchpick.app.core.analytics.AnalyticsTracker
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -113,6 +115,7 @@ class FeedViewModel @Inject constructor(
 
         // Optimistic UI update: hemen en üste ekle
         _uiState.update { it.copy(posts = listOf(newPost) + it.posts) }
+        analyticsTracker.logCommunityPostPublished(_uiState.value.currentRegion, attachedPick != null)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -149,6 +152,7 @@ class FeedViewModel @Inject constructor(
                 ) else it
             })
         }
+        analyticsTracker.logCommunityLikeToggled(postId, isNowLiked)
 
         viewModelScope.launch(Dispatchers.IO) {
             try {

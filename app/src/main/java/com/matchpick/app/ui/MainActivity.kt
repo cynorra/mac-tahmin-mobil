@@ -56,6 +56,24 @@ class MainActivity : ComponentActivity() {
         // Deep Link kontrolü
         handleAppLinks(intent)
 
+        // Anonim / Misafir oturumunu başlat ve Google Ads Analytics oturumunu logla
+        val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+        if (auth.currentUser == null) {
+            try {
+                auth.signInAnonymously().addOnSuccessListener { res ->
+                    val uid = res.user?.uid ?: "anonymous_user"
+                    analyticsTracker.logUserSessionStarted(uid, isGuest = true)
+                }.addOnFailureListener {
+                    analyticsTracker.logUserSessionStarted("guest_user", isGuest = true)
+                }
+            } catch (_: Exception) {
+                analyticsTracker.logUserSessionStarted("guest_user", isGuest = true)
+            }
+        } else {
+            val uid = auth.currentUser?.uid ?: "user"
+            analyticsTracker.logUserSessionStarted(uid, isGuest = auth.currentUser?.isAnonymous == true)
+        }
+
         setContent {
             val isDark = isSystemInDarkTheme()
             val predictState by predictViewModel.uiState.collectAsStateWithLifecycle()
@@ -73,6 +91,7 @@ class MainActivity : ComponentActivity() {
                         feedViewModel = feedViewModel,
                         leaderboardViewModel = leaderboardViewModel,
                         rewardedAdController = rewardedAdController,
+                        analyticsTracker = analyticsTracker,
                         onShareFixture = { fixture ->
                             sharingFixture = fixture
                         }

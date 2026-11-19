@@ -1,26 +1,69 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Kullanıcı profili: Sadece kendi profilini güncelleyebilir, puanları sadece Cloud Functions yazar
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId 
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['total_points', 'current_streak']);
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
     }
 
-    // Tahminler: Maç başlamadan önce yazılmalı
-    match /predictions/{predictionId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null 
-                    && request.resource.data.user_id == request.auth.uid
-                    && request.time < get(/databases/$(database)/documents/fixtures/$(request.resource.data.fixture_id)).data.match_date_utc;
-      allow update, delete: if false; // Tahmin bir kez kilitlendikten sonra değiştirilemez
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Fikstürler: Sadece backend/admin günceller
+    // 1. Günlük Maç Paketleri (Daily Bundles): Herkes okuyabilir, sadece admin/script yazar
+    match /daily_bundles/{date} {
+      allow read: if true;
+      allow write: if false; // Cloud Functions veya Admin SDK (sync_engine.py) ile yazılır
+    }
+
+    // 2. Fikstürler (Fixtures): Herkes okuyabilir (oranlar ve maç bilgileri)
     match /fixtures/{fixtureId} {
-      allow read: if request.auth != null;
+      allow read: if true;
+      allow write: if false; // Admin SDK / sync_engine.py
+    }
+
+    // 3. Kullanıcı Profili (Users): 
+    // - Okuma: Herkese açık (Liderlik tablosu puanı ve kullanıcı adı için)
+    // - Oluşturma: Giriş yapan veya anonim kullanıcı kendi profilini oluşturabilir
+    // - Güncelleme: Sadece kendi profilini güncelleyebilir; puan ve seri sadece Admin/Backend tarafından yazılır
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId)
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['totalPoints', 'currentStreak']);
+      allow delete: if false;
+    }
+
+    // 4. Topluluk Gönderileri (Feed Posts):
+    // - Okuma: Herkese açık
+    // - Oluşturma: Giriş yapan veya anonim kullanıcı oluşturabilir (metin boyutu 1-300 karakter)
+    // - Beğeni Güncellemesi: Sadece likesCount ve likedBy alanlarını güncelleyebilir
+    match /feed_posts/{postId} {
+      allow read: if true;
+      allow create: if isAuthenticated()
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() > 0
+                    && request.resource.data.text.size() <= 300;
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.auth.token.admin == true);
+    }
+
+    // 5. Tahminler (Predictions):
+    // - Okuma: Kullanıcı kendi tahminlerini okuyabilir
+    // - Oluşturma: Kendi tahmini için maç başlamadan önce oluşturabilir
+    // - Güncelleme/Silme: Kilitlendikten sonra değiştirilemez (sadece score_calculator.py günceller)
+    match /predictions/{predictionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // 6. VIP Bankolar (Official Picks):
+    // - Okuma: Herkese açık
+    // - Yazma: Sadece backend / admin
+    match /official_picks/{pickId} {
+      allow read: if true;
       allow write: if false;
     }
   }
