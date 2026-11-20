@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.matchpick.app.R
+import com.matchpick.app.core.ads.AdConfig
+import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -264,6 +266,15 @@ fun LeaderboardScreen(
                             onShare = { onShareReferral(referralCode) }
                         )
 
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AdaptiveBannerAd(adUnitId = AdConfig.BANNER_AD_UNIT_ID)
+                        }
+
                         if (topUsers.size >= 3) {
                             PodiumSection(topThree = topUsers.take(3))
                         }
@@ -284,6 +295,17 @@ fun LeaderboardScreen(
                             },
                             onShare = { onShareReferral(referralCode) }
                         )
+                    }
+
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AdaptiveBannerAd(adUnitId = AdConfig.BANNER_AD_UNIT_ID)
+                        }
                     }
 
                     if (topUsers.isEmpty()) {

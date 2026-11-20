@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.matchpick.app.R
+import com.matchpick.app.core.ads.AdConfig
+import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.theme.MatchPickPalette
 
@@ -322,6 +324,18 @@ fun MatchDetailBottomSheet(
                         tint = Color(0xFF041B11)
                     )
                 }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Integrated Sponsor Banner in Telemetry Sheet
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                AdaptiveBannerAd(adUnitId = AdConfig.BANNER_AD_UNIT_ID)
             }
 
             Spacer(modifier = Modifier.height(24.dp))

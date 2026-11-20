@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.matchpick.app.R
+import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.components.DateSelectorStrip
@@ -246,8 +247,8 @@ fun PredictScreen(
                             )
                         }
 
-                        // Inline Banner Ad after 2nd regular fixture
-                        if (index == 1) {
+                        // Non-intrusive Inline Banner Ad every 3 fixtures
+                        if (index > 0 && (index + 1) % 3 == 0) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -255,7 +256,7 @@ fun PredictScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 AdaptiveBannerAd(
-                                    adUnitId = "ca-app-pub-3940256099942544/6300978111"
+                                    adUnitId = AdConfig.BANNER_AD_UNIT_ID
                                 )
                             }
                         }

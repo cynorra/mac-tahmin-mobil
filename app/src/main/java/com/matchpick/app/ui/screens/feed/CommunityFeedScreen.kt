@@ -252,7 +252,7 @@ fun CommunityFeedScreen(
                         onLike = { onLikePost(post.id) }
                     )
 
-                    if (index > 0 && index % 4 == 0) {
+                    if (index > 0 && (index + 1) % 3 == 0) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()

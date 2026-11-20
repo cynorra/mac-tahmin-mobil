@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,6 +37,8 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.matchpick.app.R
+import com.matchpick.app.core.ads.AdConfig
+import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -280,7 +283,7 @@ fun OfficialPicksScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                items(picks, key = { it.fixtureId }) { pickItem ->
+                itemsIndexed(picks, key = { _, it -> it.fixtureId }) { index, pickItem ->
                     VipPickCard(
                         pick = pickItem,
                         onUnlock = {
@@ -291,6 +294,18 @@ fun OfficialPicksScreen(
                             }
                         }
                     )
+
+                    // Non-intrusive banner divider after every 2 VIP picks
+                    if (index > 0 && (index + 1) % 2 == 0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AdaptiveBannerAd(adUnitId = AdConfig.BANNER_AD_UNIT_ID)
+                        }
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(72.dp))
