@@ -3,8 +3,10 @@ package com.matchpick.app.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
@@ -36,8 +38,12 @@ fun MatchDetailBottomSheet(
     onShare: () -> Unit = {},
     onDismiss: () -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scrollState = rememberScrollState()
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetState = sheetState,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         containerColor = Color(0xFF0A0F1E),
         dragHandle = {
@@ -54,7 +60,12 @@ fun MatchDetailBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 22.dp, vertical = 12.dp)
+                .verticalScroll(scrollState)
+                .navigationBarsPadding()
+                .padding(horizontal = 22.dp)
+                .padding(top = 8.dp, bottom = 36.dp)
+                .wrapContentWidth(Alignment.CenterHorizontally)
+                .widthIn(max = 680.dp)
         ) {
             // Header Pill
             Row(
@@ -279,7 +290,10 @@ fun MatchDetailBottomSheet(
                 ).forEach { (choice, odds, isSelected) ->
                     Surface(
                         onClick = { onPickSelected(choice) },
-                        modifier = Modifier.weight(1f).height(48.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(54.dp)
+                            .bounceClickable(scaleDown = 0.94f) { onPickSelected(choice) },
                         shape = RoundedCornerShape(14.dp),
                         color = if (isSelected) MatchPickPalette.NeonEmerald else Color(0xFF162035),
                         border = BorderStroke(
@@ -288,18 +302,22 @@ fun MatchDetailBottomSheet(
                         )
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = 4.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
                             Text(
                                 text = choice,
                                 fontWeight = FontWeight.Black,
+                                fontSize = 14.sp,
                                 color = if (isSelected) Color(0xFF041B11) else Color.White
                             )
+                            Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = String.format("%.2f", odds),
-                                fontSize = 10.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isSelected) Color(0xFF041B11) else MatchPickPalette.TextSecondary
                             )
@@ -310,8 +328,9 @@ fun MatchDetailBottomSheet(
                 IconButton(
                     onClick = onShare,
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(54.dp)
                         .clip(RoundedCornerShape(14.dp))
+                        .bounceClickable(scaleDown = 0.92f) { onShare() }
                         .background(
                             Brush.linearGradient(
                                 listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)
@@ -326,7 +345,7 @@ fun MatchDetailBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Integrated Sponsor Banner in Telemetry Sheet
             Box(
@@ -338,7 +357,7 @@ fun MatchDetailBottomSheet(
                 AdaptiveBannerAd(adUnitId = AdConfig.BANNER_AD_UNIT_ID)
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(36.dp))
         }
     }
 }
