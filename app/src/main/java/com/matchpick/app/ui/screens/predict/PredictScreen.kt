@@ -483,9 +483,8 @@ fun SpotlightDerbyHeroCard(
 
             // Expandable / Tappable Telemetry Pill
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onOpenTelemetry() },
+                onClick = onOpenTelemetry,
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 color = MatchPickPalette.SurfaceElevated,
                 border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)

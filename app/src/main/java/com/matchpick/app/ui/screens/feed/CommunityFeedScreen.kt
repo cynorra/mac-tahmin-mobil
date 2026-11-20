@@ -3,6 +3,7 @@ package com.matchpick.app.ui.screens.feed
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -122,19 +123,19 @@ fun CommunityFeedScreen(
                         Triple(1, R.string.tab_local, "TR")
                     ).forEach { (idx, labelRes, regionCode) ->
                         val active = selectedTab == idx
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (active) MatchPickPalette.NeonEmerald else Color.Transparent,
+                        Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
+                                .background(if (active) MatchPickPalette.NeonEmerald else Color.Transparent)
                                 .clickable {
                                     selectedTab = idx
                                     onRegionSelected(regionCode)
                                 }
+                                .padding(horizontal = 12.dp, vertical = 5.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = stringResource(labelRes),
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = if (active) Color(0xFF031A0E) else MatchPickPalette.TextSecondary
@@ -152,21 +153,21 @@ fun CommunityFeedScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(trendingTags) { tag ->
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = MatchPickPalette.SurfaceDark,
-                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
+                Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
+                        .background(MatchPickPalette.SurfaceDark)
+                        .border(0.5.dp, MatchPickPalette.BorderSubtle, RoundedCornerShape(10.dp))
                         .clickable {
                             if (!postInput.contains(tag)) {
                                 postInput = if (postInput.isBlank()) "$tag " else "$postInput $tag "
                             }
                         }
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = tag,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Medium,
                         color = MatchPickPalette.TextSecondary,
