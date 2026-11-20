@@ -94,6 +94,10 @@
     <string name="language_en_active">English active</string>
     <string name="settings_dark_mode_title">AMOLED Dark Theme</string>
     <string name="settings_dark_mode_subtitle">Optimized for high-contrast OLED displays</string>
+    <string name="settings_privacy_policy_title">Privacy Policy &amp; Data Safety</string>
+    <string name="settings_privacy_policy_subtitle">KVKK, GDPR compliance and telemetry data rights</string>
+    <string name="settings_delete_account_title">Account &amp; Data Deletion</string>
+    <string name="settings_delete_account_subtitle">Permanently delete your account and stored data</string>
     <string name="btn_logout">Log Out</string>
 
     <!-- Social Share Modal -->

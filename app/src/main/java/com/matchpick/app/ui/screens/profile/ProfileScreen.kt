@@ -11,10 +11,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -365,6 +368,55 @@ fun ProfileScreen(
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
 
+                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+
+                SettingsRow(
+                    icon = Icons.Default.Security,
+                    title = stringResource(R.string.settings_privacy_policy_title),
+                    subtitle = stringResource(R.string.settings_privacy_policy_subtitle),
+                    onClick = {
+                        val url = if (currentLanguage == "tr") {
+                            "https://cynorra.github.io/matchpick/kvkk.html"
+                        } else {
+                            "https://cynorra.github.io/matchpick/privacy-policy.html"
+                        }
+                        uriHandler.openUri(url)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                        tint = MatchPickPalette.NeonEmerald,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                HorizontalDivider(
+                    color = MatchPickPalette.BorderSubtle,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                SettingsRow(
+                    icon = Icons.Default.DeleteOutline,
+                    title = stringResource(R.string.settings_delete_account_title),
+                    subtitle = stringResource(R.string.settings_delete_account_subtitle),
+                    onClick = {
+                        uriHandler.openUri("https://cynorra.github.io/matchpick/delete-account.html")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                        contentDescription = null,
+                        tint = MatchPickPalette.CrimsonLive.copy(alpha = 0.8f),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                HorizontalDivider(
+                    color = MatchPickPalette.BorderSubtle,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -447,10 +499,16 @@ private fun SettingsRow(
     icon: ImageVector,
     title: String,
     subtitle: String,
+    onClick: (() -> Unit)? = null,
     trailingContent: @Composable () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (onClick != null) Modifier.clip(RoundedCornerShape(8.dp)).clickable(onClick = onClick)
+                else Modifier
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

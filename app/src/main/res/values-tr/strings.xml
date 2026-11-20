@@ -94,6 +94,10 @@
     <string name="language_en_active">İngilizce aktif</string>
     <string name="settings_dark_mode_title">AMOLED Koyu Tema</string>
     <string name="settings_dark_mode_subtitle">OLED ekranlar için optimize edilmiş derin siyahlar</string>
+    <string name="settings_privacy_policy_title">Gizlilik Politikası &amp; KVKK</string>
+    <string name="settings_privacy_policy_subtitle">6698 sayılı KVKK Aydınlatma Metni ve veri hakları</string>
+    <string name="settings_delete_account_title">Hesap ve Veri Silme</string>
+    <string name="settings_delete_account_subtitle">Hesabınızı ve kişisel verilerinizi kalıcı olarak silin</string>
     <string name="btn_logout">Çıkış Yap</string>
 
     <!-- Social Share Modal -->

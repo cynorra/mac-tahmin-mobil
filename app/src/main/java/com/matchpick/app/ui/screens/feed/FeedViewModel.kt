@@ -87,44 +87,12 @@ class FeedViewModel @Inject constructor(
                     attachedPrediction = attachedPick
                 )
             }
-            if (list.isNotEmpty()) list else getSeedFeedPosts()
-        } catch (_: Exception) {
-            getSeedFeedPosts()
+            list
+        } catch (e: Exception) {
+            android.util.Log.w("FeedViewModel", "Firestore feed fetch error: ${e.message}")
+            emptyList()
         }
     }
-
-    private fun getSeedFeedPosts(): List<PostUiModel> = listOf(
-        PostUiModel(
-            id = "seed_post_1",
-            authorName = "Berke_Tactics",
-            authorPhotoUrl = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
-            text = "Lazio son 5 iç saha maçında ilk yarılarda gol buldu. Lecce karşısında erken baskı bekliyorum, İY 0.5 Üst değerlendirilebilir.",
-            timestampFormatted = "10:45",
-            likesCount = 14,
-            isLiked = false,
-            attachedPrediction = "Lazio - Lecce • İY 0.5 Üst"
-        ),
-        PostUiModel(
-            id = "seed_post_2",
-            authorName = "Marco BetGuru",
-            authorPhotoUrl = "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150",
-            text = "Athletic Bilbao San Mames'te xG üstünlüğünü elinde tutuyor. Espanyol deplasman karnesi zayıf. MS 1 banko duruyor.",
-            timestampFormatted = "09:30",
-            likesCount = 22,
-            isLiked = false,
-            attachedPrediction = "Athletic Bilbao vs Espanyol • MS 1"
-        ),
-        PostUiModel(
-            id = "seed_post_3",
-            authorName = "Alex Morgan",
-            authorPhotoUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
-            text = "Premier League taktik analizlerinde bugün Arsenal hücum rotasyonuna dikkat. AI modeli güven oranı %84 seviyesinde.",
-            timestampFormatted = "08:15",
-            likesCount = 31,
-            isLiked = false,
-            attachedPrediction = "Arsenal • AI %84"
-        )
-    )
 
     fun publishPost(content: String, attachedPick: String? = null) {
         if (content.isBlank()) return
