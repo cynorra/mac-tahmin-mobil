@@ -297,12 +297,12 @@ fun SpotlightDerbyHeroCard(
         shape = RoundedCornerShape(24.dp),
         color = MatchPickPalette.SurfaceDark,
         border = BorderStroke(
-            1.2.dp,
-            Brush.horizontalGradient(
+            1.dp,
+            Brush.verticalGradient(
                 listOf(
-                    MatchPickPalette.NeonEmerald,
-                    MatchPickPalette.VipGold,
-                    MatchPickPalette.ElectricCyan
+                    MatchPickPalette.NeonEmerald.copy(alpha = 0.45f),
+                    MatchPickPalette.BorderSubtle,
+                    Color(0x10FFFFFF)
                 )
             )
         )
@@ -319,23 +319,30 @@ fun SpotlightDerbyHeroCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MatchPickPalette.VipDeep,
+                    border = BorderStroke(0.6.dp, MatchPickPalette.VipGold.copy(alpha = 0.35f))
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_crown_luxury),
-                        contentDescription = null,
-                        tint = MatchPickPalette.VipGold,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(R.string.marquee_derby_badge).uppercase(),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 0.8.sp,
-                        color = MatchPickPalette.VipGold
-                    )
+                    Row(
+                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_crown_luxury),
+                            contentDescription = null,
+                            tint = MatchPickPalette.VipGold,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.marquee_derby_badge).uppercase(),
+                            fontSize = 10.5.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.8.sp,
+                            color = MatchPickPalette.VipGold
+                        )
+                    }
                 }
 
                 IconButton(
@@ -371,76 +378,109 @@ fun SpotlightDerbyHeroCard(
                     alignment = Alignment.CenterHorizontally
                 )
 
-                // Central AI Probability Circular Gauge
-                Box(
+                // Central AI Probability Circular Gauge & Telemetry Pill
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
-                        .size(96.dp)
-                        .padding(horizontal = 6.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(horizontal = 8.dp)
+                        .wrapContentWidth()
                 ) {
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        val strokeWidth = 5.dp.toPx()
-                        val diameter = size.minDimension - strokeWidth
-                        val radius = diameter / 2f
-                        val topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2f, strokeWidth / 2f)
-                        val arcSize = androidx.compose.ui.geometry.Size(diameter, diameter)
+                    // Neural Dial (Only Confidence & Label - Generous breathing room)
+                    Box(
+                        modifier = Modifier.size(78.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Canvas(modifier = Modifier.fillMaxSize()) {
+                            val strokeWidth = 3.5.dp.toPx()
+                            val diameter = size.minDimension - strokeWidth
+                            val topLeft = androidx.compose.ui.geometry.Offset(strokeWidth / 2f, strokeWidth / 2f)
+                            val arcSize = androidx.compose.ui.geometry.Size(diameter, diameter)
 
-                        // Background track
-                        drawArc(
-                            color = Color(0xFF131D2E),
-                            startAngle = 0f,
-                            sweepAngle = 360f,
-                            useCenter = false,
-                            topLeft = topLeft,
-                            size = arcSize,
-                            style = Stroke(width = strokeWidth)
-                        )
+                            // Background Track
+                            drawArc(
+                                color = Color(0xFF141F30),
+                                startAngle = 0f,
+                                sweepAngle = 360f,
+                                useCenter = false,
+                                topLeft = topLeft,
+                                size = arcSize,
+                                style = Stroke(width = strokeWidth)
+                            )
 
-                        // Home Probability Arc (Emerald)
-                        val homeSweep = (fixture.votesHomePercent / 100f) * 360f
-                        drawArc(
-                            color = MatchPickPalette.NeonEmerald,
-                            startAngle = -90f,
-                            sweepAngle = homeSweep,
-                            useCenter = false,
-                            topLeft = topLeft,
-                            size = arcSize,
-                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                        )
+                            // Confidence Arc with Smooth Caps
+                            val sweepAngle = (fixture.officialConfidence / 100f).coerceIn(0f, 1f) * 360f
+                            drawArc(
+                                brush = Brush.sweepGradient(
+                                    listOf(
+                                        MatchPickPalette.NeonEmerald,
+                                        Color(0xFF00E5FF),
+                                        MatchPickPalette.NeonEmerald
+                                    )
+                                ),
+                                startAngle = -90f,
+                                sweepAngle = sweepAngle,
+                                useCenter = false,
+                                topLeft = topLeft,
+                                size = arcSize,
+                                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                            )
+                        }
 
-                        // Away Probability Arc (Cyan)
-                        val awaySweep = (fixture.votesAwayPercent / 100f) * 360f
-                        drawArc(
-                            color = MatchPickPalette.ElectricCyan,
-                            startAngle = -90f + homeSweep,
-                            sweepAngle = awaySweep,
-                            useCenter = false,
-                            topLeft = topLeft,
-                            size = arcSize,
-                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.ai_confidence_title),
+                                fontSize = 8.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 0.6.sp,
+                                color = MatchPickPalette.TextMuted,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = "%${fixture.officialConfidence}",
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Black,
+                                color = MatchPickPalette.TextPrimary,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1
+                            )
+                        }
                     }
 
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.ai_confidence_title),
-                            fontSize = 8.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MatchPickPalette.TextMuted
-                        )
-                        Text(
-                            text = "%${fixture.officialConfidence}",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
-                            color = MatchPickPalette.NeonEmerald
-                        )
-                        fixture.officialPick?.let { pick ->
-                            Text(
-                                text = stringResource(R.string.pick_label, pick),
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MatchPickPalette.VipGold
-                            )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Dedicated, non-overlapping Tactical Pick Pill
+                    fixture.officialPick?.let { pick ->
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MatchPickPalette.EmeraldDeep,
+                            border = BorderStroke(0.6.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.45f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 3.5.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_sparkle_pro),
+                                    contentDescription = null,
+                                    tint = MatchPickPalette.NeonEmerald,
+                                    modifier = Modifier.size(10.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = stringResource(R.string.pick_label, pick),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 0.3.sp,
+                                    color = MatchPickPalette.NeonEmerald,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }
@@ -757,7 +797,10 @@ fun FixtureCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 fixture.officialPick?.let { pick ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f, fill = false)
+                    ) {
                         Icon(
                             imageVector = Icons.Default.AutoAwesome,
                             contentDescription = null,
@@ -769,11 +812,13 @@ fun FixtureCard(
                             text = stringResource(R.string.app_pick_badge, pick, fixture.officialConfidence),
                             style = MaterialTheme.typography.labelSmall,
                             color = MatchPickPalette.TextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 11.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
-
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = stringResource(R.string.tap_for_telemetry),
                     style = MaterialTheme.typography.labelSmall,
@@ -825,7 +870,7 @@ private fun OddsButton(
         shape = RoundedCornerShape(14.dp),
         color = if (isSelected) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated,
         border = BorderStroke(
-            if (isSelected) 1.5.dp else 0.5.dp,
+            if (isSelected) 1.dp else 0.5.dp,
             if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.BorderSubtle
         )
     ) {
@@ -836,19 +881,24 @@ private fun OddsButton(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = choice,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextPrimary
+                    color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextPrimary,
+                    maxLines = 1
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = String.format(Locale.US, "%.2f", odds),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (isSelected) Color.White else MatchPickPalette.TextSecondary
+                    color = if (isSelected) Color.White else MatchPickPalette.TextSecondary,
+                    maxLines = 1
                 )
             }
             Spacer(modifier = Modifier.height(1.dp))
@@ -857,7 +907,8 @@ private fun OddsButton(
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 fontSize = 10.sp,
-                color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
+                color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted,
+                maxLines = 1
             )
         }
     }
