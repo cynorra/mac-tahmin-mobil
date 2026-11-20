@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -216,12 +217,14 @@ fun ProfileScreen(
                 title = stringResource(R.string.stat_points),
                 value = "$totalPoints PTS",
                 valueColor = MatchPickPalette.NeonEmerald,
+                iconRes = R.drawable.ic_target_pro,
                 modifier = Modifier.weight(1f)
             )
             StatCard(
                 title = stringResource(R.string.stat_streak),
-                value = "🔥 $currentStreak",
+                value = "$currentStreak",
                 valueColor = MatchPickPalette.VipGold,
+                iconRes = R.drawable.ic_flame_pro,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -232,14 +235,16 @@ fun ProfileScreen(
         ) {
             StatCard(
                 title = stringResource(R.string.stat_best),
-                value = "🏆 $bestStreak",
+                value = "$bestStreak",
                 valueColor = MatchPickPalette.TextPrimary,
+                iconRes = R.drawable.ic_trophy_pro,
                 modifier = Modifier.weight(1f)
             )
             StatCard(
                 title = stringResource(R.string.profile_accuracy_label),
-                value = "⚡ 84.2%",
+                value = "84.2%",
                 valueColor = MatchPickPalette.ElectricCyan,
+                iconRes = R.drawable.ic_shield_check_pro,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -394,6 +399,7 @@ private fun StatCard(
     title: String,
     value: String,
     valueColor: Color,
+    iconRes: Int? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -415,12 +421,23 @@ private fun StatCard(
                 fontSize = 11.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = valueColor
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (iconRes != null) {
+                    Icon(
+                        painter = painterResource(iconRes),
+                        contentDescription = null,
+                        tint = valueColor,
+                        modifier = Modifier.size(15.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                }
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = valueColor
+                )
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -149,7 +150,12 @@ fun CelebrationDialog(
                             border = BorderStroke(2.dp, MatchPickPalette.VipGold)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(text = "🔥", fontSize = 34.sp)
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_flame_pro),
+                                    contentDescription = null,
+                                    tint = MatchPickPalette.VipAmber,
+                                    modifier = Modifier.size(36.dp)
+                                )
                             }
                         }
                     }

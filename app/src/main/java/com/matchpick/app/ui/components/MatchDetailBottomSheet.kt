@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,7 +69,12 @@ fun MatchDetailBottomSheet(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "🧬", fontSize = 12.sp)
+                        Icon(
+                            painter = painterResource(R.drawable.ic_sparkle_pro),
+                            contentDescription = null,
+                            tint = Color(0xFFD8B4FE),
+                            modifier = Modifier.size(12.dp)
+                        )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = stringResource(R.string.neural_radar_badge),

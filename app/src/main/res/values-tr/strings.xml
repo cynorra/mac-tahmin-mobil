@@ -122,6 +122,9 @@
     <string name="metric_win_probability">YZ Kazanma Olasılığı</string>
     <string name="tap_for_telemetry">Nöral Telemetri ve xG Analizi için karta dokun</string>
     <string name="vip_accuracy_banner">%91.4 Son 30 Günlük Yapay Zeka İsabet Oranı</string>
+    <string name="vip_accuracy_label">30 GÜNLÜK NÖRAL İSABET</string>
+    <string name="vip_accuracy_sublabel">Doğrulanmış başarı oranı</string>
+    <string name="vip_verified_badge">DOĞRULANDI</string>
     <string name="vip_vault_locked_hint">Şifreli VIP Sinyali • Anında Kilidi Aç</string>
     <string name="profile_tier_badge">PRO ANALİST • SEVİYE IV</string>
     <string name="profile_accuracy_label">İsabet</string>

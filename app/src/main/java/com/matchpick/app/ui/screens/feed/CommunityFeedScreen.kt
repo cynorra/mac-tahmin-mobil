@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -88,12 +89,18 @@ fun CommunityFeedScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(MatchPickPalette.NeonEmerald),
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(MatchPickPalette.EmeraldDeep)
+                        .border(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.3f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "💬", fontSize = 18.sp)
+                    Icon(
+                        painter = painterResource(R.drawable.ic_chat_pro),
+                        contentDescription = null,
+                        tint = MatchPickPalette.NeonEmerald,
+                        modifier = Modifier.size(19.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Column {
@@ -458,14 +465,25 @@ fun PostCard(
                     color = MatchPickPalette.EmeraldDeep,
                     border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
                 ) {
-                    Text(
-                        text = "🎯 $pick",
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MatchPickPalette.NeonEmerald,
-                        fontSize = 10.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_target_pro),
+                            contentDescription = null,
+                            tint = MatchPickPalette.NeonEmerald,
+                            modifier = Modifier.size(11.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = pick,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MatchPickPalette.NeonEmerald,
+                            fontSize = 10.sp
+                        )
+                    }
                 }
             }
 

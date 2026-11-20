@@ -2,6 +2,7 @@ package com.matchpick.app.ui.screens.leaderboard
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -77,12 +79,18 @@ fun LeaderboardScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(MatchPickPalette.VipCrownGradient),
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(MatchPickPalette.VipDeep)
+                            .border(1.dp, MatchPickPalette.VipGold.copy(alpha = 0.25f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = "🏆", fontSize = 18.sp)
+                        Icon(
+                            painter = painterResource(R.drawable.ic_trophy_pro),
+                            contentDescription = null,
+                            tint = MatchPickPalette.VipGold,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
@@ -102,15 +110,15 @@ fun LeaderboardScreen(
 
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = MatchPickPalette.VipDeep,
-                    border = BorderStroke(0.5.dp, MatchPickPalette.VipGold)
+                    color = MatchPickPalette.SurfaceElevated,
+                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                 ) {
                     Text(
                         text = "SEASON 26",
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MatchPickPalette.VipGold
+                        color = MatchPickPalette.TextSecondary
                     )
                 }
             }
@@ -152,11 +160,20 @@ fun LeaderboardScreen(
                                 fontWeight = FontWeight.Bold,
                                 color = MatchPickPalette.TextPrimary
                             )
-                            Text(
-                                text = "🔥 ${currentUser.streak} ${stringResource(R.string.streak_label)}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MatchPickPalette.VipGold
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_flame_pro),
+                                    contentDescription = null,
+                                    tint = MatchPickPalette.VipGold,
+                                    modifier = Modifier.size(11.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = "${currentUser.streak} ${stringResource(R.string.streak_label)}",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MatchPickPalette.VipGold
+                                )
+                            }
                         }
                     }
                     Text(
@@ -202,7 +219,12 @@ fun LeaderboardScreen(
                                             modifier = Modifier.size(52.dp)
                                         ) {
                                             Box(contentAlignment = Alignment.Center) {
-                                                Text(text = "🏆", fontSize = 22.sp)
+                                                Icon(
+                                                    painter = painterResource(R.drawable.ic_trophy_pro),
+                                                    contentDescription = null,
+                                                    tint = MatchPickPalette.NeonEmerald,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
                                             }
                                         }
                                         Spacer(modifier = Modifier.height(4.dp))
@@ -284,7 +306,12 @@ fun LeaderboardScreen(
                                         modifier = Modifier.size(52.dp)
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
-                                            Text(text = "🏆", fontSize = 22.sp)
+                                            Icon(
+                                                painter = painterResource(R.drawable.ic_trophy_pro),
+                                                contentDescription = null,
+                                                tint = MatchPickPalette.NeonEmerald,
+                                                modifier = Modifier.size(24.dp)
+                                            )
                                         }
                                     }
                                     Spacer(modifier = Modifier.height(4.dp))
@@ -350,7 +377,12 @@ fun ReferralHubCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "🎁", fontSize = 16.sp)
+                    Icon(
+                        painter = painterResource(R.drawable.ic_gift_pro),
+                        contentDescription = null,
+                        tint = MatchPickPalette.NeonEmerald,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(R.string.referral_title),
@@ -471,22 +503,19 @@ fun PodiumSection(topThree: List<LeaderboardUserUiModel>) {
                 user = second,
                 rank = 2,
                 height = 96.dp,
-                pillarColor = Color(0xFF94A3B8),
-                crown = "🥈"
+                pillarColor = Color(0xFF94A3B8)
             )
             PodiumPillar(
                 user = first,
                 rank = 1,
                 height = 124.dp,
-                pillarColor = MatchPickPalette.VipGold,
-                crown = "👑"
+                pillarColor = MatchPickPalette.VipGold
             )
             PodiumPillar(
                 user = third,
                 rank = 3,
                 height = 84.dp,
-                pillarColor = Color(0xFFD97706),
-                crown = "🥉"
+                pillarColor = Color(0xFFD97706)
             )
         }
     }
@@ -497,14 +526,27 @@ fun PodiumPillar(
     user: LeaderboardUserUiModel,
     rank: Int,
     height: androidx.compose.ui.unit.Dp,
-    pillarColor: Color,
-    crown: String
+    pillarColor: Color
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(92.dp)
     ) {
-        Text(text = crown, fontSize = if (rank == 1) 20.sp else 16.sp)
+        if (rank == 1) {
+            Icon(
+                painter = painterResource(R.drawable.ic_crown_luxury),
+                contentDescription = null,
+                tint = MatchPickPalette.VipGold,
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Icon(
+                painter = painterResource(R.drawable.ic_trophy_pro),
+                contentDescription = null,
+                tint = pillarColor,
+                modifier = Modifier.size(17.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(4.dp))
         Surface(
             modifier = Modifier.size(if (rank == 1) 48.dp else 42.dp),
@@ -642,17 +684,26 @@ fun LeaderboardRow(
                             )
                         }
                     }
-                    Text(
-                        text = "🔥 ${user.streak} Seri • ${user.country}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MatchPickPalette.TextSecondary,
-                        fontSize = 10.sp
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_flame_pro),
+                            contentDescription = null,
+                            tint = MatchPickPalette.VipGold,
+                            modifier = Modifier.size(10.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text(
+                            text = "${user.streak} ${stringResource(R.string.streak_label)} • ${user.country}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MatchPickPalette.TextSecondary,
+                            fontSize = 10.sp
+                        )
+                    }
                 }
             }
 
             Text(
-                text = "${user.points} Puan",
+                text = stringResource(R.string.points_label, user.points),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MatchPickPalette.NeonEmerald

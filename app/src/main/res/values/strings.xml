@@ -122,6 +122,9 @@
     <string name="metric_win_probability">AI Win Probability</string>
     <string name="tap_for_telemetry">Tap card for Neural Telemetry &amp; xG Breakdown</string>
     <string name="vip_accuracy_banner">91.4% Rolling 30-Day Neural Accuracy</string>
+    <string name="vip_accuracy_label">30-DAY NEURAL ACCURACY</string>
+    <string name="vip_accuracy_sublabel">Rolling verified win rate</string>
+    <string name="vip_verified_badge">VERIFIED</string>
     <string name="vip_vault_locked_hint">Encrypted Pro Signal • Unlock Instant Access</string>
     <string name="profile_tier_badge">PRO ANALYST • TIER IV</string>
     <string name="profile_accuracy_label">Accuracy</string>

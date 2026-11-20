@@ -132,8 +132,15 @@ fun PredictScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                     ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_flame_pro),
+                            contentDescription = null,
+                            tint = MatchPickPalette.VipGold,
+                            modifier = Modifier.size(13.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "🔥 $userStreak",
+                            text = "$userStreak",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.VipGold
@@ -311,24 +318,23 @@ fun SpotlightDerbyHeroCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MatchPickPalette.VipDeep,
-                    border = BorderStroke(0.5.dp, MatchPickPalette.VipGold)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                    ) {
-                        Text(text = "👑", fontSize = 11.sp)
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = stringResource(R.string.marquee_derby_badge),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MatchPickPalette.VipGold
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(R.drawable.ic_crown_luxury),
+                        contentDescription = null,
+                        tint = MatchPickPalette.VipGold,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(R.string.marquee_derby_badge).uppercase(),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = 0.8.sp,
+                        color = MatchPickPalette.VipGold
+                    )
                 }
 
                 IconButton(
