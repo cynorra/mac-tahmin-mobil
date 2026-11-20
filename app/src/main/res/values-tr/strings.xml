@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MatchPick Pro</string>
+    <string name="play_store_title">MatchPick: AI Maç Tahminleri</string>
+    <string name="play_store_short_description">Yapay zeka maç tahminleri, xG istatistikleri ve banko futbol analizleri.</string>
     <string name="app_tagline">Yeni Nesil Futbol Tahmin &amp; Topluluk Platformu</string>
 
     <!-- Navigation -->
