@@ -357,10 +357,11 @@ fun LeaderboardScreen(
                         item {
                             PodiumSection(topThree = topUsers.take(3))
                         }
-                    }
-
-                    if (topUsers.isNotEmpty()) {
                         itemsIndexed(topUsers.drop(3), key = { _, user -> user.userId }) { _, item ->
+                            LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
+                        }
+                    } else {
+                        itemsIndexed(topUsers, key = { _, user -> user.userId }) { _, item ->
                             LeaderboardRow(user = item, isCurrentUser = item.rank == currentUser.rank)
                         }
                     }

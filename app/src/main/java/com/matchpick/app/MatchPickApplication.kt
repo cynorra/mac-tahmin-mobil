@@ -30,9 +30,13 @@ class MatchPickApplication : Application(), Configuration.Provider {
         // Crashlytics User Identifier bağlama
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
 
-        // AdMob SDK'sını arka planda initialize ederek ilk frame gecikmesini önleme
-        CoroutineScope(Dispatchers.IO).launch {
-            MobileAds.initialize(this@MatchPickApplication) {}
+        // AdMob SDK'sını initialize et (AdMob internal looper/binder gereksinimleri için)
+        try {
+            MobileAds.initialize(this) { status ->
+                android.util.Log.d("GoogleAdsAnalytics", "MobileAds initialized: $status")
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("GoogleAdsAnalytics", "MobileAds initialization error", e)
         }
     }
 }

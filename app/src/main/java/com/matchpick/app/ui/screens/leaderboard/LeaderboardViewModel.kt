@@ -139,26 +139,13 @@ class LeaderboardViewModel @Inject constructor(
                     )
                     return@withContext Pair(mappedList, finalCurrent)
                 }
-            } catch (_: Exception) {
-                // Firestore offline veya rules kısıtlı olduğunda topluluk analist simülasyonu kullanılır
+            } catch (e: Exception) {
+                android.util.Log.w("LeaderboardViewModel", "Firestore leaderboard fetch error: ${e.message}")
             }
 
-            // Global rekabetçi analist kadrosu (Podyum ve sıralamanın canlı doluluğu için)
-            val seedAnalysts = listOf(
-                LeaderboardUserUiModel(1, "seed_1", "Alex Morgan", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150", 520L, 14, "GB"),
-                LeaderboardUserUiModel(2, "seed_2", "Berke_Tactics", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150", 480L, 11, "TR"),
-                LeaderboardUserUiModel(3, "seed_3", "Marco BetGuru", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150", 440L, 9, "ES"),
-                LeaderboardUserUiModel(4, "seed_4", "Luka_Analyst", "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=150", 390L, 8, "DE"),
-                LeaderboardUserUiModel(5, "seed_5", "Sofie Nielsen", "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150", 340L, 7, "DK"),
-                LeaderboardUserUiModel(6, "seed_6", "Kaan99", "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150", 310L, 6, "TR"),
-                LeaderboardUserUiModel(7, "seed_7", "Antoine V.", "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150", 270L, 5, "FR"),
-                LeaderboardUserUiModel(8, "seed_8", "Davide R.", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150", 240L, 4, "IT")
-            )
-
-            val higherRanks = seedAnalysts.count { it.points > userPoints }
-            val userRank = higherRanks + 1
+            // Mock / sahte veriler kaldırıldı; sadece gerçek kullanıcı/sıralama verisi kullanılır
             val defaultCurrent = LeaderboardUserUiModel(
-                rank = userRank,
+                rank = 1,
                 userId = currentUid.ifEmpty { "me" },
                 name = currentName,
                 avatarUrl = currentPhoto,
@@ -167,12 +154,13 @@ class LeaderboardViewModel @Inject constructor(
                 country = "GLOBAL"
             )
 
-            val combinedList = (seedAnalysts + defaultCurrent)
-                .sortedByDescending { it.points }
-                .mapIndexed { index, model -> model.copy(rank = index + 1) }
+            val realUsersList = if (userPoints > 0L) {
+                listOf(defaultCurrent)
+            } else {
+                emptyList()
+            }
 
-            val resolvedCurrentUser = combinedList.find { it.userId == defaultCurrent.userId } ?: defaultCurrent
-            Pair(combinedList, resolvedCurrentUser)
+            Pair(realUsersList, defaultCurrent)
         }
 }
 

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
@@ -58,15 +59,30 @@ data class OfficialPickUiModel(
 
 class RewardedAdController(private val context: Context) {
     private var rewardedAd: RewardedAd? = null
+    private var isLoading: Boolean = false
 
-    fun loadAd(adUnitId: String) {
+    fun loadAd(adUnitId: String = AdConfig.REWARDED_AD_UNIT_ID, onLoaded: (() -> Unit)? = null) {
+        if (isLoading) {
+            android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad already loading, skipping duplicate request.")
+            return
+        }
+        if (rewardedAd != null) {
+            android.util.Log.d("GoogleAdsAnalytics", "⚡ [REWARD] Ad already loaded and ready in cache.")
+            onLoaded?.invoke()
+            return
+        }
+
+        isLoading = true
+        android.util.Log.d("GoogleAdsAnalytics", "📡 [REWARD] Requesting Rewarded Ad: unit=$adUnitId")
         RewardedAd.load(
             context,
             adUnitId,
             AdRequest.Builder().build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
+                    isLoading = false
                     rewardedAd = ad
+                    android.util.Log.d("GoogleAdsAnalytics", "✅ [REWARD] Rewarded ad loaded successfully: unit=$adUnitId")
                     ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                         override fun onAdShowedFullScreenContent() {
                             android.util.Log.d("GoogleAdsAnalytics", "👁️ [CONVERSION] Rewarded Ad Impression: unit=$adUnitId")
@@ -75,31 +91,44 @@ class RewardedAdController(private val context: Context) {
                             android.util.Log.d("GoogleAdsAnalytics", "🎯 [CONVERSION] Rewarded Ad Clicked: unit=$adUnitId")
                         }
                         override fun onAdDismissedFullScreenContent() {
+                            android.util.Log.d("GoogleAdsAnalytics", "👋 [REWARD] Rewarded ad dismissed.")
+                            rewardedAd = null
+                            loadAd(adUnitId)
+                        }
+                        override fun onAdFailedToShowFullScreenContent(error: AdError) {
+                            android.util.Log.e("GoogleAdsAnalytics", "❌ [REWARD] Rewarded ad failed to show: ${error.message}")
                             rewardedAd = null
                             loadAd(adUnitId)
                         }
                     }
+                    onLoaded?.invoke()
                 }
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    android.util.Log.w("GoogleAdsAnalytics", "Rewarded ad failed to load: ${error.message}")
+                    isLoading = false
                     rewardedAd = null
+                    android.util.Log.w("GoogleAdsAnalytics", "⚠️ Rewarded ad failed to load: code=${error.code}, msg=${error.message}")
                 }
             }
         )
     }
 
-    fun showAd(activity: Activity, onRewardEarned: () -> Unit) {
+    fun isAdLoaded(): Boolean = rewardedAd != null
+
+    fun showAd(
+        activity: Activity,
+        onAdNotReady: () -> Unit,
+        onRewardEarned: () -> Unit
+    ) {
         val currentAd = rewardedAd
         if (currentAd != null) {
-            currentAd.show(activity) { _ ->
-                android.util.Log.d("GoogleAdsAnalytics", "🏆 [REWARD] Rewarded ad reward earned!")
+            rewardedAd = null
+            currentAd.show(activity) { rewardItem ->
+                android.util.Log.d("GoogleAdsAnalytics", "🏆 [REWARD] Rewarded ad reward earned: ${rewardItem.amount} ${rewardItem.type}")
                 onRewardEarned()
-                rewardedAd = null
-                loadAd(currentAd.adUnitId)
             }
         } else {
-            android.util.Log.d("GoogleAdsAnalytics", "⚠️ [REWARD] Rewarded ad not loaded yet, fallback to instant unlock")
-            onRewardEarned()
+            android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad not ready yet, notifying user and preloading.")
+            onAdNotReady()
             loadAd(AdConfig.REWARDED_AD_UNIT_ID)
         }
     }
@@ -109,11 +138,15 @@ class RewardedAdController(private val context: Context) {
 fun OfficialPicksScreen(
     picks: List<OfficialPickUiModel>,
     rewardedAdController: RewardedAdController,
+    activity: Activity,
     onUnlockPick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val activity = context.findActivity()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        rewardedAdController.loadAd(AdConfig.REWARDED_AD_UNIT_ID)
+    }
 
     Column(
         modifier = modifier
@@ -292,14 +325,19 @@ fun OfficialPicksScreen(
                     VipPickCard(
                         pick = pickItem,
                         onUnlock = {
-                            val act = context.findActivity() ?: activity
-                            if (act != null) {
-                                rewardedAdController.showAd(act) {
+                            rewardedAdController.showAd(
+                                activity = activity,
+                                onAdNotReady = {
+                                    android.widget.Toast.makeText(
+                                        context,
+                                        context.getString(R.string.ad_loading_reward),
+                                        android.widget.Toast.LENGTH_SHORT
+                                    ).show()
+                                },
+                                onRewardEarned = {
                                     onUnlockPick(pickItem.fixtureId)
                                 }
-                            } else {
-                                onUnlockPick(pickItem.fixtureId)
-                            }
+                            )
                         }
                     )
 
@@ -403,7 +441,7 @@ fun VipPickCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "%${pick.confidenceRate}",
+                            text = stringResource(R.string.percentage_format, pick.confidenceRate),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             fontSize = 11.sp,

@@ -388,7 +388,7 @@ fun SpotlightDerbyHeroCard(
                 ) {
                     // Neural Dial (Only Confidence & Label - Generous breathing room)
                     Box(
-                        modifier = Modifier.size(78.dp),
+                        modifier = Modifier.size(84.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -429,21 +429,23 @@ fun SpotlightDerbyHeroCard(
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(horizontal = 4.dp)
                         ) {
                             Text(
                                 text = stringResource(R.string.ai_confidence_title),
-                                fontSize = 8.5.sp,
+                                fontSize = 7.5.sp,
                                 fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.6.sp,
+                                letterSpacing = 0.2.sp,
                                 color = MatchPickPalette.TextMuted,
                                 textAlign = TextAlign.Center,
-                                maxLines = 1
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(1.dp))
                             Text(
-                                text = "%${fixture.officialConfidence}",
-                                fontSize = 17.sp,
+                                text = stringResource(R.string.percentage_format, fixture.officialConfidence),
+                                fontSize = 17.5.sp,
                                 fontWeight = FontWeight.Black,
                                 color = MatchPickPalette.TextPrimary,
                                 textAlign = TextAlign.Center,
@@ -903,7 +905,7 @@ private fun OddsButton(
             }
             Spacer(modifier = Modifier.height(1.dp))
             Text(
-                text = if (isSelected) "✓ " + stringResource(R.string.pick_selected) else "%$votePercent",
+                text = if (isSelected) "✓ " + stringResource(R.string.pick_selected) else stringResource(R.string.percentage_format, votePercent),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 fontSize = 10.sp,

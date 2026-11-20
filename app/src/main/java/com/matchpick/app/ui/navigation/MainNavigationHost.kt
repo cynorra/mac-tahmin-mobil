@@ -1,5 +1,6 @@
 package com.matchpick.app.ui.navigation
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -60,6 +61,7 @@ sealed class Screen(val route: String, val titleRes: Int, val icon: androidx.com
 
 @Composable
 fun MainNavigationHost(
+    activity: Activity,
     adUnitId: String,
     predictViewModel: PredictViewModel,
     feedViewModel: FeedViewModel,
@@ -93,8 +95,8 @@ fun MainNavigationHost(
                     "2" -> "${fixture.awayTeamName} (2)"
                     else -> fixture.officialPick ?: "Home Win"
                 }
-                // First pick is unlocked for instant preview, subsequent picks are VIP locked
-                val isLocked = index > 0 && !unlockedPickIds.contains(fixture.id)
+                // All VIP picks require watching a rewarded ad to unlock
+                val isLocked = !unlockedPickIds.contains(fixture.id)
                 OfficialPickUiModel(
                     fixtureId = fixture.id,
                     leagueName = fixture.leagueName,
@@ -295,6 +297,7 @@ fun MainNavigationHost(
                     OfficialPicksScreen(
                         picks = officialPicks,
                         rewardedAdController = rewardedAdController,
+                        activity = activity,
                         onUnlockPick = { id ->
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             val unlockedPick = officialPicks.find { it.fixtureId == id }

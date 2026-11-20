@@ -124,6 +124,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         MainNavigationHost(
+                            activity = this@MainActivity,
                             adUnitId = AdConfig.BANNER_AD_UNIT_ID,
                             predictViewModel = predictViewModel,
                             feedViewModel = feedViewModel,

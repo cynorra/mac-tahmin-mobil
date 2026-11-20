@@ -113,7 +113,8 @@
 
     <!-- Ad & Monetization -->
     <string name="ad_sponsor_label">Ad</string>
-    <string name="ad_loading_reward">Loading rewarded ad...</string>
+    <string name="ad_loading_reward">Ad is preparing, please try again in a few seconds.</string>
+    <string name="percentage_format">%1$d%%</string>
 
     <!-- 2026+ Spatial Arena & Neural Telemetry -->
     <string name="hero_match_of_the_day">MATCH OF THE DAY • 2X STREAK BOOST</string>
