@@ -4,7 +4,9 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -83,35 +86,37 @@ fun PredictScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
+                    Image(
+                        painter = painterResource(R.drawable.ic_app_logo),
+                        contentDescription = "MatchPick Pro",
                         modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(MatchPickPalette.NeonEmerald),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "⚡", fontSize = 18.sp)
-                    }
+                            .border(0.5.dp, MatchPickPalette.BorderSubtle, RoundedCornerShape(10.dp))
+                    )
                     Spacer(modifier = Modifier.width(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            text = "MatchPick",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = (-0.3).sp
+                            ),
                             color = MatchPickPalette.TextPrimary
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
-                            shape = RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(5.dp),
                             color = MatchPickPalette.EmeraldDeep,
-                            border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
+                            border = BorderStroke(0.5.dp, MatchPickPalette.EmeraldPrimary.copy(alpha = 0.6f))
                         ) {
                             Text(
                                 text = "PRO",
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
                                 fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MatchPickPalette.NeonEmerald
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MatchPickPalette.EmeraldPrimary,
+                                letterSpacing = 0.5.sp
                             )
                         }
                     }

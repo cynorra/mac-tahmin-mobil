@@ -63,9 +63,7 @@ fun LeagueFilterRow(
             )
 
             Surface(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .clickable { onLeagueSelected(item.id) },
+                onClick = { onLeagueSelected(item.id) },
                 shape = RoundedCornerShape(20.dp),
                 color = containerColor,
                 border = BorderStroke(if (isSelected) 1.2.dp else 0.5.dp, borderColor)

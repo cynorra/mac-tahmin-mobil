@@ -126,7 +126,12 @@ fun CommunityFeedScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(if (active) MatchPickPalette.NeonEmerald else Color.Transparent)
+                                .background(if (active) MatchPickPalette.EmeraldDeep else Color.Transparent)
+                                .border(
+                                    1.dp,
+                                    if (active) MatchPickPalette.EmeraldPrimary.copy(alpha = 0.8f) else Color.Transparent,
+                                    RoundedCornerShape(12.dp)
+                                )
                                 .clickable {
                                     selectedTab = idx
                                     onRegionSelected(regionCode)
@@ -138,7 +143,7 @@ fun CommunityFeedScreen(
                                 text = stringResource(labelRes),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = if (active) Color(0xFF031A0E) else MatchPickPalette.TextSecondary
+                                color = if (active) MatchPickPalette.EmeraldPrimary else MatchPickPalette.TextSecondary
                             )
                         }
                     }
@@ -321,12 +326,13 @@ fun CommunityFeedScreen(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(MatchPickPalette.NeonEmerald)
+                            .background(MatchPickPalette.EmeraldDeep)
+                            .border(1.dp, MatchPickPalette.EmeraldPrimary.copy(alpha = 0.7f), RoundedCornerShape(12.dp))
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = stringResource(R.string.btn_publish),
-                            tint = Color(0xFF031A0E),
+                            tint = MatchPickPalette.EmeraldPrimary,
                             modifier = Modifier.size(18.dp)
                         )
                     }

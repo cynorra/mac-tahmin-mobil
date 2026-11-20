@@ -2,6 +2,7 @@ package com.matchpick.app.ui.screens.profile
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -286,10 +287,16 @@ fun ProfileScreen(
                     subtitle = stringResource(if (currentLanguage == "tr") R.string.language_tr_active else R.string.language_en_active)
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        val isEn = currentLanguage == "en"
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (currentLanguage == "en") MatchPickPalette.NeonEmerald else MatchPickPalette.SurfaceElevated)
+                                .background(if (isEn) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated)
+                                .border(
+                                    1.dp,
+                                    if (isEn) MatchPickPalette.EmeraldPrimary.copy(alpha = 0.8f) else MatchPickPalette.BorderSubtle,
+                                    RoundedCornerShape(8.dp)
+                                )
                                 .clickable { onChangeLanguage("en") }
                                 .padding(horizontal = 12.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
@@ -298,14 +305,20 @@ fun ProfileScreen(
                                 text = "EN",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp,
-                                color = if (currentLanguage == "en") Color(0xFF031A0E) else MatchPickPalette.TextSecondary
+                                color = if (isEn) MatchPickPalette.EmeraldPrimary else MatchPickPalette.TextSecondary
                             )
                         }
                         Spacer(modifier = Modifier.width(6.dp))
+                        val isTr = currentLanguage == "tr"
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (currentLanguage == "tr") MatchPickPalette.NeonEmerald else MatchPickPalette.SurfaceElevated)
+                                .background(if (isTr) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated)
+                                .border(
+                                    1.dp,
+                                    if (isTr) MatchPickPalette.EmeraldPrimary.copy(alpha = 0.8f) else MatchPickPalette.BorderSubtle,
+                                    RoundedCornerShape(8.dp)
+                                )
                                 .clickable { onChangeLanguage("tr") }
                                 .padding(horizontal = 12.dp, vertical = 6.dp),
                             contentAlignment = Alignment.Center
@@ -314,7 +327,7 @@ fun ProfileScreen(
                                 text = "TR",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp,
-                                color = if (currentLanguage == "tr") Color(0xFF031A0E) else MatchPickPalette.TextSecondary
+                                color = if (isTr) MatchPickPalette.EmeraldPrimary else MatchPickPalette.TextSecondary
                             )
                         }
                     }

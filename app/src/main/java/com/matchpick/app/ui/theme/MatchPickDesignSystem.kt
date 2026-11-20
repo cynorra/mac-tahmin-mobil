@@ -21,11 +21,12 @@ object MatchPickPalette {
     val SurfaceGlass = Color(0xFF192238)
     val SurfaceInteractive = Color(0xFF1E2942)
 
-    // Primary Athletic Accents
-    val NeonEmerald = Color(0xFF00E676)
-    val EmeraldGlow = Color(0xFF69F0AE)
-    val EmeraldDeep = Color(0xFF062B1A)
-    val EmeraldSubtle = Color(0xFF093822)
+    // Primary Athletic Accents (Refined, eye-friendly pitch emerald, never radioactive)
+    val EmeraldPrimary = Color(0xFF10B981)
+    val NeonEmerald = EmeraldPrimary // Backward-compatible alias
+    val EmeraldGlow = Color(0xFF34D399)
+    val EmeraldDeep = Color(0xFF063321)
+    val EmeraldSubtle = Color(0xFF09432B)
 
     // Supporting Functional Colors (Intentional, never over-saturated)
     val ElectricCyan = Color(0xFF06B6D4)
@@ -48,7 +49,7 @@ object MatchPickPalette {
     // Micro-Borders (Apple Glass style: light catches the edge at 8-12% opacity)
     val BorderSubtle = Color(0x18FFFFFF)
     val BorderMedium = Color(0x28FFFFFF)
-    val BorderEmerald = Color(0xFF00E676)
+    val BorderEmerald = Color(0x9910B981)
 
     // Gradients - Subtle and Luxurious
     val HeroCardGradient = Brush.verticalGradient(
