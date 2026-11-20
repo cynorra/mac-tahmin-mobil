@@ -38,6 +38,9 @@ import coil.compose.AsyncImage
 import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdaptiveBannerAd
+import com.matchpick.app.ui.components.NumberFlowText
+import com.matchpick.app.ui.components.bounceClickable
+import com.matchpick.app.ui.components.magicBorderBeam
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.components.DateSelectorStrip
 import com.matchpick.app.ui.components.LeagueFilterRow
@@ -140,8 +143,8 @@ fun PredictScreen(
                             modifier = Modifier.size(13.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "$userStreak",
+                        NumberFlowText(
+                            value = "$userStreak",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.VipGold
@@ -154,8 +157,8 @@ fun PredictScreen(
                                 .background(MatchPickPalette.BorderSubtle)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.points_label, userPoints),
+                        NumberFlowText(
+                            value = stringResource(R.string.points_label, userPoints),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.NeonEmerald
@@ -293,7 +296,9 @@ fun SpotlightDerbyHeroCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .magicBorderBeam(strokeWidth = 1.2.dp),
         shape = RoundedCornerShape(24.dp),
         color = MatchPickPalette.SurfaceDark,
         border = BorderStroke(
@@ -867,7 +872,8 @@ private fun OddsButton(
         onClick = { onClick(choice) },
         modifier = modifier
             .scale(scale)
-            .height(52.dp),
+            .height(52.dp)
+            .bounceClickable(scaleDown = 0.95f, enabled = isEnabled) { onClick(choice) },
         enabled = isEnabled,
         shape = RoundedCornerShape(14.dp),
         color = if (isSelected) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated,

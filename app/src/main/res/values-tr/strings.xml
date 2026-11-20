@@ -118,6 +118,9 @@
     <!-- Ad & Monetization -->
     <string name="ad_sponsor_label">Sponsor</string>
     <string name="ad_loading_reward">Reklam hazırlanıyor, lütfen birkaç saniye sonra tekrar deneyin.</string>
+    <string name="ad_error_reward">Reklam yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="vip_unlocked_success">VIP Nöral Analizin Kilidi Açıldı!</string>
+    <string name="ad_loading_indicator">REKLAM HAZIRLANIYOR…</string>
     <string name="percentage_format">%%%1$d</string>
 
     <!-- 2026+ Spatial Arena & Neural Telemetry -->

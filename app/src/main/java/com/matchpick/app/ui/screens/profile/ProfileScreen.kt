@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.matchpick.app.R
+import com.matchpick.app.ui.components.NumberFlowText
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Composable
@@ -483,8 +484,8 @@ private fun StatCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                 }
-                Text(
-                    text = value,
+                NumberFlowText(
+                    value = value,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = valueColor

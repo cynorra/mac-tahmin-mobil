@@ -32,6 +32,8 @@ import coil.compose.AsyncImage
 import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdaptiveBannerAd
+import com.matchpick.app.ui.components.NumberFlowText
+import com.matchpick.app.ui.components.magicBorderBeam
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -129,7 +131,8 @@ fun LeaderboardScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .magicBorderBeam(strokeWidth = 1.dp),
                 shape = RoundedCornerShape(14.dp),
                 color = MatchPickPalette.EmeraldDeep,
                 border = BorderStroke(0.8.dp, MatchPickPalette.NeonEmerald)
@@ -170,16 +173,16 @@ fun LeaderboardScreen(
                                     modifier = Modifier.size(11.dp)
                                 )
                                 Spacer(modifier = Modifier.width(3.dp))
-                                Text(
-                                    text = "${currentUser.streak} ${stringResource(R.string.streak_label)}",
+                                NumberFlowText(
+                                    value = "${currentUser.streak} ${stringResource(R.string.streak_label)}",
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MatchPickPalette.VipGold
                                 )
                             }
                         }
                     }
-                    Text(
-                        text = stringResource(R.string.points_label, currentUser.points),
+                    NumberFlowText(
+                        value = stringResource(R.string.points_label, currentUser.points),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MatchPickPalette.NeonEmerald

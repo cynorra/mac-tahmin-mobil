@@ -39,6 +39,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.matchpick.app.R
 import com.matchpick.app.core.analytics.AnalyticsTracker
 import com.matchpick.app.data.local.FixtureEntity
+import com.matchpick.app.ui.components.LocalSonner
+import com.matchpick.app.ui.components.SonnerHost
+import com.matchpick.app.ui.components.rememberSonnerState
 import com.matchpick.app.ui.screens.feed.CommunityFeedScreen
 import com.matchpick.app.ui.screens.feed.FeedViewModel
 import com.matchpick.app.ui.screens.leaderboard.LeaderboardScreen
@@ -141,12 +144,16 @@ fun MainNavigationHost(
         context.createConfigurationContext(localizedConfig)
     }
 
+    val sonnerState = rememberSonnerState()
+
     CompositionLocalProvider(
         androidx.compose.ui.platform.LocalConfiguration provides localizedConfig,
-        androidx.compose.ui.platform.LocalContext provides localizedContext
+        androidx.compose.ui.platform.LocalContext provides localizedContext,
+        LocalSonner provides sonnerState
     ) {
-        Scaffold(
-            containerColor = MatchPickPalette.DeepObsidian,
+        Box(modifier = Modifier.fillMaxSize()) {
+            Scaffold(
+                containerColor = MatchPickPalette.DeepObsidian,
             bottomBar = {
                 Surface(
                     modifier = Modifier
@@ -376,5 +383,12 @@ fun MainNavigationHost(
                 }
             }
         }
+
+        // Sonner Polish Toast Container
+        SonnerHost(
+            state = sonnerState,
+            alignment = Alignment.TopCenter
+        )
     }
+}
 }

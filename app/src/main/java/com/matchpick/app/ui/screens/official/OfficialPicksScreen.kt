@@ -41,6 +41,11 @@ import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.core.util.findActivity
+import com.matchpick.app.ui.components.LocalSonner
+import com.matchpick.app.ui.components.NumberFlowText
+import com.matchpick.app.ui.components.SonnerType
+import com.matchpick.app.ui.components.bounceClickable
+import com.matchpick.app.ui.components.magicBorderBeam
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -59,10 +64,18 @@ data class OfficialPickUiModel(
 
 class RewardedAdController(private val context: Context) {
     private var rewardedAd: RewardedAd? = null
-    private var isLoading: Boolean = false
+    var isAdLoadingState = mutableStateOf(false)
+        private set
+
+    // Pending show callbacks when user clicked before load completed
+    private var pendingActivity: Activity? = null
+    private var pendingOnReward: (() -> Unit)? = null
+    private var pendingOnFailed: ((String) -> Unit)? = null
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var pendingTimeoutRunnable: Runnable? = null
 
     fun loadAd(adUnitId: String = AdConfig.REWARDED_AD_UNIT_ID, onLoaded: (() -> Unit)? = null) {
-        if (isLoading) {
+        if (isAdLoadingState.value) {
             android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad already loading, skipping duplicate request.")
             return
         }
@@ -72,7 +85,7 @@ class RewardedAdController(private val context: Context) {
             return
         }
 
-        isLoading = true
+        isAdLoadingState.value = true
         android.util.Log.d("GoogleAdsAnalytics", "📡 [REWARD] Requesting Rewarded Ad: unit=$adUnitId")
         RewardedAd.load(
             context,
@@ -80,7 +93,7 @@ class RewardedAdController(private val context: Context) {
             AdRequest.Builder().build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
-                    isLoading = false
+                    isAdLoadingState.value = false
                     rewardedAd = ad
                     android.util.Log.d("GoogleAdsAnalytics", "✅ [REWARD] Rewarded ad loaded successfully: unit=$adUnitId")
                     ad.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -101,12 +114,35 @@ class RewardedAdController(private val context: Context) {
                             loadAd(adUnitId)
                         }
                     }
-                    onLoaded?.invoke()
+
+                    // Auto-show immediately if user clicked while ad was fetching
+                    pendingTimeoutRunnable?.let { mainHandler.removeCallbacks(it) }
+                    val act = pendingActivity
+                    val rewardCb = pendingOnReward
+                    if (act != null && rewardCb != null) {
+                        pendingActivity = null
+                        pendingOnReward = null
+                        pendingOnFailed = null
+                        rewardedAd = null
+                        ad.show(act) { rewardItem ->
+                            android.util.Log.d("GoogleAdsAnalytics", "🏆 [REWARD] Rewarded ad reward earned: ${rewardItem.amount} ${rewardItem.type}")
+                            rewardCb()
+                        }
+                    } else {
+                        onLoaded?.invoke()
+                    }
                 }
+
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    isLoading = false
+                    isAdLoadingState.value = false
                     rewardedAd = null
                     android.util.Log.w("GoogleAdsAnalytics", "⚠️ Rewarded ad failed to load: code=${error.code}, msg=${error.message}")
+                    pendingTimeoutRunnable?.let { mainHandler.removeCallbacks(it) }
+                    val failCb = pendingOnFailed
+                    pendingActivity = null
+                    pendingOnReward = null
+                    pendingOnFailed = null
+                    failCb?.invoke(error.message)
                 }
             }
         )
@@ -116,7 +152,8 @@ class RewardedAdController(private val context: Context) {
 
     fun showAd(
         activity: Activity,
-        onAdNotReady: () -> Unit,
+        onLoadingStarted: () -> Unit,
+        onFailed: (String) -> Unit,
         onRewardEarned: () -> Unit
     ) {
         val currentAd = rewardedAd
@@ -127,8 +164,26 @@ class RewardedAdController(private val context: Context) {
                 onRewardEarned()
             }
         } else {
-            android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad not ready yet, notifying user and preloading.")
-            onAdNotReady()
+            android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad not cached yet, engaging fluid auto-show pipeline.")
+            pendingActivity = activity
+            pendingOnReward = onRewardEarned
+            pendingOnFailed = onFailed
+            onLoadingStarted()
+
+            // 10 second timeout fallback
+            val timeout = Runnable {
+                if (pendingActivity != null) {
+                    pendingActivity = null
+                    pendingOnReward = null
+                    val fail = pendingOnFailed
+                    pendingOnFailed = null
+                    isAdLoadingState.value = false
+                    fail?.invoke("Zaman aşımı: Reklam sunucularına ulaşılamadı.")
+                }
+            }
+            pendingTimeoutRunnable = timeout
+            mainHandler.postDelayed(timeout, 10000L)
+
             loadAd(AdConfig.REWARDED_AD_UNIT_ID)
         }
     }
@@ -316,6 +371,9 @@ fun OfficialPicksScreen(
                 }
             }
         } else {
+            val sonner = LocalSonner.current
+            var loadingPickId by remember { mutableStateOf<String?>(null) }
+
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -324,18 +382,35 @@ fun OfficialPicksScreen(
                 itemsIndexed(picks, key = { _, it -> it.fixtureId }) { index, pickItem ->
                     VipPickCard(
                         pick = pickItem,
+                        isLoadingAd = loadingPickId == pickItem.fixtureId,
                         onUnlock = {
                             rewardedAdController.showAd(
                                 activity = activity,
-                                onAdNotReady = {
-                                    android.widget.Toast.makeText(
-                                        context,
-                                        context.getString(R.string.ad_loading_reward),
-                                        android.widget.Toast.LENGTH_SHORT
-                                    ).show()
+                                onLoadingStarted = {
+                                    loadingPickId = pickItem.fixtureId
+                                    sonner.show(
+                                        message = context.getString(R.string.ad_loading_reward),
+                                        type = SonnerType.VIP,
+                                        durationMs = 4000L
+                                    )
+                                },
+                                onFailed = { errorMsg ->
+                                    loadingPickId = null
+                                    sonner.show(
+                                        message = context.getString(R.string.ad_error_reward),
+                                        description = errorMsg,
+                                        type = SonnerType.ERROR,
+                                        durationMs = 4500L
+                                    )
                                 },
                                 onRewardEarned = {
+                                    loadingPickId = null
                                     onUnlockPick(pickItem.fixtureId)
+                                    sonner.show(
+                                        message = context.getString(R.string.vip_unlocked_success),
+                                        type = SonnerType.SUCCESS,
+                                        durationMs = 3500L
+                                    )
                                 }
                             )
                         }
@@ -364,6 +439,7 @@ fun OfficialPicksScreen(
 @Composable
 fun VipPickCard(
     pick: OfficialPickUiModel,
+    isLoadingAd: Boolean = false,
     onUnlock: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -374,7 +450,9 @@ fun VipPickCard(
     }
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (!pick.isVipLocked) Modifier.magicBorderBeam(strokeWidth = 1.dp) else Modifier),
         shape = RoundedCornerShape(20.dp),
         color = MatchPickPalette.SurfaceDark,
         border = cardBorder
@@ -590,27 +668,49 @@ fun VipPickCard(
             if (pick.isVipLocked) {
                 Button(
                     onClick = onUnlock,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    enabled = !isLoadingAd,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .bounceClickable(scaleDown = 0.96f, enabled = !isLoadingAd) { onUnlock() },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MatchPickPalette.VipGold
+                        containerColor = if (isLoadingAd) MatchPickPalette.SurfaceElevated else MatchPickPalette.VipGold,
+                        disabledContainerColor = MatchPickPalette.SurfaceElevated
                     )
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_crown_luxury),
-                        contentDescription = null,
-                        tint = Color(0xFF03180D),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.rewarded_unlock_pick),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF03180D),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (isLoadingAd) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            color = MatchPickPalette.VipGold,
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = stringResource(R.string.ad_loading_indicator),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MatchPickPalette.VipGold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_crown_luxury),
+                            contentDescription = null,
+                            tint = Color(0xFF03180D),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.rewarded_unlock_pick),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color(0xFF03180D),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             } else {
                 Surface(
