@@ -17,13 +17,13 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
-        versionName = "1.3.5"
+        versionName = "1.3.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
 
-        // AdMob Sample App ID
-        manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+        // AdMob Production App ID
+        manifestPlaceholders["admobAppId"] = "ca-app-pub-4674211063760769~9806710318"
     }
 
     buildTypes {
