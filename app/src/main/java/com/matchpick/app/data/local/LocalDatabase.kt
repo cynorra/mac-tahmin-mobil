@@ -47,6 +47,9 @@ interface FixtureDao {
 
     @Query("SELECT COUNT(*) FROM daily_fixtures")
     suspend fun getFixtureCount(): Int
+
+    @Query("SELECT COUNT(*) FROM daily_fixtures WHERE userPick IS NOT NULL")
+    suspend fun getUserPredictionCount(): Int
 }
 
 @Database(entities = [FixtureEntity::class], version = 2, exportSchema = false)

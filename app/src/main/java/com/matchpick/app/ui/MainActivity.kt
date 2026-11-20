@@ -66,6 +66,9 @@ class MainActivity : ComponentActivity() {
         // AdMob Interstitial'ı belleğe al (Geçişlerde 0 ms bekleme)
         AdMobManager.loadInterstitial(this, AdConfig.INTERSTITIAL_AD_UNIT_ID)
 
+        // AdMob Rewarded Video'yu belleğe al (VIP analiz kilidini anında açmak için)
+        rewardedAdController.loadAd(AdConfig.REWARDED_AD_UNIT_ID)
+
         // WorkManager periyodik senkronizasyon planla
         DailySyncWorker.schedule(this)
 

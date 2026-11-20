@@ -78,7 +78,10 @@ fun MainNavigationHost(
     val feedState by feedViewModel.uiState.collectAsState()
     val leaderboardState by leaderboardViewModel.uiState.collectAsState()
 
-    var unlockedPickIds by rememberSaveable { mutableStateOf(setOf<String>()) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { context.getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE) }
+    val initialUnlocked = remember { prefs.getStringSet("unlocked_vip_picks", emptySet())?.toSet() ?: emptySet() }
+    var unlockedPickIds by remember { mutableStateOf(initialUnlocked) }
 
     val officialPicks = remember(predictState.fixtures, unlockedPickIds) {
         predictState.fixtures
@@ -108,8 +111,6 @@ fun MainNavigationHost(
     }
 
     var isNotificationsEnabled by remember { mutableStateOf(true) }
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val prefs = remember { context.getSharedPreferences("app_settings", android.content.Context.MODE_PRIVATE) }
     var currentLanguage by remember {
         mutableStateOf(
             prefs.getString("pref_language", null)
@@ -302,14 +303,20 @@ fun MainNavigationHost(
                                 recommendedPick = unlockedPick?.recommendedPick ?: "",
                                 confidence = unlockedPick?.confidenceRate ?: 80
                             )
-                            unlockedPickIds = unlockedPickIds + id
+                            val newSet = unlockedPickIds + id
+                            unlockedPickIds = newSet
+                            prefs.edit().putStringSet("unlocked_vip_picks", newSet).apply()
                         }
                     )
                 }
                 composable(Screen.Leaderboard.route) {
+                    val syncedCurrentUser = leaderboardState.currentUser.copy(
+                        points = maxOf(leaderboardState.currentUser.points, predictState.points),
+                        streak = maxOf(leaderboardState.currentUser.streak, predictState.streak)
+                    )
                     LeaderboardScreen(
                         topUsers = leaderboardState.topUsers,
-                        currentUser = leaderboardState.currentUser,
+                        currentUser = syncedCurrentUser,
                         referralCode = leaderboardState.referralCode,
                         onCopyReferral = { code ->
                             haptics.performHapticFeedback(HapticFeedbackType.LongPress)

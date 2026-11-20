@@ -42,16 +42,28 @@ class PredictViewModel @Inject constructor(
 
     private suspend fun loadUserStats() {
         val uid = auth.currentUser?.uid
+        var remotePoints: Long? = null
+        var remoteStreak: Int? = null
+
         if (!uid.isNullOrEmpty()) {
             try {
                 val doc = firestore.collection("users").document(uid).get().await()
                 if (doc.exists()) {
-                    val pts = doc.getLong("totalPoints") ?: 0L
-                    val stk = doc.getLong("currentStreak")?.toInt() ?: 0
-                    _uiState.update { it.copy(points = pts, streak = stk) }
+                    remotePoints = doc.getLong("totalPoints")
+                    remoteStreak = doc.getLong("currentStreak")?.toInt()
                 }
             } catch (_: Exception) {}
         }
+
+        // Yerel veritabanında kullanıcının yaptığı tahmin sayısını hesapla
+        val localCount = try {
+            repository.getUserPredictionCount()
+        } catch (_: Exception) { 0 }
+
+        val finalPoints = maxOf(remotePoints ?: 0L, localCount * 10L)
+        val finalStreak = maxOf(remoteStreak ?: 0, localCount)
+
+        _uiState.update { it.copy(points = finalPoints, streak = finalStreak) }
     }
 
     fun loadFixtures(region: String) {
@@ -95,7 +107,11 @@ class PredictViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (uid.isNotEmpty()) {
-                repository.savePrediction(fixtureId, pick, uid)
+                try {
+                    repository.savePrediction(fixtureId, pick, uid)
+                } catch (e: Exception) {
+                    android.util.Log.w("MatchPickBackend", "Prediction local save fallback: ${e.message}")
+                }
                 try {
                     val userUpdates = hashMapOf<String, Any>(
                         "uid" to uid,

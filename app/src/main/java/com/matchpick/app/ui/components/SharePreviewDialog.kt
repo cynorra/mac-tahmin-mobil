@@ -22,6 +22,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdMobManager
 import com.matchpick.app.core.social.SocialShareManager
+import com.matchpick.app.core.util.findActivity
 import com.matchpick.app.data.local.FixtureEntity
 
 @Composable
@@ -35,7 +36,7 @@ fun SharePreviewDialog(
 ) {
     var generatedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
-    val activity = context as? Activity
+    val activity = context.findActivity()
 
     Dialog(
         onDismissRequest = onDismiss,

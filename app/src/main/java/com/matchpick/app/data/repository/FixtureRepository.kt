@@ -29,21 +29,29 @@ class FixtureRepository @Inject constructor(
         return fixtureDao.getFixturesByLeague(leagueId).flowOn(Dispatchers.IO)
     }
 
+    suspend fun getUserPredictionCount(): Int = withContext(Dispatchers.IO) {
+        fixtureDao.getUserPredictionCount()
+    }
+
     suspend fun savePrediction(fixtureId: String, pick: String, userId: String) = withContext(Dispatchers.IO) {
         // Önce yerel veritabanını güncelle (0 ms gecikme ve anında UI feedback)
         fixtureDao.updateUserPick(fixtureId, pick)
 
-        // Firestore'a tahmini senkronize et
-        val predictionData = hashMapOf(
-            "fixtureId" to fixtureId,
-            "userId" to userId,
-            "pick" to pick,
-            "createdAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
-        )
-        firestore.collection("predictions")
-            .document("${fixtureId}_$userId")
-            .set(predictionData)
-            .await()
+        // Firestore'a tahmini senkronize et (Network/offline hata güvenliği)
+        try {
+            val predictionData = hashMapOf(
+                "fixtureId" to fixtureId,
+                "userId" to userId,
+                "pick" to pick,
+                "createdAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+            )
+            firestore.collection("predictions")
+                .document("${fixtureId}_$userId")
+                .set(predictionData)
+                .await()
+        } catch (e: Exception) {
+            android.util.Log.w("MatchPickBackend", "Firestore prediction sync postponed: ${e.message}")
+        }
     }
 
     suspend fun refreshDailyFixtures(force: Boolean = false) = withContext(Dispatchers.IO) {

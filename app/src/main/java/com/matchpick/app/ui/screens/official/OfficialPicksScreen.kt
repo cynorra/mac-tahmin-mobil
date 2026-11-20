@@ -39,6 +39,7 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdaptiveBannerAd
+import com.matchpick.app.core.util.findActivity
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -88,14 +89,18 @@ class RewardedAdController(private val context: Context) {
     }
 
     fun showAd(activity: Activity, onRewardEarned: () -> Unit) {
-        rewardedAd?.let { ad ->
-            ad.show(activity) { _ ->
+        val currentAd = rewardedAd
+        if (currentAd != null) {
+            currentAd.show(activity) { _ ->
+                android.util.Log.d("GoogleAdsAnalytics", "🏆 [REWARD] Rewarded ad reward earned!")
                 onRewardEarned()
                 rewardedAd = null
-                loadAd(ad.adUnitId)
+                loadAd(currentAd.adUnitId)
             }
-        } ?: run {
+        } else {
+            android.util.Log.d("GoogleAdsAnalytics", "⚠️ [REWARD] Rewarded ad not loaded yet, fallback to instant unlock")
             onRewardEarned()
+            loadAd(AdConfig.REWARDED_AD_UNIT_ID)
         }
     }
 }
@@ -108,7 +113,7 @@ fun OfficialPicksScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val activity = context as? Activity
+    val activity = context.findActivity()
 
     Column(
         modifier = modifier
@@ -287,10 +292,13 @@ fun OfficialPicksScreen(
                     VipPickCard(
                         pick = pickItem,
                         onUnlock = {
-                            activity?.let { act ->
+                            val act = context.findActivity() ?: activity
+                            if (act != null) {
                                 rewardedAdController.showAd(act) {
                                     onUnlockPick(pickItem.fixtureId)
                                 }
+                            } else {
+                                onUnlockPick(pickItem.fixtureId)
                             }
                         }
                     )
