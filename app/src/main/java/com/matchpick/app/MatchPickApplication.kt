@@ -33,7 +33,10 @@ class MatchPickApplication : Application(), Configuration.Provider {
         // AdMob SDK'sını initialize et (AdMob internal looper/binder gereksinimleri için)
         try {
             val reqConfig = com.google.android.gms.ads.RequestConfiguration.Builder()
-                .setTestDeviceIds(listOf(com.google.android.gms.ads.AdRequest.DEVICE_ID_EMULATOR))
+                .setTestDeviceIds(listOf(
+                    com.google.android.gms.ads.AdRequest.DEVICE_ID_EMULATOR,
+                    "103A05E61DA40E4E55DB9E16111C6F1C"
+                ))
                 .build()
             MobileAds.setRequestConfiguration(reqConfig)
 
