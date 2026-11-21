@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var frameRateMonitor: FrameRateMonitor
     @Inject lateinit var rewardedAdController: RewardedAdController
     @Inject lateinit var feedbackManager: FeedbackManager
+    @Inject lateinit var credentialAuthManager: com.matchpick.app.core.auth.CredentialAuthManager
 
     private val predictViewModel: PredictViewModel by viewModels()
     private val feedViewModel: FeedViewModel by viewModels()
@@ -100,6 +101,7 @@ class MainActivity : ComponentActivity() {
             val leaderboardState by leaderboardViewModel.uiState.collectAsStateWithLifecycle()
 
             var showCinematicSplash by rememberSaveable { mutableStateOf(true) }
+            var showAuth by rememberSaveable { mutableStateOf(false) }
             var sharingFixture by remember { mutableStateOf<FixtureEntity?>(null) }
             var celebratedStreak by rememberSaveable { mutableIntStateOf(0) }
             var activeStreakModal by remember { mutableStateOf<Int?>(null) }
@@ -135,8 +137,25 @@ class MainActivity : ComponentActivity() {
                             analyticsTracker = analyticsTracker,
                             onShareFixture = { fixture ->
                                 sharingFixture = fixture
-                            }
+                            },
+                            onRequestSignIn = { showAuth = true }
                         )
+
+                        if (showAuth) {
+                            val webClientId = remember {
+                                val id = resources.getIdentifier("default_web_client_id", "string", packageName)
+                                if (id != 0) getString(id) else ""
+                            }
+                            com.matchpick.app.ui.screens.auth.AuthSplashScreen(
+                                authManager = credentialAuthManager,
+                                webClientId = webClientId,
+                                onAuthSuccess = {
+                                    showAuth = false
+                                    recreate()
+                                },
+                                onDismiss = { showAuth = false }
+                            )
+                        }
 
                         // Sosyal Paylaşım Açılır Penceresi
                         sharingFixture?.let { fixture ->

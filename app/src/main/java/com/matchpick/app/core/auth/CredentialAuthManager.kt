@@ -7,6 +7,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 import com.matchpick.app.data.repository.AuthRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -67,6 +68,33 @@ class CredentialAuthManager @Inject constructor(
                 SignInResult.Failure(e.localizedMessage ?: "Credential retrieval failed")
             } catch (e: GoogleIdTokenParsingException) {
                 SignInResult.Failure("Invalid Google ID token")
+            } catch (e: Exception) {
+                SignInResult.Failure(e.localizedMessage ?: "Unknown auth error")
+            }
+        }
+
+    /** E-posta/sifre ile giris yapar; createAccount true ise hesap olusturur (misafir oturumu varsa yukseltir). */
+    suspend fun signInWithEmail(email: String, password: String, createAccount: Boolean): SignInResult =
+        withContext(Dispatchers.IO) {
+            try {
+                val cleanEmail = email.trim()
+                val current = auth.currentUser
+                val user = if (createAccount) {
+                    if (current != null && current.isAnonymous) {
+                        // Misafir oturumunu e-posta hesabina yukselt (uid korunur)
+                        current.linkWithCredential(EmailAuthProvider.getCredential(cleanEmail, password)).await().user
+                    } else {
+                        auth.createUserWithEmailAndPassword(cleanEmail, password).await().user
+                    }
+                } else {
+                    auth.signInWithEmailAndPassword(cleanEmail, password).await().user
+                }
+                if (user != null) {
+                    authRepository.syncUserOnAuthSuccess(user, "US")
+                    SignInResult.Success(user.uid)
+                } else {
+                    SignInResult.Failure("User payload is null")
+                }
             } catch (e: Exception) {
                 SignInResult.Failure(e.localizedMessage ?: "Unknown auth error")
             }

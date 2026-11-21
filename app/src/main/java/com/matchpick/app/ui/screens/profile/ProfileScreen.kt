@@ -50,6 +50,8 @@ fun ProfileScreen(
     onChangeLanguage: (String) -> Unit,
     isAmoledTheme: Boolean,
     onToggleAmoled: (Boolean) -> Unit,
+    isGuest: Boolean = false,
+    onSignInClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
 
@@ -104,6 +106,21 @@ fun ProfileScreen(
                     )
                 }
             }
+        }
+
+        if (isGuest) {
+            Button(
+                onClick = onSignInClick,
+                modifier = Modifier.fillMaxWidth().height(48.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MatchPickPalette.NeonEmerald,
+                    contentColor = androidx.compose.ui.graphics.Color(0xFF03170E)
+                )
+            ) {
+                Text(text = stringResource(R.string.profile_sign_in), fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.height(10.dp))
         }
 
         Spacer(modifier = Modifier.height(14.dp))

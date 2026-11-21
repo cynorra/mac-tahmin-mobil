@@ -72,6 +72,7 @@ fun MainNavigationHost(
     rewardedAdController: RewardedAdController,
     analyticsTracker: AnalyticsTracker,
     onShareFixture: (FixtureEntity) -> Unit,
+    onRequestSignIn: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -380,6 +381,8 @@ fun MainNavigationHost(
                             analyticsTracker.logLanguageSwitched(lang)
                         },
                         isAmoledTheme = MatchPickPalette.isAmoled,
+                        isGuest = firebaseUser == null || firebaseUser.isAnonymous,
+                        onSignInClick = onRequestSignIn,
                         onToggleAmoled = { enabled ->
                             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             MatchPickPalette.isAmoled = enabled

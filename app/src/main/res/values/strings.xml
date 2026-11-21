@@ -153,4 +153,15 @@
     <string name="prediction_updated_title">Prediction Updated</string>
     <string name="prediction_updated_desc">Pick changed. (XP is awarded once per match) 🔄</string>
     <string name="match_locked_notice">This match has already started or is locked.</string>
+    <string name="auth_email">Email</string>
+    <string name="auth_password">Password</string>
+    <string name="auth_show">Show</string>
+    <string name="auth_hide">Hide</string>
+    <string name="auth_sign_in">Sign in</string>
+    <string name="auth_register">Create account</string>
+    <string name="auth_no_account">No account? Create one</string>
+    <string name="auth_have_account">Already have an account? Sign in</string>
+    <string name="auth_invalid_input">Enter a valid email and a password of at least 6 characters.</string>
+    <string name="auth_continue_guest">Continue as guest</string>
+    <string name="profile_sign_in">Sign in or create account</string>
 </resources>

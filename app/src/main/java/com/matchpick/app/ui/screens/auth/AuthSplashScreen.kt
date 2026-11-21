@@ -5,9 +5,16 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -299,31 +306,48 @@ fun AuthSplashScreen(
     authManager: CredentialAuthManager,
     webClientId: String,
     onAuthSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDismiss: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var isRegister by rememberSaveable { mutableStateOf(false) }
+    var showPassword by remember { mutableStateOf(false) }
+
+    fun handle(result: SignInResult) {
+        isLoading = false
+        when (result) {
+            is SignInResult.Success -> onAuthSuccess()
+            is SignInResult.Failure -> errorMessage = result.error
+            is SignInResult.Cancelled -> {}
+        }
+    }
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF0A1428),
-                        MatchPickPalette.DeepObsidian
-                    )
+                    colors = listOf(Color(0xFF0A1428), MatchPickPalette.DeepObsidian)
                 )
             )
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .imePadding()
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 480.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Box(
                 modifier = Modifier
@@ -347,7 +371,37 @@ fun AuthSplashScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MatchPickPalette.NeonEmerald,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 4.dp, bottom = 48.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 28.dp)
+            )
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text(stringResource(R.string.auth_email)) },
+                singleLine = true,
+                enabled = !isLoading,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(stringResource(R.string.auth_password)) },
+                singleLine = true,
+                enabled = !isLoading,
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    TextButton(onClick = { showPassword = !showPassword }) {
+                        Text(
+                            text = stringResource(if (showPassword) R.string.auth_hide else R.string.auth_show),
+                            color = MatchPickPalette.NeonEmerald,
+                            fontSize = 12.sp
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
             )
 
             errorMessage?.let {
@@ -356,25 +410,24 @@ fun AuthSplashScreen(
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(top = 12.dp)
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (isLoading) {
                 CircularProgressIndicator(color = MatchPickPalette.NeonEmerald)
             } else {
                 Button(
                     onClick = {
+                        if (email.isBlank() || password.length < 6) {
+                            errorMessage = context.getString(R.string.auth_invalid_input)
+                            return@Button
+                        }
                         isLoading = true
                         errorMessage = null
                         coroutineScope.launch {
-                            val result = authManager.signInWithGoogle(context, webClientId)
-                            isLoading = false
-                            when (result) {
-                                is SignInResult.Success -> onAuthSuccess()
-                                is SignInResult.Failure -> errorMessage = result.error
-                                is SignInResult.Cancelled -> {}
-                            }
+                            handle(authManager.signInWithEmail(email, password, isRegister))
                         }
                     },
                     modifier = Modifier
@@ -387,10 +440,47 @@ fun AuthSplashScreen(
                     )
                 ) {
                     Text(
-                        text = stringResource(R.string.btn_continue_google),
+                        text = stringResource(if (isRegister) R.string.auth_register else R.string.auth_sign_in),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Black
                     )
+                }
+                TextButton(onClick = { isRegister = !isRegister; errorMessage = null }) {
+                    Text(
+                        text = stringResource(if (isRegister) R.string.auth_have_account else R.string.auth_no_account),
+                        color = MatchPickPalette.NeonEmerald
+                    )
+                }
+
+                if (webClientId.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    OutlinedButton(
+                        onClick = {
+                            isLoading = true
+                            errorMessage = null
+                            coroutineScope.launch {
+                                handle(authManager.signInWithGoogle(context, webClientId))
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(54.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.btn_continue_google),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                }
+
+                if (onDismiss != null) {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(R.string.auth_continue_guest), color = Color.White.copy(alpha = 0.7f))
+                    }
                 }
             }
         }

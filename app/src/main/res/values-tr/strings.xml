@@ -153,4 +153,15 @@
     <string name="prediction_updated_title">Tahmin Güncellendi</string>
     <string name="prediction_updated_desc">Seçiminiz güncellendi. (XP maç başına yalnızca 1 kez kazanılır) 🔄</string>
     <string name="match_locked_notice">Bu maç başlamış veya tahminlere kapatılmıştır.</string>
+    <string name="auth_email">E-posta</string>
+    <string name="auth_password">Şifre</string>
+    <string name="auth_show">Göster</string>
+    <string name="auth_hide">Gizle</string>
+    <string name="auth_sign_in">Giriş yap</string>
+    <string name="auth_register">Hesap oluştur</string>
+    <string name="auth_no_account">Hesabın yok mu? Oluştur</string>
+    <string name="auth_have_account">Zaten hesabın var mı? Giriş yap</string>
+    <string name="auth_invalid_input">Geçerli bir e-posta ve en az 6 karakterlik şifre gir.</string>
+    <string name="auth_continue_guest">Misafir olarak devam et</string>
+    <string name="profile_sign_in">Giriş yap veya hesap oluştur</string>
 </resources>
