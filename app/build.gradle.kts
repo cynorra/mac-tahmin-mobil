@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "com.matchpick.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.cynnorra.matchpick"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionName = "1.3.9"
 
@@ -45,6 +45,7 @@ android {
             signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
+            ndk { debugSymbolLevel = "SYMBOL_TABLE" }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
