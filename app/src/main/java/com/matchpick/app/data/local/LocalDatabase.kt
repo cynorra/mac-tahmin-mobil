@@ -48,6 +48,9 @@ interface FixtureDao {
     @Query("SELECT COUNT(*) FROM daily_fixtures")
     suspend fun getFixtureCount(): Int
 
+    @Query("SELECT * FROM daily_fixtures WHERE userPick IS NOT NULL")
+    suspend fun getPickedFixtures(): List<FixtureEntity>
+
     @Query("SELECT COUNT(*) FROM daily_fixtures WHERE userPick IS NOT NULL")
     suspend fun getUserPredictionCount(): Int
 }

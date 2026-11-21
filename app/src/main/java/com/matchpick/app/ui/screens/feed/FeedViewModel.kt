@@ -19,25 +19,43 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.matchpick.app.core.analytics.AnalyticsTracker
+import com.matchpick.app.data.local.FixtureEntity
+import com.matchpick.app.data.repository.FixtureRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val analyticsTracker: AnalyticsTracker
+    private val analyticsTracker: AnalyticsTracker,
+    private val fixtureRepository: FixtureRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         FeedUiState(
             posts = emptyList(),
-            currentRegion = "GLOBAL"
+            currentRegion = "GLOBAL",
+            trendingTags = emptyList()
         )
     )
     val uiState: StateFlow<FeedUiState> = _uiState.asStateFlow()
 
+    private var cachedFixtures: List<FixtureEntity> = emptyList()
+
     init {
         loadFeed("GLOBAL")
+        observeRealFixtures()
+    }
+
+    private fun observeRealFixtures() {
+        viewModelScope.launch {
+            try {
+                fixtureRepository.getFixtures("").collect { fixtures ->
+                    cachedFixtures = fixtures
+                    recalculateTags(fixtures, _uiState.value.posts, _uiState.value.currentRegion)
+                }
+            } catch (_: Exception) {}
+        }
     }
 
     fun loadFeed(region: String) {
@@ -45,6 +63,7 @@ class FeedViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true, currentRegion = region) }
             val fetchedPosts = fetchPostsFromFirestore(region)
             _uiState.update { it.copy(posts = fetchedPosts, isLoading = false) }
+            recalculateTags(cachedFixtures, fetchedPosts, region)
         }
     }
 
@@ -114,7 +133,9 @@ class FeedViewModel @Inject constructor(
         )
 
         // Optimistic UI update: hemen en üste ekle
-        _uiState.update { it.copy(posts = listOf(newPost) + it.posts) }
+        val updatedPosts = listOf(newPost) + _uiState.value.posts
+        _uiState.update { it.copy(posts = updatedPosts) }
+        recalculateTags(cachedFixtures, updatedPosts, _uiState.value.currentRegion)
         analyticsTracker.logCommunityPostPublished(_uiState.value.currentRegion, attachedPick != null)
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -135,6 +156,47 @@ class FeedViewModel @Inject constructor(
                 // UI durumu zaten eklendi
             }
         }
+    }
+
+    private fun recalculateTags(
+        fixtures: List<FixtureEntity>,
+        posts: List<PostUiModel>,
+        region: String
+    ) {
+        val tagsSet = linkedSetOf<String>()
+
+        // 1. Gerçek kullanıcı gönderilerindeki hashtag'leri dinamik topla
+        val hashtagRegex = Regex("#[a-zA-Z0-9çğıöşüÇĞİÖŞÜ_]+")
+        posts.forEach { post ->
+            hashtagRegex.findAll(post.text).forEach { match ->
+                val tag = match.value
+                if (tag.length in 3..25) {
+                    tagsSet.add("💬 $tag")
+                }
+            }
+        }
+
+        // 2. Bugünün veritabanındaki GERÇEK canlı maçlarından etiket üret (Asla sahte maç yok!)
+        val relevantFixtures = if (region == "GLOBAL") {
+            fixtures
+        } else {
+            fixtures.filter { it.countryCode.equals(region, ignoreCase = true) || it.countryCode == "GLOBAL" }
+                .ifEmpty { fixtures }
+        }
+
+        relevantFixtures.take(6).forEach { fix ->
+            val homeClean = fix.homeTeamName.split(" ").firstOrNull()?.replace(Regex("[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]"), "") ?: ""
+            val awayClean = fix.awayTeamName.split(" ").firstOrNull()?.replace(Regex("[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]"), "") ?: ""
+            if (homeClean.isNotEmpty() && awayClean.isNotEmpty()) {
+                tagsSet.add("🔥 #${homeClean}v${awayClean}")
+            }
+            val leagueClean = fix.leagueName.replace(Regex("[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]"), "")
+            if (leagueClean.isNotEmpty() && leagueClean.length <= 15) {
+                tagsSet.add("⚡ #$leagueClean")
+            }
+        }
+
+        _uiState.update { it.copy(trendingTags = tagsSet.toList()) }
     }
 
     fun toggleLike(postId: String) {
@@ -178,5 +240,6 @@ class FeedViewModel @Inject constructor(
 data class FeedUiState(
     val isLoading: Boolean = false,
     val posts: List<PostUiModel> = emptyList(),
-    val currentRegion: String = "GLOBAL"
+    val currentRegion: String = "GLOBAL",
+    val trendingTags: List<String> = emptyList()
 )

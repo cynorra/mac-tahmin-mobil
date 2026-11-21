@@ -139,11 +139,18 @@
     <string name="profile_tier_badge">PRO ANALYST • TIER IV</string>
     <string name="profile_accuracy_label">Accuracy</string>
     <string name="profile_global_rank_label">Global Rank</string>
-    <string name="feed_trending_matches">TRENDING DERBIES</string>
+    <string name="feed_trending_matches">LIVE MATCH TAGS</string>
     <string name="feed_empty_title">No Community Discussions Yet</string>
     <string name="feed_empty_desc">Be the first analyst to share your match predictions and tactical insights below.</string>
     <string name="leaderboard_empty_title">Standings Reset for Matchday</string>
     <string name="leaderboard_empty_desc">Submit your match predictions to claim your spot on the global podium!</string>
     <string name="vip_empty_title">AI Telemetry In Progress</string>
     <string name="vip_empty_desc">Curated high-confidence match insights are being synthesized for today\'s fixtures.</string>
+
+    <!-- Prediction Status & Anti-Exploit Feedback -->
+    <string name="prediction_saved_title">Prediction Recorded</string>
+    <string name="prediction_saved_desc">+10 XP added to your stats! Keep the streak alive 🔥</string>
+    <string name="prediction_updated_title">Prediction Updated</string>
+    <string name="prediction_updated_desc">Pick changed. (XP is awarded once per match) 🔄</string>
+    <string name="match_locked_notice">This match has already started or is locked.</string>
 </resources>

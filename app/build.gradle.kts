@@ -115,6 +115,7 @@ dependencies {
 
     // Google Mobile Ads (AdMob)
     implementation("com.google.android.gms:play-services-ads:23.2.0")
+    implementation("com.google.android.ump:user-messaging-platform:3.0.0")
 
     // Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.51.1")

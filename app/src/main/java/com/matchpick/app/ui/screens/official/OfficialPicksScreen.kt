@@ -75,6 +75,7 @@ class RewardedAdController(private val context: Context) {
     private var pendingTimeoutRunnable: Runnable? = null
 
     fun loadAd(adUnitId: String = AdConfig.REWARDED_AD_UNIT_ID, onLoaded: (() -> Unit)? = null) {
+        if (!com.matchpick.app.core.ads.AdMobManager.canRequestAds(context)) return
         if (isAdLoadingState.value) {
             android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad already loading, skipping duplicate request.")
             return

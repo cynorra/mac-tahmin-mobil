@@ -43,6 +43,7 @@ class FixtureRepository @Inject constructor(
                 "fixtureId" to fixtureId,
                 "userId" to userId,
                 "pick" to pick,
+                "status" to "PENDING",
                 "createdAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
             )
             firestore.collection("predictions")
@@ -89,7 +90,9 @@ class FixtureRepository @Inject constructor(
                         aiAnalysis = raw["aiAnalysis"] as? String ?: ""
                     )
                 }
-                fixtureDao.insertFixtures(entities)
+                // REPLACE kullanıcının tahminini siliyordu -> XP tekrar kazanılabiliyordu. Mevcut tahminleri koru.
+                val picks = fixtureDao.getPickedFixtures().associate { it.id to it.userPick }
+                fixtureDao.insertFixtures(entities.map { e -> picks[e.id]?.let { e.copy(userPick = it) } ?: e })
             }
         } catch (_: Exception) {
             // Offline fallback: Hata anında Room'daki mevcut verilerle devam edilir

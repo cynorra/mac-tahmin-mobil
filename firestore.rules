@@ -29,9 +29,12 @@ service cloud.firestore {
     // - Güncelleme: Sadece kendi profilini güncelleyebilir; puan ve seri sadece Admin/Backend tarafından yazılır
     match /users/{userId} {
       allow read: if true;
-      allow create: if isOwner(userId);
+      allow create: if isOwner(userId)
+                    && (!('totalPoints' in request.resource.data) || request.resource.data.totalPoints == 0)
+                    && (!('currentStreak' in request.resource.data) || request.resource.data.currentStreak == 0)
+                    && (!('bestStreak' in request.resource.data) || request.resource.data.bestStreak == 0);
       allow update: if isOwner(userId)
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['totalPoints', 'currentStreak']);
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['totalPoints', 'currentStreak', 'bestStreak']);
       allow delete: if false;
     }
 
@@ -45,7 +48,8 @@ service cloud.firestore {
                     && request.resource.data.text is string
                     && request.resource.data.text.size() > 0
                     && request.resource.data.text.size() <= 300;
-      allow update: if isAuthenticated();
+      allow update: if isAuthenticated()
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount', 'likedBy']);
       allow delete: if isAuthenticated() && (resource.data.authorId == request.auth.uid || request.auth.token.admin == true);
     }
 
@@ -55,8 +59,18 @@ service cloud.firestore {
     // - Güncelleme/Silme: Kilitlendikten sonra değiştirilemez (sadece score_calculator.py günceller)
     match /predictions/{predictionId} {
       allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if false;
+      allow create: if isAuthenticated()
+                    && predictionId == request.resource.data.fixtureId + '_' + request.auth.uid
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.pick in ['1', 'X', '2']
+                    && request.resource.data.status == 'PENDING';
+      // Sadece bekleyen tahminde seçim değiştirilebilir; durum/sahip/maç alanları sabit
+      allow update: if isAuthenticated()
+                    && resource.data.userId == request.auth.uid
+                    && resource.data.status == 'PENDING'
+                    && request.resource.data.pick in ['1', 'X', '2']
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pick', 'createdAt']);
+      allow delete: if false;
     }
 
     // 6. VIP Bankolar (Official Picks):

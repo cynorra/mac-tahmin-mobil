@@ -289,7 +289,6 @@ fun MatchDetailBottomSheet(
                     Triple("2", fixture.oddsAway, fixture.userPick == "2" || fixture.userPick == "AWAY")
                 ).forEach { (choice, odds, isSelected) ->
                     Surface(
-                        onClick = { onPickSelected(choice) },
                         modifier = Modifier
                             .weight(1f)
                             .height(54.dp)

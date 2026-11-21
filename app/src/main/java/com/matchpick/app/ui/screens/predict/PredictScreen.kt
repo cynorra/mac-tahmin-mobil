@@ -869,12 +869,10 @@ private fun OddsButton(
     )
 
     Surface(
-        onClick = { onClick(choice) },
         modifier = modifier
             .scale(scale)
             .height(52.dp)
             .bounceClickable(scaleDown = 0.95f, enabled = isEnabled) { onClick(choice) },
-        enabled = isEnabled,
         shape = RoundedCornerShape(14.dp),
         color = if (isSelected) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated,
         border = BorderStroke(

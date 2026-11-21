@@ -35,6 +35,7 @@ import com.matchpick.app.R
 import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.core.moderation.ClientContentModerator
 import com.matchpick.app.core.moderation.ModerationResult
+import com.matchpick.app.ui.components.bounceClickable
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -52,6 +53,7 @@ data class PostUiModel(
 @Composable
 fun CommunityFeedScreen(
     posts: List<PostUiModel>,
+    trendingTags: List<String> = emptyList(),
     onSendPost: (String) -> Unit,
     onLikePost: (String) -> Unit,
     adUnitId: String,
@@ -61,14 +63,6 @@ fun CommunityFeedScreen(
     var postInput by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Global, 1: Local
-
-    val trendingTags = remember(selectedTab) {
-        if (selectedTab == 1) {
-            listOf("🔥 #GSvFB Derbi", "⚡ #BJKvTS", "🎯 #KGVar Banko", "🧠 #SüperLigxG")
-        } else {
-            listOf("🔥 #ElClasico", "⚡ #ARSvMCI", "🎯 #Over2.5", "🧬 #NeuralPick")
-        }
-    }
 
     Column(
         modifier = modifier
@@ -158,8 +152,8 @@ fun CommunityFeedScreen(
             }
         }
 
-        // Trending Tags Strip
-        LazyRow(
+        // Trending Tags Strip (etiket yoksa gizli)
+        if (trendingTags.isNotEmpty()) LazyRow(
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)

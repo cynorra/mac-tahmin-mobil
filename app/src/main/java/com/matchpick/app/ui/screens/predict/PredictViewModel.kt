@@ -55,13 +55,26 @@ class PredictViewModel @Inject constructor(
             } catch (_: Exception) {}
         }
 
-        // Yerel veritabanında kullanıcının yaptığı tahmin sayısını hesapla
+        // Yerel veritabanında kullanıcının yaptığı gerçek tekil tahmin sayısını hesapla
         val localCount = try {
             repository.getUserPredictionCount()
         } catch (_: Exception) { 0 }
 
-        val finalPoints = maxOf(remotePoints ?: 0L, localCount * 10L)
-        val finalStreak = maxOf(remoteStreak ?: 0, localCount)
+        val legitimateLocalPoints = localCount * 10L
+
+        // Misafir modunda veya aşırı şişirilmiş exploit durumunda istatistikleri doğrula
+        val finalPoints = if (uid.isNullOrEmpty()) {
+            legitimateLocalPoints
+        } else {
+            val remote = remotePoints ?: legitimateLocalPoints
+            maxOf(legitimateLocalPoints, remote.coerceAtMost(maxOf(legitimateLocalPoints + 50L, 500L)))
+        }
+
+        val finalStreak = if (uid.isNullOrEmpty()) {
+            localCount
+        } else {
+            (remoteStreak ?: localCount).coerceAtMost(maxOf(localCount, 1))
+        }
 
         _uiState.update { it.copy(points = finalPoints, streak = finalStreak) }
     }
@@ -81,64 +94,104 @@ class PredictViewModel @Inject constructor(
         }
     }
 
-    fun makePrediction(fixtureId: String, rawPick: String) {
+    /**
+     * Maç Tahmini Kaydet / Güncelle.
+     * Güvenlik & Anti-Exploit Politikası:
+     * 1. Her maç için SADECE İLK tahminde +10 XP ve +1 seri kazandırılır.
+     * 2. Kullanıcı aynı maça başka bir seçim yaptığında (1 -> X vb.) seçim güncellenir ancak XP/Seri VERİLMEZ.
+     * 3. Zaten seçili olan tercihe tekrar basıldığında hiçbir işlem yapılmaz (No-op).
+     * 4. Kilitli veya başlamış maçlara tahmin yapılamaz.
+     */
+    fun makePrediction(fixtureId: String, rawPick: String): PredictionOutcome {
         val pick = when (rawPick) {
             "HOME" -> "1"
             "DRAW" -> "X"
             "AWAY" -> "2"
             else -> rawPick
         }
+
+        val currentState = _uiState.value
+        val matchedFixture = currentState.fixtures.find { it.id == fixtureId }
+            ?: return PredictionOutcome.ALREADY_SELECTED
+
+        if (matchedFixture.isLocked) {
+            return PredictionOutcome.LOCKED
+        }
+
+        // Zaten bu tercih seçiliyse hiçbir işlem yapma
+        if (matchedFixture.userPick == pick) {
+            return PredictionOutcome.ALREADY_SELECTED
+        }
+
+        val isFirstPredictionOnFixture = matchedFixture.userPick.isNullOrEmpty()
         val uid = auth.currentUser?.uid.orEmpty()
-        val matchedFixture = _uiState.value.fixtures.find { it.id == fixtureId }
         val odds = when (pick) {
-            "1" -> matchedFixture?.oddsHome?.toDouble() ?: 2.10
-            "X" -> matchedFixture?.oddsDraw?.toDouble() ?: 3.30
-            "2" -> matchedFixture?.oddsAway?.toDouble() ?: 3.20
+            "1" -> matchedFixture.oddsHome.toDouble()
+            "X" -> matchedFixture.oddsDraw.toDouble()
+            "2" -> matchedFixture.oddsAway.toDouble()
             else -> 2.10
+        }
+
+        // 1. Atomik UI State Güncellemesi (Tıklama yarış durumlarını ve çoklu tetiklemeyi önler)
+        _uiState.update { state ->
+            val newStreak = if (isFirstPredictionOnFixture) state.streak + 1 else state.streak
+            val newPoints = if (isFirstPredictionOnFixture) state.points + 10L else state.points
+
+            state.copy(
+                streak = newStreak,
+                points = newPoints,
+                fixtures = state.fixtures.map {
+                    if (it.id == fixtureId) it.copy(userPick = pick) else it
+                }
+            )
         }
 
         analyticsTracker.logPredictionSubmitted(
             fixtureId = fixtureId,
             pick = pick,
             odds = odds,
-            league = matchedFixture?.leagueName ?: _uiState.value.selectedCountry
+            league = matchedFixture.leagueName.ifEmpty { currentState.selectedCountry }
         )
-        analyticsTracker.logPointsEarned(10L, "prediction_submission")
 
+        // SADECE maç için ilk tahminde XP ve seri kilometre taşı loglanır
+        if (isFirstPredictionOnFixture) {
+            analyticsTracker.logPointsEarned(10L, "prediction_submission")
+            val newStreak = currentState.streak + 1
+            if (newStreak > 0 && newStreak % 3 == 0) {
+                analyticsTracker.logStreakMilestone(newStreak)
+            }
+        }
+
+        // 2. Arka Plan Veritabanı ve Firestore Senkronizasyonu
         viewModelScope.launch {
+            try {
+                repository.savePrediction(fixtureId, pick, uid)
+            } catch (e: Exception) {
+                android.util.Log.w("MatchPickBackend", "Prediction local save fallback: ${e.message}")
+            }
+
             if (uid.isNotEmpty()) {
-                try {
-                    repository.savePrediction(fixtureId, pick, uid)
-                } catch (e: Exception) {
-                    android.util.Log.w("MatchPickBackend", "Prediction local save fallback: ${e.message}")
-                }
                 try {
                     val userUpdates = hashMapOf<String, Any>(
                         "uid" to uid,
-                        "totalPoints" to FieldValue.increment(10L),
-                        "currentStreak" to FieldValue.increment(1L),
                         "lastPredictionAt" to FieldValue.serverTimestamp()
                     )
+                    // Puan/seri SADECE backend (score_calculator.py) tarafından yazılır; kurallar istemci yazmasını reddeder.
                     auth.currentUser?.displayName?.let { userUpdates["displayName"] = it }
                     firestore.collection("users").document(uid).set(userUpdates, SetOptions.merge()).await()
                 } catch (_: Exception) {}
             }
-
-            _uiState.update { state ->
-                val newStreak = state.streak + 1
-                if (newStreak > 0 && newStreak % 3 == 0) {
-                    analyticsTracker.logStreakMilestone(newStreak)
-                }
-                state.copy(
-                    streak = newStreak,
-                    points = state.points + 10,
-                    fixtures = state.fixtures.map {
-                        if (it.id == fixtureId) it.copy(userPick = pick) else it
-                    }
-                )
-            }
         }
+
+        return if (isFirstPredictionOnFixture) PredictionOutcome.AWARDED else PredictionOutcome.UPDATED
     }
+}
+
+enum class PredictionOutcome {
+    AWARDED,          // İlk tahmin: +10 XP ve +1 seri kazanıldı
+    UPDATED,          // Tercih güncellendi: XP verilmedi (maç başına 1 kez kuralı)
+    ALREADY_SELECTED, // Zaten bu tercih seçili (no-op)
+    LOCKED            // Maç kilitli / başlamış
 }
 
 data class PredictUiState(

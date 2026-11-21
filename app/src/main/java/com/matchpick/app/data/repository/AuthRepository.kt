@@ -33,7 +33,7 @@ class AuthRepository(
                 "email" to (user.email ?: ""),
                 "photoUrl" to (user.photoUrl?.toString() ?: ""),
                 "country" to countryCode,
-                "totalPoints" to if (pendingReferrer != null) 25L else 0L, // Hoş geldin bonusu
+                "totalPoints" to 0L,
                 "currentStreak" to 0,
                 "bestStreak" to 0,
                 "referredBy" to (pendingReferrer ?: ""),
@@ -41,33 +41,7 @@ class AuthRepository(
             )
             userDocRef.set(userData, SetOptions.merge()).await()
 
-            // Eğer bir referans koduyla geldiyse davet edene puan kazandır
-            if (!pendingReferrer.isNullOrEmpty()) {
-                rewardReferrer(pendingReferrer, user.uid)
-            }
-        }
-    }
-
-    private suspend fun rewardReferrer(referrerCode: String, newUserId: String) {
-        val query = firestore.collection("users")
-            .whereEqualTo("uid", referrerCode)
-            .limit(1)
-            .get()
-            .await()
-
-        if (!query.isEmpty) {
-            val referrerDoc = query.documents[0]
-            referrerDoc.reference.update("totalPoints", FieldValue.increment(50L)).await()
-            
-            // Log referral
-            firestore.collection("referrals").document("${referrerCode}_$newUserId").set(
-                mapOf(
-                    "referrer" to referrerCode,
-                    "referred" to newUserId,
-                    "reward" to 50L,
-                    "timestamp" to FieldValue.serverTimestamp()
-                )
-            ).await()
+            // Referans ödülü istemciden verilemez (kurallar başkasının puanını yazdırmaz); backend işlemeli.
         }
     }
 

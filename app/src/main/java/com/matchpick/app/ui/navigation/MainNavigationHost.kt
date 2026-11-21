@@ -378,6 +378,12 @@ fun MainNavigationHost(
                             currentLanguage = lang
                             prefs.edit().putString("pref_language", lang).apply()
                             analyticsTracker.logLanguageSwitched(lang)
+                        },
+                        isAmoledTheme = MatchPickPalette.isAmoled,
+                        onToggleAmoled = { enabled ->
+                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            MatchPickPalette.isAmoled = enabled
+                            prefs.edit().putBoolean("pref_amoled", enabled).apply()
                         }
                     )
                 }

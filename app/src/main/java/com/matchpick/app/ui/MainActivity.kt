@@ -37,7 +37,7 @@ import com.matchpick.app.ui.screens.feed.FeedViewModel
 import com.matchpick.app.ui.screens.leaderboard.LeaderboardViewModel
 import com.matchpick.app.ui.screens.official.RewardedAdController
 import com.matchpick.app.ui.screens.predict.PredictViewModel
-import com.matchpick.app.ui.theme.MatchPickDarkColorScheme
+import com.matchpick.app.ui.theme.matchPickDarkColorScheme
 import com.matchpick.app.ui.theme.MatchPickPalette
 import com.matchpick.app.ui.theme.MatchPickTypography
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,11 +63,11 @@ class MainActivity : ComponentActivity() {
         // Frame rate ve jank izleme
         frameRateMonitor.startMonitoring(this)
 
-        // AdMob Interstitial'ı belleğe al (Geçişlerde 0 ms bekleme)
-        AdMobManager.loadInterstitial(this, AdConfig.INTERSTITIAL_AD_UNIT_ID)
-
-        // AdMob Rewarded Video'yu belleğe al (VIP analiz kilidini anında açmak için)
-        rewardedAdController.loadAd(AdConfig.REWARDED_AD_UNIT_ID)
+        // UMP onayi (GDPR) sonrasi Interstitial + Rewarded on yukleme
+        AdMobManager.gatherConsent(this) {
+            AdMobManager.loadInterstitial(this, AdConfig.INTERSTITIAL_AD_UNIT_ID)
+            rewardedAdController.loadAd(AdConfig.REWARDED_AD_UNIT_ID)
+        }
 
         // WorkManager periyodik senkronizasyon planla
         DailySyncWorker.schedule(this)
@@ -93,6 +93,8 @@ class MainActivity : ComponentActivity() {
             analyticsTracker.logUserSessionStarted(uid, isGuest = auth.currentUser?.isAnonymous == true)
         }
 
+        MatchPickPalette.isAmoled = getSharedPreferences("app_settings", MODE_PRIVATE).getBoolean("pref_amoled", true)
+
         setContent {
             val predictState by predictViewModel.uiState.collectAsStateWithLifecycle()
             val leaderboardState by leaderboardViewModel.uiState.collectAsStateWithLifecycle()
@@ -115,7 +117,7 @@ class MainActivity : ComponentActivity() {
             }
 
             MaterialTheme(
-                colorScheme = MatchPickDarkColorScheme,
+                colorScheme = matchPickDarkColorScheme(),
                 typography = MatchPickTypography
             ) {
                 Surface(

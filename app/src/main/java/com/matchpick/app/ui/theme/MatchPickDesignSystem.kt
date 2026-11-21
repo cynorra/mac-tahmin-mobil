@@ -1,6 +1,9 @@
 package com.matchpick.app.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -15,11 +18,14 @@ import androidx.compose.ui.unit.sp
  */
 object MatchPickPalette {
     // Canvas & Surfaces
-    val DeepObsidian = Color(0xFF070A10)
-    val SurfaceDark = Color(0xFF0E1422)
-    val SurfaceElevated = Color(0xFF141C2E)
-    val SurfaceGlass = Color(0xFF192238)
-    val SurfaceInteractive = Color(0xFF1E2942)
+    /** AMOLED modu: true iken arka planlar saf siyah. Compose state, değişince UI yeniden çizilir. */
+    var isAmoled by mutableStateOf(true)
+
+    val DeepObsidian: Color get() = if (isAmoled) Color(0xFF000000) else Color(0xFF070A10)
+    val SurfaceDark: Color get() = if (isAmoled) Color(0xFF0A0A0C) else Color(0xFF0E1422)
+    val SurfaceElevated: Color get() = if (isAmoled) Color(0xFF111114) else Color(0xFF141C2E)
+    val SurfaceGlass: Color get() = if (isAmoled) Color(0xFF16161A) else Color(0xFF192238)
+    val SurfaceInteractive: Color get() = if (isAmoled) Color(0xFF1B1B20) else Color(0xFF1E2942)
 
     // Primary Athletic Accents (Refined, eye-friendly pitch emerald, never radioactive)
     val EmeraldPrimary = Color(0xFF10B981)
@@ -52,18 +58,12 @@ object MatchPickPalette {
     val BorderEmerald = Color(0x9910B981)
 
     // Gradients - Subtle and Luxurious
-    val HeroCardGradient = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF152238),
-            Color(0xFF0F1727)
-        )
+    val HeroCardGradient: Brush get() = Brush.verticalGradient(
+        colors = if (isAmoled) listOf(Color(0xFF0A0A0C), Color(0xFF000000)) else listOf(Color(0xFF152238), Color(0xFF0F1727))
     )
 
-    val GlassCardGradient = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF121A2A),
-            Color(0xFF0E1422)
-        )
+    val GlassCardGradient: Brush get() = Brush.verticalGradient(
+        colors = if (isAmoled) listOf(Color(0xFF111114), Color(0xFF0A0A0C)) else listOf(Color(0xFF121A2A), Color(0xFF0E1422))
     )
 
     val NeonBrandGradient = Brush.horizontalGradient(
@@ -84,7 +84,7 @@ object MatchPickPalette {
         )
     )
 
-    val DialTrackColor = Color(0xFF131D2E)
+    val DialTrackColor: Color get() = if (isAmoled) Color(0xFF16161A) else Color(0xFF131D2E)
 
     val VipCrownGradient = Brush.linearGradient(
         colors = listOf(VipGold, VipAmber)
@@ -95,7 +95,7 @@ object MatchPickPalette {
     )
 }
 
-val MatchPickDarkColorScheme = darkColorScheme(
+fun matchPickDarkColorScheme() = darkColorScheme(
     primary = MatchPickPalette.NeonEmerald,
     onPrimary = Color(0xFF031A0E),
     primaryContainer = MatchPickPalette.EmeraldDeep,

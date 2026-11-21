@@ -48,9 +48,10 @@ fun ProfileScreen(
     onToggleNotifications: (Boolean) -> Unit,
     currentLanguage: String,
     onChangeLanguage: (String) -> Unit,
+    isAmoledTheme: Boolean,
+    onToggleAmoled: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isAmoledTheme by remember { mutableStateOf(true) }
 
     Column(
         modifier = modifier
@@ -354,7 +355,7 @@ fun ProfileScreen(
                 ) {
                     Switch(
                         checked = isAmoledTheme,
-                        onCheckedChange = { isAmoledTheme = it },
+                        onCheckedChange = onToggleAmoled,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color(0xFF031A0E),
                             checkedTrackColor = MatchPickPalette.NeonEmerald,
