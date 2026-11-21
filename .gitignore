@@ -27,3 +27,12 @@ uidump.xml
 
 # Firebase service account keys (never commit)
 *-firebase-adminsdk-*.json
+
+# Local-only: store listing assets, keyword research, tooling output (keep private)
+store-assets/
+scripts/store-listing/
+scripts/backfill_prediction_status.py
+graphify-out/
+.serena/
+Keyword Stats*.csv
+hs_err_pid*.log
