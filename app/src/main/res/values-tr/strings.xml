@@ -164,4 +164,10 @@
     <string name="auth_invalid_input">Geçerli bir e-posta ve en az 6 karakterlik şifre gir.</string>
     <string name="auth_continue_guest">Misafir olarak devam et</string>
     <string name="profile_sign_in">Giriş yap veya hesap oluştur</string>
+    <string name="delete_account_title">Hesap silinsin mi?</string>
+    <string name="delete_account_desc">Hesabın, tahminlerin, puanların, serilerin ve topluluk gönderilerin kalıcı olarak silinir. Bu işlem geri alınamaz.</string>
+    <string name="delete_account_confirm">Kalıcı olarak sil</string>
+    <string name="dlg_cancel">Vazgeç</string>
+    <string name="settings_ad_privacy_title">Reklam gizlilik ayarları</string>
+    <string name="settings_ad_privacy_subtitle">Reklam izni tercihlerini gözden geçir veya değiştir</string>
 </resources>

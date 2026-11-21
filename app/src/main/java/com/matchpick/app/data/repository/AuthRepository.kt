@@ -45,6 +45,18 @@ class AuthRepository(
         }
     }
 
+    /** Hesap silme: kullanicinin tahminlerini, gonderilerini ve profil belgesini siler. */
+    suspend fun deleteUserData(uid: String) {
+        val preds = firestore.collection("predictions").whereEqualTo("userId", uid).get().await()
+        val posts = firestore.collection("feed_posts").whereEqualTo("authorId", uid).get().await()
+        (preds.documents + posts.documents).chunked(400).forEach { chunk ->
+            val batch = firestore.batch()
+            chunk.forEach { batch.delete(it.reference) }
+            batch.commit().await()
+        }
+        firestore.collection("users").document(uid).delete().await()
+    }
+
     private fun extractPendingReferralCode(): String? {
         var refCode: String? = null
         val referrerClient = InstallReferrerClient.newBuilder(context).build()

@@ -102,6 +102,19 @@ class MainActivity : ComponentActivity() {
 
             var showCinematicSplash by rememberSaveable { mutableStateOf(true) }
             var showAuth by rememberSaveable { mutableStateOf(false) }
+            var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+            var privacyOptionsRequired by remember { mutableStateOf(AdMobManager.isPrivacyOptionsRequired(this@MainActivity)) }
+            val authWebClientId = remember {
+                val id = resources.getIdentifier("default_web_client_id", "string", packageName)
+                if (id != 0) getString(id) else ""
+            }
+            LaunchedEffect(Unit) {
+                // UMP durumu acilista asenkron guncellenir; birkac saniye yokla
+                repeat(10) {
+                    privacyOptionsRequired = AdMobManager.isPrivacyOptionsRequired(this@MainActivity)
+                    kotlinx.coroutines.delay(1000)
+                }
+            }
             var sharingFixture by remember { mutableStateOf<FixtureEntity?>(null) }
             var celebratedStreak by rememberSaveable { mutableIntStateOf(0) }
             var activeStreakModal by remember { mutableStateOf<Int?>(null) }
@@ -138,17 +151,32 @@ class MainActivity : ComponentActivity() {
                             onShareFixture = { fixture ->
                                 sharingFixture = fixture
                             },
-                            onRequestSignIn = { showAuth = true }
+                            onRequestSignIn = { showAuth = true },
+                            onLogout = {
+                                credentialAuthManager.signOut()
+                                recreate()
+                            },
+                            onRequestDelete = { showDeleteDialog = true },
+                            showPrivacyOptions = privacyOptionsRequired,
+                            onPrivacyOptions = { AdMobManager.showPrivacyOptions(this@MainActivity) }
                         )
 
+                        if (showDeleteDialog) {
+                            com.matchpick.app.ui.screens.auth.DeleteAccountDialog(
+                                authManager = credentialAuthManager,
+                                webClientId = authWebClientId,
+                                onDeleted = {
+                                    showDeleteDialog = false
+                                    recreate()
+                                },
+                                onDismiss = { showDeleteDialog = false }
+                            )
+                        }
+
                         if (showAuth) {
-                            val webClientId = remember {
-                                val id = resources.getIdentifier("default_web_client_id", "string", packageName)
-                                if (id != 0) getString(id) else ""
-                            }
                             com.matchpick.app.ui.screens.auth.AuthSplashScreen(
                                 authManager = credentialAuthManager,
-                                webClientId = webClientId,
+                                webClientId = authWebClientId,
                                 onAuthSuccess = {
                                     showAuth = false
                                     recreate()

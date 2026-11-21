@@ -54,6 +54,19 @@ object AdMobManager {
         )
     }
 
+    /** EEA/UK'de kullanicinin onay tercihini degistirebilmesi icin UMP gizlilik secenekleri gerekli mi? */
+    fun isPrivacyOptionsRequired(context: Context): Boolean =
+        UserMessagingPlatform.getConsentInformation(context).privacyOptionsRequirementStatus ==
+            com.google.android.ump.ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
+
+    fun showPrivacyOptions(activity: Activity) {
+        UserMessagingPlatform.showPrivacyOptionsForm(activity) { formError ->
+            if (formError != null) {
+                android.util.Log.w("GoogleAdsAnalytics", "UMP privacy options error: ${formError.message}")
+            }
+        }
+    }
+
     fun loadInterstitial(context: Context, adUnitId: String = AdConfig.INTERSTITIAL_AD_UNIT_ID) {
         val appContext = context.applicationContext
         if (isLoadingInterstitial || interstitialAd != null || !canRequestAds(appContext)) return

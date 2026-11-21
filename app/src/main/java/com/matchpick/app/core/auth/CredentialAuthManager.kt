@@ -7,6 +7,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.GoogleAuthProvider
 import com.matchpick.app.data.repository.AuthRepository
@@ -97,6 +98,55 @@ class CredentialAuthManager @Inject constructor(
                 }
             } catch (e: Exception) {
                 SignInResult.Failure(e.localizedMessage ?: "Unknown auth error")
+            }
+        }
+
+    fun signOut() { auth.signOut() }
+
+    fun isGuest(): Boolean = auth.currentUser?.isAnonymous != false
+
+    fun usesPassword(): Boolean =
+        auth.currentUser?.providerData?.any { it.providerId == EmailAuthProvider.PROVIDER_ID } == true
+
+    private suspend fun googleCredential(activityContext: Context, webClientId: String): AuthCredential {
+        val option = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(webClientId)
+            .setAutoSelectEnabled(false)
+            .build()
+        val request = GetCredentialRequest.Builder().addCredentialOption(option).build()
+        val result = credentialManager.getCredential(context = activityContext, request = request)
+        val token = com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+            .createFrom(result.credential.data).idToken
+        return GoogleAuthProvider.getCredential(token, null)
+    }
+
+    /** Uygulama ici hesap silme: yeniden dogrula, verileri sil, Auth hesabini sil. */
+    suspend fun deleteAccount(activityContext: Context, webClientId: String, password: String?): SignInResult =
+        withContext(Dispatchers.IO) {
+            try {
+                val user = auth.currentUser ?: return@withContext SignInResult.Failure("No active session")
+                if (!user.isAnonymous) {
+                    val providers = user.providerData.map { it.providerId }
+                    val credential: AuthCredential? = when {
+                        EmailAuthProvider.PROVIDER_ID in providers -> {
+                            val email = user.email
+                            if (email.isNullOrEmpty() || password.isNullOrEmpty()) {
+                                return@withContext SignInResult.Failure("Password required")
+                            }
+                            EmailAuthProvider.getCredential(email, password)
+                        }
+                        GoogleAuthProvider.PROVIDER_ID in providers -> googleCredential(activityContext, webClientId)
+                        else -> null
+                    }
+                    if (credential != null) user.reauthenticate(credential).await()
+                }
+                val uid = user.uid
+                authRepository.deleteUserData(uid)
+                user.delete().await()
+                SignInResult.Success(uid)
+            } catch (e: Exception) {
+                SignInResult.Failure(e.localizedMessage ?: "Account deletion failed")
             }
         }
 }

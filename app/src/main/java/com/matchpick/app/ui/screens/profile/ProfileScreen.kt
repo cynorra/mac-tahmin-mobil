@@ -52,6 +52,10 @@ fun ProfileScreen(
     onToggleAmoled: (Boolean) -> Unit,
     isGuest: Boolean = false,
     onSignInClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
+    onDeleteAccountClick: () -> Unit = {},
+    showPrivacyOptions: Boolean = false,
+    onPrivacyOptionsClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
 
@@ -410,6 +414,20 @@ fun ProfileScreen(
                     )
                 }
 
+                if (showPrivacyOptions) {
+                    HorizontalDivider(
+                        color = MatchPickPalette.BorderSubtle,
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    )
+
+                    SettingsRow(
+                        icon = Icons.Default.Security,
+                        title = stringResource(R.string.settings_ad_privacy_title),
+                        subtitle = stringResource(R.string.settings_ad_privacy_subtitle),
+                        onClick = onPrivacyOptionsClick
+                    ) {}
+                }
+
                 HorizontalDivider(
                     color = MatchPickPalette.BorderSubtle,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -419,18 +437,10 @@ fun ProfileScreen(
                     icon = Icons.Default.DeleteOutline,
                     title = stringResource(R.string.settings_delete_account_title),
                     subtitle = stringResource(R.string.settings_delete_account_subtitle),
-                    onClick = {
-                        uriHandler.openUri("https://cynorra.github.io/matchpick/delete-account.html")
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                        contentDescription = null,
-                        tint = MatchPickPalette.CrimsonLive.copy(alpha = 0.8f),
-                        modifier = Modifier.size(16.dp)
-                    )
-                }
+                    onClick = onDeleteAccountClick
+                ) {}
 
+                if (!isGuest) {
                 HorizontalDivider(
                     color = MatchPickPalette.BorderSubtle,
                     modifier = Modifier.padding(vertical = 12.dp)
@@ -440,7 +450,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .clickable { }
+                        .clickable(onClick = onLogoutClick)
                         .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -457,6 +467,7 @@ fun ProfileScreen(
                         fontWeight = FontWeight.SemiBold,
                         color = MatchPickPalette.CrimsonLive
                     )
+                }
                 }
             }
         }

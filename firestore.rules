@@ -35,7 +35,7 @@ service cloud.firestore {
                     && (!('bestStreak' in request.resource.data) || request.resource.data.bestStreak == 0);
       allow update: if isOwner(userId)
                     && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['totalPoints', 'currentStreak', 'bestStreak']);
-      allow delete: if false;
+      allow delete: if isOwner(userId); // hesap silme (uygulama ici)
     }
 
     // 4. Topluluk Gönderileri (Feed Posts):
@@ -70,7 +70,7 @@ service cloud.firestore {
                     && resource.data.status == 'PENDING'
                     && request.resource.data.pick in ['1', 'X', '2']
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['pick', 'createdAt']);
-      allow delete: if false;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid; // hesap silme
     }
 
     // 6. VIP Bankolar (Official Picks):

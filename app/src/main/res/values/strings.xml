@@ -164,4 +164,10 @@
     <string name="auth_invalid_input">Enter a valid email and a password of at least 6 characters.</string>
     <string name="auth_continue_guest">Continue as guest</string>
     <string name="profile_sign_in">Sign in or create account</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_desc">This permanently deletes your account, predictions, points, streaks and community posts. This cannot be undone.</string>
+    <string name="delete_account_confirm">Delete permanently</string>
+    <string name="dlg_cancel">Cancel</string>
+    <string name="settings_ad_privacy_title">Ad privacy settings</string>
+    <string name="settings_ad_privacy_subtitle">Review or change your ad consent choices</string>
 </resources>

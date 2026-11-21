@@ -73,6 +73,10 @@ fun MainNavigationHost(
     analyticsTracker: AnalyticsTracker,
     onShareFixture: (FixtureEntity) -> Unit,
     onRequestSignIn: () -> Unit = {},
+    onLogout: () -> Unit = {},
+    onRequestDelete: () -> Unit = {},
+    showPrivacyOptions: Boolean = false,
+    onPrivacyOptions: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -383,6 +387,10 @@ fun MainNavigationHost(
                         isAmoledTheme = MatchPickPalette.isAmoled,
                         isGuest = firebaseUser == null || firebaseUser.isAnonymous,
                         onSignInClick = onRequestSignIn,
+                        onLogoutClick = onLogout,
+                        onDeleteAccountClick = onRequestDelete,
+                        showPrivacyOptions = showPrivacyOptions,
+                        onPrivacyOptionsClick = onPrivacyOptions,
                         onToggleAmoled = { enabled ->
                             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             MatchPickPalette.isAmoled = enabled
