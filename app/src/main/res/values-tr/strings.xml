@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">MatchPick Pro</string>
     <string name="play_store_title">MatchPick: AI Maç Tahminleri</string>
-    <string name="play_store_short_description">Yapay zeka maç tahminleri, xG istatistikleri ve banko futbol analizleri.</string>
+    <string name="play_store_short_description">Yapay zeka maç tahminleri, xG istatistikleri ve futbol analizleri.</string>
     <string name="app_tagline">Yeni Nesil Futbol Tahmin &amp; Topluluk Platformu</string>
 
     <!-- Navigation -->
     <string name="nav_predict">Tahminler</string>
     <string name="nav_feed">Topluluk</string>
-    <string name="nav_official">Günün Bankoları</string>
+    <string name="nav_official">VIP</string>
     <string name="nav_leaderboard">Sıralama</string>
     <string name="nav_profile">Profil</string>
 
@@ -53,7 +53,7 @@
     <string name="win_rate_label">Başarı Oranı</string>
 
     <!-- VIP / App Picks -->
-    <string name="vip_header_title">VIP Pro Bankolar</string>
+    <string name="vip_header_title">VIP Pro Tahminler</string>
     <string name="vip_header_subtitle">Yapay zeka sinir ağı ve taktiksel metriklerle seçilmiş yüksek güvenli maçlar.</string>
     <string name="hot_pick_badge">GÜNÜN MAÇI</string>
     <string name="rewarded_unlock_pick">Reklam İzle &amp; VIP Analizi Aç</string>
@@ -145,7 +145,7 @@
     <string name="leaderboard_empty_title">Yeni Maç Günü Puan Durumu</string>
     <string name="leaderboard_empty_desc">Günün maçlarını tahmin ederek podyumun zirvesine hemen yerleş!</string>
     <string name="vip_empty_title">YZ Telemetrisi Hazırlanıyor</string>
-    <string name="vip_empty_desc">Günün en yüksek güven oranlı banko analizleri başlama düdüğüne doğru güncellenecektir.</string>
+    <string name="vip_empty_desc">Günün en yüksek güven oranlı tahmin analizleri başlama düdüğüne doğru güncellenecektir.</string>
 
     <!-- Prediction Status & Anti-Exploit Feedback -->
     <string name="prediction_saved_title">Tahmin Kaydedildi</string>

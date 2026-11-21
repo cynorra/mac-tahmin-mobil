@@ -313,13 +313,6 @@ fun MatchDetailBottomSheet(
                                 fontSize = 14.sp,
                                 color = if (isSelected) Color(0xFF041B11) else Color.White
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = String.format("%.2f", odds),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isSelected) Color(0xFF041B11) else MatchPickPalette.TextSecondary
-                            )
                         }
                     }
                 }

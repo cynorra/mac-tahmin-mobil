@@ -898,14 +898,6 @@ private fun OddsButton(
                     color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextPrimary,
                     maxLines = 1
                 )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = String.format(Locale.US, "%.2f", odds),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (isSelected) Color.White else MatchPickPalette.TextSecondary,
-                    maxLines = 1
-                )
             }
             Spacer(modifier = Modifier.height(1.dp))
             Text(

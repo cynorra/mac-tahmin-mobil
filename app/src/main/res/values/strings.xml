@@ -7,7 +7,7 @@
     <!-- Navigation -->
     <string name="nav_predict">Predictions</string>
     <string name="nav_feed">Community</string>
-    <string name="nav_official">VIP Bankos</string>
+    <string name="nav_official">VIP</string>
     <string name="nav_leaderboard">Ranks</string>
     <string name="nav_profile">Profile</string>
 
