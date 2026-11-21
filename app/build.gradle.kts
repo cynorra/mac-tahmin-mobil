@@ -26,8 +26,23 @@ android {
         manifestPlaceholders["admobAppId"] = "ca-app-pub-4674211063760769~9806710318"
     }
 
+    // Release imzası CI'da ortam değişkenlerinden okunur (keystore repoda tutulmaz).
+    // Değişkenler yoksa (yerel geliştirme) release imzasız bırakılır.
+    val ksFile = System.getenv("KEYSTORE_FILE")
+    signingConfigs {
+        if (ksFile != null && file(ksFile).exists()) {
+            create("release") {
+                storeFile = file(ksFile)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

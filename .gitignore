@@ -24,3 +24,6 @@ chat_transcript.txt
 !scripts/*.py
 screenshot_*.png
 uidump.xml
+
+# Firebase service account keys (never commit)
+*-firebase-adminsdk-*.json
