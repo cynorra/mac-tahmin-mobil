@@ -31,6 +31,10 @@ class PredictViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PredictUiState())
     val uiState: StateFlow<PredictUiState> = _uiState.asStateFlow()
 
+    private val rewardedFixtureIds = java.util.Collections.synchronizedSet(mutableSetOf<String>())
+    private var baseRemotePoints: Long = 0L
+    private var baseRemoteStreak: Int = 0
+
     init {
         viewModelScope.launch {
             liveFixtureSeeder.seedLiveFixturesIfEmpty()
@@ -76,13 +80,26 @@ class PredictViewModel @Inject constructor(
             (remoteStreak ?: localCount).coerceAtMost(maxOf(localCount, 1))
         }
 
+        baseRemotePoints = (finalPoints - legitimateLocalPoints).coerceAtLeast(0L)
+        baseRemoteStreak = (finalStreak - localCount).coerceAtLeast(0)
+
         _uiState.update { it.copy(points = finalPoints, streak = finalStreak) }
     }
 
     fun loadFixtures(region: String) {
         viewModelScope.launch {
             repository.getFixtures(region).collect { list ->
-                _uiState.update { it.copy(fixtures = list, isLoading = false, selectedCountry = region) }
+                list.forEach { if (!it.userPick.isNullOrEmpty()) rewardedFixtureIds.add(it.id) }
+                val pickedCount = maxOf(list.count { !it.userPick.isNullOrEmpty() }, rewardedFixtureIds.size)
+                _uiState.update {
+                    it.copy(
+                        fixtures = list,
+                        isLoading = false,
+                        selectedCountry = region,
+                        points = baseRemotePoints + (pickedCount * 10L),
+                        streak = baseRemoteStreak + pickedCount
+                    )
+                }
             }
         }
     }
@@ -123,7 +140,7 @@ class PredictViewModel @Inject constructor(
             return PredictionOutcome.ALREADY_SELECTED
         }
 
-        val isFirstPredictionOnFixture = matchedFixture.userPick.isNullOrEmpty()
+        val isFirstPredictionOnFixture = matchedFixture.userPick.isNullOrEmpty() && rewardedFixtureIds.add(fixtureId)
         val uid = auth.currentUser?.uid.orEmpty()
         val odds = when (pick) {
             "1" -> matchedFixture.oddsHome.toDouble()
@@ -132,17 +149,22 @@ class PredictViewModel @Inject constructor(
             else -> 2.10
         }
 
-        // 1. Atomik UI State Güncellemesi (Tıklama yarış durumlarını ve çoklu tetiklemeyi önler)
+        // 1. Atomik UI State Güncellemesi (Tıklama yarış durumlarını ve çoklu tetiklemeyi kesin olarak önler)
+        var awardedInUpdate = false
         _uiState.update { state ->
-            val newStreak = if (isFirstPredictionOnFixture) state.streak + 1 else state.streak
-            val newPoints = if (isFirstPredictionOnFixture) state.points + 10L else state.points
+            val currentFix = state.fixtures.find { it.id == fixtureId }
+            val stillFirst = isFirstPredictionOnFixture && currentFix?.userPick.isNullOrEmpty()
+            awardedInUpdate = stillFirst
+
+            val updatedFixtures = state.fixtures.map {
+                if (it.id == fixtureId) it.copy(userPick = pick) else it
+            }
+            val totalPickedCount = maxOf(updatedFixtures.count { !it.userPick.isNullOrEmpty() }, rewardedFixtureIds.size)
 
             state.copy(
-                streak = newStreak,
-                points = newPoints,
-                fixtures = state.fixtures.map {
-                    if (it.id == fixtureId) it.copy(userPick = pick) else it
-                }
+                streak = baseRemoteStreak + totalPickedCount,
+                points = baseRemotePoints + (totalPickedCount * 10L),
+                fixtures = updatedFixtures
             )
         }
 
@@ -154,9 +176,9 @@ class PredictViewModel @Inject constructor(
         )
 
         // SADECE maç için ilk tahminde XP ve seri kilometre taşı loglanır
-        if (isFirstPredictionOnFixture) {
+        if (awardedInUpdate) {
             analyticsTracker.logPointsEarned(10L, "prediction_submission")
-            val newStreak = currentState.streak + 1
+            val newStreak = _uiState.value.streak
             if (newStreak > 0 && newStreak % 3 == 0) {
                 analyticsTracker.logStreakMilestone(newStreak)
             }
@@ -183,7 +205,7 @@ class PredictViewModel @Inject constructor(
             }
         }
 
-        return if (isFirstPredictionOnFixture) PredictionOutcome.AWARDED else PredictionOutcome.UPDATED
+        return if (awardedInUpdate) PredictionOutcome.AWARDED else PredictionOutcome.UPDATED
     }
 }
 

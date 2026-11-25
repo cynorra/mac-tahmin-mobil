@@ -597,8 +597,7 @@ fun VipPickCard(
                     enabled = !isLoadingAd,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
-                        .bounceClickable(scaleDown = 0.96f, enabled = !isLoadingAd) { onUnlock() },
+                        .height(48.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isLoadingAd) MatchPickPalette.SurfaceElevated else MatchPickPalette.VipGold,

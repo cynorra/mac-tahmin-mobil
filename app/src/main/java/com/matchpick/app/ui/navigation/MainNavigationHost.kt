@@ -279,13 +279,42 @@ fun MainNavigationHost(
                 }
             ) {
                 composable(Screen.Predict.route) {
+                    val sonner = LocalSonner.current
                     PredictScreen(
                         fixtures = predictState.fixtures,
                         userStreak = predictState.streak,
                         userPoints = predictState.points,
                         onPredictSelected = { id, pick ->
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            predictViewModel.makePrediction(id, pick)
+                            val outcome = predictViewModel.makePrediction(id, pick)
+                            when (outcome) {
+                                com.matchpick.app.ui.screens.predict.PredictionOutcome.AWARDED -> {
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    sonner.show(
+                                        message = localizedContext.getString(R.string.prediction_saved_title),
+                                        description = localizedContext.getString(R.string.prediction_saved_desc),
+                                        type = com.matchpick.app.ui.components.SonnerType.SUCCESS,
+                                        durationMs = 2400L
+                                    )
+                                }
+                                com.matchpick.app.ui.screens.predict.PredictionOutcome.UPDATED -> {
+                                    haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    sonner.show(
+                                        message = localizedContext.getString(R.string.prediction_updated_title),
+                                        description = localizedContext.getString(R.string.prediction_updated_desc),
+                                        type = com.matchpick.app.ui.components.SonnerType.INFO,
+                                        durationMs = 2200L
+                                    )
+                                }
+                                com.matchpick.app.ui.screens.predict.PredictionOutcome.LOCKED -> {
+                                    sonner.show(
+                                        message = localizedContext.getString(R.string.match_locked),
+                                        description = localizedContext.getString(R.string.match_locked_notice),
+                                        type = com.matchpick.app.ui.components.SonnerType.ERROR,
+                                        durationMs = 2500L
+                                    )
+                                }
+                                com.matchpick.app.ui.screens.predict.PredictionOutcome.ALREADY_SELECTED -> Unit
+                            }
                         },
                         onShareClicked = onShareFixture
                     )

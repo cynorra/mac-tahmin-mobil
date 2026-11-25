@@ -322,7 +322,6 @@ fun MatchDetailBottomSheet(
                     modifier = Modifier
                         .size(54.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .bounceClickable(scaleDown = 0.92f) { onShare() }
                         .background(
                             Brush.linearGradient(
                                 listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan)

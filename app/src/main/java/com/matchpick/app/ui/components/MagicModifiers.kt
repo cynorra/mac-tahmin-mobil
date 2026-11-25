@@ -46,6 +46,7 @@ fun Modifier.bounceClickable(
     onClick: () -> Unit
 ): Modifier = composed {
     var isPressed by remember { mutableStateOf(false) }
+    val currentOnClick by androidx.compose.runtime.rememberUpdatedState(onClick)
     val scale by animateFloatAsState(
         targetValue = if (isPressed && enabled) scaleDown else 1f,
         animationSpec = spring(
@@ -68,7 +69,7 @@ fun Modifier.bounceClickable(
                         tryAwaitRelease()
                         isPressed = false
                     },
-                    onTap = { onClick() }
+                    onTap = { currentOnClick() }
                 )
             }
         }
