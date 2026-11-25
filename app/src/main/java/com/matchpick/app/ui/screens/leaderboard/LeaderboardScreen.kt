@@ -118,7 +118,7 @@ fun LeaderboardScreen(
                     border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
                 ) {
                     Text(
-                        text = "SEASON 26",
+                        text = stringResource(R.string.season_badge),
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -463,7 +463,7 @@ fun ReferralHubCard(
                             letterSpacing = 1.sp
                         )
                         Text(
-                            text = "KOD",
+                            text = stringResource(R.string.code_label),
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
                             color = MatchPickPalette.TextMuted

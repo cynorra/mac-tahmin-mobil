@@ -61,7 +61,7 @@ fun CommunityFeedScreen(
     modifier: Modifier = Modifier
 ) {
     var postInput by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var errorMessageRes by remember { mutableStateOf<Int?>(null) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Global, 1: Local
 
     Column(
@@ -267,9 +267,9 @@ fun CommunityFeedScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                errorMessage?.let {
+                errorMessageRes?.let { resId ->
                     Text(
-                        text = it,
+                        text = stringResource(resId),
                         color = MatchPickPalette.CrimsonLive,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(bottom = 4.dp)
@@ -284,7 +284,7 @@ fun CommunityFeedScreen(
                         value = postInput,
                         onValueChange = {
                             postInput = it
-                            errorMessage = null
+                            errorMessageRes = null
                         },
                         placeholder = {
                             Text(
@@ -316,10 +316,10 @@ fun CommunityFeedScreen(
                                     is ModerationResult.Valid -> {
                                         onSendPost(trimmed)
                                         postInput = ""
-                                        errorMessage = null
+                                        errorMessageRes = null
                                     }
                                     is ModerationResult.Invalid -> {
-                                        errorMessage = mod.reason
+                                        errorMessageRes = mod.reasonResId
                                     }
                                 }
                             }

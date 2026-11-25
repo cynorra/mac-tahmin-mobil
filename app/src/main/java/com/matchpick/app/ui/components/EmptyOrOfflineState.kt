@@ -7,9 +7,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.matchpick.app.R
 
 @Composable
 fun EmptyOrOfflineState(
@@ -33,7 +35,7 @@ fun EmptyOrOfflineState(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Connection Dropped",
+                text = stringResource(R.string.offline_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -49,7 +51,7 @@ fun EmptyOrOfflineState(
                 onClick = onRetry,
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Retry Sync")
+                Text(stringResource(R.string.offline_retry))
             }
         }
     }

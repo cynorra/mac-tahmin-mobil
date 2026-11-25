@@ -3,6 +3,7 @@ package com.matchpick.app.ui.screens.auth
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -213,9 +215,13 @@ fun CinematicSplashIntro(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "⚡",
-                            fontSize = 40.sp
+                        Image(
+                            painter = painterResource(R.drawable.ic_app_logo),
+                            contentDescription = "MatchPick Pro",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(10.dp)
+                                .clip(RoundedCornerShape(18.dp))
                         )
                     }
                 }
@@ -356,7 +362,14 @@ fun AuthSplashScreen(
                     .background(MatchPickPalette.NeonBrandGradient),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "⚡", fontSize = 36.sp)
+                Image(
+                    painter = painterResource(R.drawable.ic_app_logo),
+                    contentDescription = "MatchPick Pro",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
             }
             Spacer(modifier = Modifier.height(18.dp))
             Text(

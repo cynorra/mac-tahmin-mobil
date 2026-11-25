@@ -2,10 +2,11 @@ package com.matchpick.app.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,7 +27,7 @@ import com.matchpick.app.ui.theme.MatchPickPalette
 data class LeagueFilterItem(
     val id: String,
     val titleRes: Int,
-    val iconEmoji: String,
+    val badgeCode: String,
     val accentColor: Color
 )
 
@@ -37,14 +38,14 @@ fun LeagueFilterRow(
     modifier: Modifier = Modifier
 ) {
     val leagues = listOf(
-        LeagueFilterItem("ALL", R.string.league_all, "⚡", MatchPickPalette.NeonEmerald),
-        LeagueFilterItem("MY_PICKS", R.string.league_my_picks, "🎯", MatchPickPalette.VipGold),
-        LeagueFilterItem("ucl", R.string.league_ucl, "🏆", MatchPickPalette.NeonEmerald),
-        LeagueFilterItem("epl", R.string.league_epl, "🦁", MatchPickPalette.NeonEmerald),
-        LeagueFilterItem("laliga", R.string.league_laliga, "🇪🇸", MatchPickPalette.NeonEmerald),
-        LeagueFilterItem("superlig", R.string.league_superlig, "🇹🇷", MatchPickPalette.NeonEmerald),
-        LeagueFilterItem("bundesliga", R.string.league_bundesliga, "🇩🇪", MatchPickPalette.NeonEmerald),
-        LeagueFilterItem("seriea", R.string.league_seriea, "🇮🇹", MatchPickPalette.NeonEmerald)
+        LeagueFilterItem("ALL", R.string.league_all, "ALL", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("MY_PICKS", R.string.league_my_picks, "PRO", MatchPickPalette.VipGold),
+        LeagueFilterItem("ucl", R.string.league_ucl, "UCL", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("epl", R.string.league_epl, "ENG", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("laliga", R.string.league_laliga, "ESP", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("superlig", R.string.league_superlig, "TUR", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("bundesliga", R.string.league_bundesliga, "GER", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("seriea", R.string.league_seriea, "ITA", MatchPickPalette.NeonEmerald)
     )
 
     LazyRow(
@@ -60,7 +61,7 @@ fun LeagueFilterRow(
                 label = "leagueBg"
             )
             val borderColor by animateColorAsState(
-                targetValue = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.BorderSubtle,
+                targetValue = if (isSelected) item.accentColor else MatchPickPalette.BorderSubtle,
                 label = "leagueBorder"
             )
 
@@ -74,9 +75,11 @@ fun LeagueFilterRow(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = item.iconEmoji,
-                        fontSize = 12.sp
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(if (isSelected) item.accentColor else MatchPickPalette.TextMuted)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(

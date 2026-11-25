@@ -193,7 +193,12 @@ fun CelebrationDialog(
                             modifier = Modifier.padding(horizontal = 18.dp, vertical = 9.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(text = "⚡", fontSize = 14.sp)
+                            Icon(
+                                painter = painterResource(R.drawable.ic_flame_pro),
+                                contentDescription = null,
+                                tint = MatchPickPalette.NeonEmerald,
+                                modifier = Modifier.size(14.dp)
+                            )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
                                 text = stringResource(R.string.streak_boost_badge, streakCount),

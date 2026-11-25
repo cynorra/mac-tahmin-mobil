@@ -15,8 +15,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SportsSoccer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -96,7 +98,7 @@ fun PredictScreen(
                 .fillMaxSize()
                 .statusBarsPadding()
                 .wrapContentWidth(Alignment.CenterHorizontally)
-                .widthIn(max = 640.dp)
+                .widthIn(max = 840.dp)
         ) {
             // 1. Sleek Top Header
             Row(
@@ -221,7 +223,12 @@ fun PredictScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text(text = "⚽", fontSize = 36.sp)
+                                Icon(
+                                    imageVector = Icons.Default.SportsSoccer,
+                                    contentDescription = null,
+                                    tint = MatchPickPalette.NeonEmerald,
+                                    modifier = Modifier.size(34.dp)
+                                )
                                 Text(
                                     text = stringResource(R.string.empty_fixtures_title),
                                     style = MaterialTheme.typography.titleSmall,
@@ -918,7 +925,7 @@ private fun OddsButton(
             }
             Spacer(modifier = Modifier.height(1.dp))
             Text(
-                text = if (isSelected) "✓ " + stringResource(R.string.pick_selected) else stringResource(R.string.percentage_format, votePercent),
+                text = if (isSelected) stringResource(R.string.pick_selected) else stringResource(R.string.percentage_format, votePercent),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                 fontSize = 10.sp,

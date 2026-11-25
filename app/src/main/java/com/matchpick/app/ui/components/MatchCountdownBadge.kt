@@ -68,7 +68,7 @@ fun MatchCountdownBadge(
             }
 
             Text(
-                text = "⏳ Locks in $formattedTime",
+                text = stringResource(R.string.countdown_locks_in, formattedTime),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = if (hours == 0L && minutes < 15) Color(0xFFF59E0B) else MaterialTheme.colorScheme.outline,

@@ -275,7 +275,7 @@ def main():
                 msg = messaging.Message(
                     data={
                         "title": "MatchPick Live Fixtures",
-                        "body": "Today's Champions League & top league fixtures are live! Make your picks now ⚽",
+                        "body": "Today's Champions League and top league fixtures are live. Make your picks now.",
                         "action": "OPEN_PREDICTIONS"
                     },
                     topic="all_users"

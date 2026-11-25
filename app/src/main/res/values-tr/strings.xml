@@ -150,9 +150,9 @@
 
     <!-- Prediction Status & Anti-Exploit Feedback -->
     <string name="prediction_saved_title">Tahmin Kaydedildi</string>
-    <string name="prediction_saved_desc">+10 XP hesabınıza eklendi! Serinizi koruyun 🔥</string>
+    <string name="prediction_saved_desc">+10 XP hesabınıza eklendi. Serinizi koruyun.</string>
     <string name="prediction_updated_title">Tahmin Güncellendi</string>
-    <string name="prediction_updated_desc">Seçiminiz güncellendi. (XP maç başına yalnızca 1 kez kazanılır) 🔄</string>
+    <string name="prediction_updated_desc">Seçiminiz güncellendi. (XP maç başına yalnızca 1 kez kazanılır)</string>
     <string name="match_locked_notice">Bu maç başlamış veya tahminlere kapatılmıştır.</string>
     <string name="auth_email">E-posta</string>
     <string name="auth_password">Şifre</string>
@@ -172,6 +172,22 @@
     <string name="settings_ad_privacy_title">Reklam gizlilik ayarları</string>
     <string name="settings_ad_privacy_subtitle">Reklam izni tercihlerini gözden geçir veya değiştir</string>
     <string name="my_predictions_history_title">Tahmin Geçmişim</string>
-    <string name="my_predictions_empty">Henüz maç tahmini yapmadınız. Tahminler sekmesinden maçları seçmeye başlayın!</string>
+    <string name="my_predictions_empty">Henüz maç tahmini yapmadınız. Tahminler sekmesinden maçları seçmeye başlayın.</string>
     <string name="your_pick_badge">Tahminin: %1$s</string>
+    <string name="season_badge">SEZON 26</string>
+    <string name="code_label">KOD</string>
+    <string name="guest_analyst_name">Misafir Analist</string>
+    <string name="guest_session_label">Misafir Oturumu</string>
+    <string name="story_header_badge">MATCHPICK ARENA 2026+</string>
+    <string name="story_locked_prediction">KİLİTLİ TAHMİN</string>
+    <string name="story_win_streak">%1$d MAÇLIK SERİ AKTİF</string>
+    <string name="story_code_bonus">KOD: %1$s (+25 PTS)</string>
+    <string name="countdown_locks_in">Kapanış: %1$s</string>
+    <string name="offline_title">Bağlantı Kesildi</string>
+    <string name="offline_retry">Tekrar Dene</string>
+    <string name="mod_err_short">Metin çok kısa (en az 3 karakter).</string>
+    <string name="mod_err_long">Maksimum 280 karakter sınırını aştınız.</string>
+    <string name="mod_err_spam">Gönderiniz reklam, bağlantı veya iletişim bilgisi içeremez.</string>
+    <string name="mod_err_profanity">İçerik topluluk kurallarına aykırı ifadeler barındırıyor.</string>
+    <string name="ad_timeout_error">Zaman aşımı: Reklam sunucularına ulaşılamadı.</string>
 </resources>

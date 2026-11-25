@@ -150,9 +150,9 @@
 
     <!-- Prediction Status & Anti-Exploit Feedback -->
     <string name="prediction_saved_title">Prediction Recorded</string>
-    <string name="prediction_saved_desc">+10 XP added to your stats! Keep the streak alive 🔥</string>
+    <string name="prediction_saved_desc">+10 XP added to your stats. Keep the streak alive.</string>
     <string name="prediction_updated_title">Prediction Updated</string>
-    <string name="prediction_updated_desc">Pick changed. (XP is awarded once per match) 🔄</string>
+    <string name="prediction_updated_desc">Pick changed. (XP is awarded once per match)</string>
     <string name="match_locked_notice">This match has already started or is locked.</string>
     <string name="auth_email">Email</string>
     <string name="auth_password">Password</string>
@@ -172,6 +172,22 @@
     <string name="settings_ad_privacy_title">Ad privacy settings</string>
     <string name="settings_ad_privacy_subtitle">Review or change your ad consent choices</string>
     <string name="my_predictions_history_title">My Predictions History</string>
-    <string name="my_predictions_empty">You haven\'t made any match predictions yet. Go to Predictions tab to pick winners!</string>
+    <string name="my_predictions_empty">You haven\'t made any match predictions yet. Go to Predictions tab to pick winners.</string>
     <string name="your_pick_badge">Your Pick: %1$s</string>
+    <string name="season_badge">SEASON 26</string>
+    <string name="code_label">CODE</string>
+    <string name="guest_analyst_name">Guest Analyst</string>
+    <string name="guest_session_label">Guest Session</string>
+    <string name="story_header_badge">MATCHPICK ARENA 2026+</string>
+    <string name="story_locked_prediction">LOCKED PREDICTION</string>
+    <string name="story_win_streak">%1$d WIN STREAK ACTIVE</string>
+    <string name="story_code_bonus">CODE: %1$s (+25 PTS)</string>
+    <string name="countdown_locks_in">Locks in %1$s</string>
+    <string name="offline_title">Connection Dropped</string>
+    <string name="offline_retry">Retry Sync</string>
+    <string name="mod_err_short">Text is too short (minimum 3 characters).</string>
+    <string name="mod_err_long">Maximum 280 character limit exceeded.</string>
+    <string name="mod_err_spam">Posts cannot contain links, ads or contact info.</string>
+    <string name="mod_err_profanity">Content violates community guidelines.</string>
+    <string name="ad_timeout_error">Timed out reaching ad servers. Please try again.</string>
 </resources>

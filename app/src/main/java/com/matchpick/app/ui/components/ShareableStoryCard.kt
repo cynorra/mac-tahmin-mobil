@@ -85,7 +85,7 @@ fun ShareableStoryCard(
                         border = BorderStroke(1.dp, MatchPickPalette.NeuralViolet)
                     ) {
                         Text(
-                            text = "⚡ MATCHPICK ARENA 2026+",
+                            text = stringResource(R.string.story_header_badge),
                             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                             color = Color(0xFFE9D5FF),
                             style = MaterialTheme.typography.labelSmall,
@@ -190,7 +190,7 @@ fun ShareableStoryCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "LOCKED PREDICTION",
+                                text = stringResource(R.string.story_locked_prediction),
                                 color = MatchPickPalette.ElectricCyan,
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Black,
@@ -198,7 +198,7 @@ fun ShareableStoryCard(
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "PICK: $userPick",
+                                text = stringResource(R.string.pick_label, userPick),
                                 color = MatchPickPalette.NeonEmerald,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Black
@@ -209,7 +209,7 @@ fun ShareableStoryCard(
                     if (streakCount > 0) {
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "🔥 $streakCount WIN STREAK ACTIVE",
+                            text = stringResource(R.string.story_win_streak, streakCount),
                             color = MatchPickPalette.VipGold,
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Black
@@ -233,7 +233,7 @@ fun ShareableStoryCard(
                         border = BorderStroke(1.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.5f))
                     ) {
                         Text(
-                            text = "CODE: $referralCode (+25 PTS)",
+                            text = stringResource(R.string.story_code_bonus, referralCode),
                             color = MatchPickPalette.NeonEmerald,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Black,
@@ -330,7 +330,7 @@ private fun createStoryBitmap(
             isFakeBoldText = true
             isAntiAlias = true
         }
-        canvas.drawText("🔥 CURRENT STREAK: $streakCount IN A ROW", width / 2f, 755f, streakPaint)
+        canvas.drawText("CURRENT STREAK: $streakCount IN A ROW", width / 2f, 755f, streakPaint)
     }
 
     // Referral CTA

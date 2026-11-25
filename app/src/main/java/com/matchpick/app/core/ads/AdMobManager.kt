@@ -7,6 +7,8 @@ import android.os.Looper
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,6 +28,9 @@ object AdMobManager {
     private const val MIN_INTERVAL_MS = 240_000L // 4 dakika frekans kısıtı
     private val handler = Handler(Looper.getMainLooper())
 
+    private val _consentReady = kotlinx.coroutines.flow.MutableStateFlow(false)
+    val consentReady: kotlinx.coroutines.flow.StateFlow<Boolean> = _consentReady
+
     /** UMP (GDPR/AB-UK) onayı alındıysa veya gerekmiyorsa true. */
     fun canRequestAds(context: Context): Boolean =
         UserMessagingPlatform.getConsentInformation(context).canRequestAds()
@@ -36,6 +41,9 @@ object AdMobManager {
      */
     fun gatherConsent(activity: Activity, onReady: () -> Unit) {
         val info = UserMessagingPlatform.getConsentInformation(activity)
+        if (info.canRequestAds()) {
+            _consentReady.value = true
+        }
         info.requestConsentInfoUpdate(
             activity,
             ConsentRequestParameters.Builder().build(),
@@ -44,12 +52,17 @@ object AdMobManager {
                     if (formError != null) {
                         android.util.Log.w("GoogleAdsAnalytics", "UMP form error: ${formError.message}")
                     }
-                    if (info.canRequestAds()) onReady()
+                    if (info.canRequestAds()) {
+                        _consentReady.value = true
+                        onReady()
+                    }
                 }
             },
             { error ->
                 android.util.Log.w("GoogleAdsAnalytics", "UMP info update failed: ${error.message}")
-                if (info.canRequestAds()) onReady()
+                // UMP mesajı henüz AdMob panelinde yapılandırılmadıysa veya ağ hatası varsa bile reklam yüklemesini bloklama
+                _consentReady.value = true
+                onReady()
             }
         )
     }
@@ -69,7 +82,8 @@ object AdMobManager {
 
     fun loadInterstitial(context: Context, adUnitId: String = AdConfig.INTERSTITIAL_AD_UNIT_ID) {
         val appContext = context.applicationContext
-        if (isLoadingInterstitial || interstitialAd != null || !canRequestAds(appContext)) return
+        if (isLoadingInterstitial || interstitialAd != null) return
+        if (!canRequestAds(appContext) && !_consentReady.value) return
         isLoadingInterstitial = true
         InterstitialAd.load(
             appContext,
@@ -127,6 +141,7 @@ fun AdaptiveBannerAd(
 ) {
     val context = LocalContext.current
     val widthDp = LocalConfiguration.current.screenWidthDp
+    val consentReady by AdMobManager.consentReady.collectAsState()
     val adView = remember(adUnitId, widthDp) {
         AdView(context).apply {
             setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, widthDp))
@@ -142,7 +157,11 @@ fun AdaptiveBannerAd(
                     android.util.Log.w("GoogleAdsAnalytics", "Banner ad failed to load: ${error.message}")
                 }
             }
-            if (AdMobManager.canRequestAds(context)) loadAd(AdRequest.Builder().build())
+        }
+    }
+    androidx.compose.runtime.LaunchedEffect(adView, consentReady) {
+        if (consentReady || AdMobManager.canRequestAds(context)) {
+            adView.loadAd(AdRequest.Builder().build())
         }
     }
     DisposableEffect(adView) { onDispose { adView.destroy() } }

@@ -387,10 +387,10 @@ fun MainNavigationHost(
                     val firebaseUser = remember { FirebaseAuth.getInstance().currentUser }
                     val resolvedName = firebaseUser?.displayName?.takeIf { it.isNotBlank() }
                         ?: firebaseUser?.email?.substringBefore("@")?.takeIf { it.isNotBlank() }
-                        ?: if (currentLanguage == "tr") "Misafir Analist" else "Guest Analyst"
+                        ?: stringResource(R.string.guest_analyst_name)
                     val resolvedEmail = firebaseUser?.email?.takeIf { it.isNotBlank() }
                         ?: if (firebaseUser?.isAnonymous == true) {
-                            if (currentLanguage == "tr") "Misafir Oturumu" else "Guest Session"
+                            stringResource(R.string.guest_session_label)
                         } else "analyst@matchpick.app"
                     val resolvedAvatar = firebaseUser?.photoUrl?.toString().orEmpty()
 

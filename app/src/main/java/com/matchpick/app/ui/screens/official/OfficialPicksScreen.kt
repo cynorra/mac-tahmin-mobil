@@ -75,7 +75,7 @@ class RewardedAdController(private val context: Context) {
     private var pendingTimeoutRunnable: Runnable? = null
 
     fun loadAd(adUnitId: String = AdConfig.REWARDED_AD_UNIT_ID, onLoaded: (() -> Unit)? = null) {
-        if (!com.matchpick.app.core.ads.AdMobManager.canRequestAds(context)) return
+        if (!com.matchpick.app.core.ads.AdMobManager.canRequestAds(context) && !com.matchpick.app.core.ads.AdMobManager.consentReady.value) return
         if (isAdLoadingState.value) {
             android.util.Log.d("GoogleAdsAnalytics", "⏳ [REWARD] Ad already loading, skipping duplicate request.")
             return
@@ -179,7 +179,7 @@ class RewardedAdController(private val context: Context) {
                     val fail = pendingOnFailed
                     pendingOnFailed = null
                     isAdLoadingState.value = false
-                    fail?.invoke("Zaman aşımı: Reklam sunucularına ulaşılamadı.")
+                    fail?.invoke(context.getString(R.string.ad_timeout_error))
                 }
             }
             pendingTimeoutRunnable = timeout

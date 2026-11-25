@@ -171,7 +171,7 @@ class FeedViewModel @Inject constructor(
             hashtagRegex.findAll(post.text).forEach { match ->
                 val tag = match.value
                 if (tag.length in 3..25) {
-                    tagsSet.add("💬 $tag")
+                    tagsSet.add(tag)
                 }
             }
         }
@@ -188,11 +188,11 @@ class FeedViewModel @Inject constructor(
             val homeClean = fix.homeTeamName.split(" ").firstOrNull()?.replace(Regex("[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]"), "") ?: ""
             val awayClean = fix.awayTeamName.split(" ").firstOrNull()?.replace(Regex("[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]"), "") ?: ""
             if (homeClean.isNotEmpty() && awayClean.isNotEmpty()) {
-                tagsSet.add("🔥 #${homeClean}v${awayClean}")
+                tagsSet.add("#${homeClean}v${awayClean}")
             }
             val leagueClean = fix.leagueName.replace(Regex("[^a-zA-Z0-9çğıöşüÇĞİÖŞÜ]"), "")
             if (leagueClean.isNotEmpty() && leagueClean.length <= 15) {
-                tagsSet.add("⚡ #$leagueClean")
+                tagsSet.add("#$leagueClean")
             }
         }
 
