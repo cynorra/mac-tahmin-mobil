@@ -33,8 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.matchpick.app.R
+import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.components.NumberFlowText
 import com.matchpick.app.ui.theme.MatchPickPalette
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ProfileScreen(
@@ -50,6 +54,7 @@ fun ProfileScreen(
     onChangeLanguage: (String) -> Unit,
     isAmoledTheme: Boolean,
     onToggleAmoled: (Boolean) -> Unit,
+    pickedFixtures: List<FixtureEntity> = emptyList(),
     isGuest: Boolean = false,
     onSignInClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
@@ -273,6 +278,111 @@ fun ProfileScreen(
                 iconRes = R.drawable.ic_shield_check_pro,
                 modifier = Modifier.weight(1f)
             )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Past & Active Predictions History Card
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            color = MatchPickPalette.SurfaceDark,
+            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MatchPickPalette.GlassCardGradient)
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.my_predictions_history_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MatchPickPalette.TextPrimary
+                    )
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MatchPickPalette.EmeraldDeep,
+                        border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.5f))
+                    ) {
+                        Text(
+                            text = "${pickedFixtures.size}",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MatchPickPalette.NeonEmerald
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                if (pickedFixtures.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.my_predictions_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MatchPickPalette.TextMuted
+                    )
+                } else {
+                    val dateFormat = remember { SimpleDateFormat("dd MMM HH:mm", Locale.getDefault()) }
+                    pickedFixtures
+                        .sortedByDescending { it.matchTimestamp }
+                        .take(15)
+                        .forEachIndexed { idx, fix ->
+                            if (idx > 0) {
+                                HorizontalDivider(
+                                    color = MatchPickPalette.BorderSubtle,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "${fix.homeTeamName} vs ${fix.awayTeamName}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MatchPickPalette.TextPrimary
+                                    )
+                                    val dateText = if (fix.matchTimestamp > 0L) {
+                                        "${fix.leagueName} • ${dateFormat.format(Date(fix.matchTimestamp * 1000L))}"
+                                    } else {
+                                        fix.leagueName
+                                    }
+                                    Text(
+                                        text = dateText,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MatchPickPalette.TextMuted,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MatchPickPalette.EmeraldDeep,
+                                    border = BorderStroke(0.5.dp, MatchPickPalette.NeonEmerald)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.your_pick_badge, fix.userPick ?: "-"),
+                                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MatchPickPalette.NeonEmerald
+                                    )
+                                }
+                            }
+                        }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

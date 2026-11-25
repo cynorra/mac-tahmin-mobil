@@ -42,10 +42,10 @@ interface FixtureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFixtures(fixtures: List<FixtureEntity>)
 
-    @Query("DELETE FROM daily_fixtures WHERE id NOT IN (:activeIds)")
+    @Query("DELETE FROM daily_fixtures WHERE id NOT IN (:activeIds) AND userPick IS NULL")
     suspend fun deleteFixturesNotIn(activeIds: List<String>)
 
-    @Query("DELETE FROM daily_fixtures WHERE matchTimestamp < :minTimestamp")
+    @Query("DELETE FROM daily_fixtures WHERE matchTimestamp < :minTimestamp AND userPick IS NULL")
     suspend fun deleteExpiredFixtures(minTimestamp: Long)
 
     @Query("UPDATE daily_fixtures SET userPick = :pick WHERE id = :fixtureId")

@@ -13,6 +13,7 @@
 
     <!-- Categories & Leagues -->
     <string name="league_all">All Matches</string>
+    <string name="league_my_picks">My Picks</string>
     <string name="league_ucl">Champions League</string>
     <string name="league_epl">Premier League</string>
     <string name="league_laliga">La Liga</string>
@@ -170,4 +171,7 @@
     <string name="dlg_cancel">Cancel</string>
     <string name="settings_ad_privacy_title">Ad privacy settings</string>
     <string name="settings_ad_privacy_subtitle">Review or change your ad consent choices</string>
+    <string name="my_predictions_history_title">My Predictions History</string>
+    <string name="my_predictions_empty">You haven\'t made any match predictions yet. Go to Predictions tab to pick winners!</string>
+    <string name="your_pick_badge">Your Pick: %1$s</string>
 </resources>

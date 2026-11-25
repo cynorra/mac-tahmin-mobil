@@ -394,6 +394,10 @@ fun MainNavigationHost(
                         } else "analyst@matchpick.app"
                     val resolvedAvatar = firebaseUser?.photoUrl?.toString().orEmpty()
 
+                    val pickedList = remember(predictState.fixtures) {
+                        predictState.fixtures.filter { !it.userPick.isNullOrEmpty() }
+                    }
+
                     ProfileScreen(
                         userName = resolvedName,
                         userEmail = resolvedEmail,
@@ -401,6 +405,7 @@ fun MainNavigationHost(
                         currentStreak = predictState.streak,
                         bestStreak = maxOf(predictState.streak, leaderboardState.currentUser.streak),
                         totalPoints = predictState.points,
+                        pickedFixtures = pickedList,
                         isNotificationsEnabled = isNotificationsEnabled,
                         onToggleNotifications = {
                             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)

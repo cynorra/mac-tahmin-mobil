@@ -38,6 +38,7 @@ fun LeagueFilterRow(
 ) {
     val leagues = listOf(
         LeagueFilterItem("ALL", R.string.league_all, "⚡", MatchPickPalette.NeonEmerald),
+        LeagueFilterItem("MY_PICKS", R.string.league_my_picks, "🎯", MatchPickPalette.VipGold),
         LeagueFilterItem("ucl", R.string.league_ucl, "🏆", MatchPickPalette.NeonEmerald),
         LeagueFilterItem("epl", R.string.league_epl, "🦁", MatchPickPalette.NeonEmerald),
         LeagueFilterItem("laliga", R.string.league_laliga, "🇪🇸", MatchPickPalette.NeonEmerald),

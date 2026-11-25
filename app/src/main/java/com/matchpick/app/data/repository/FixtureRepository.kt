@@ -55,6 +55,21 @@ class FixtureRepository @Inject constructor(
         }
     }
 
+    suspend fun syncUserPredictionsFromRemote(userId: String) = withContext(Dispatchers.IO) {
+        if (userId.isBlank()) return@withContext
+        try {
+            val snap = firestore.collection("predictions")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            for (doc in snap.documents) {
+                val fId = doc.getString("fixtureId") ?: continue
+                val pick = doc.getString("pick") ?: continue
+                fixtureDao.updateUserPick(fId, pick)
+            }
+        } catch (_: Exception) {}
+    }
+
     suspend fun refreshDailyFixtures(force: Boolean = false) = withContext(Dispatchers.IO) {
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply {
             timeZone = TimeZone.getTimeZone("UTC")

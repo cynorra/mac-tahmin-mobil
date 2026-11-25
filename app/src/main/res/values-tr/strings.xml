@@ -13,6 +13,7 @@
 
     <!-- Categories & Leagues -->
     <string name="league_all">Tüm Maçlar</string>
+    <string name="league_my_picks">Tahminlerim</string>
     <string name="league_ucl">Şampiyonlar Ligi</string>
     <string name="league_epl">Premier League</string>
     <string name="league_laliga">La Liga</string>
@@ -170,4 +171,7 @@
     <string name="dlg_cancel">Vazgeç</string>
     <string name="settings_ad_privacy_title">Reklam gizlilik ayarları</string>
     <string name="settings_ad_privacy_subtitle">Reklam izni tercihlerini gözden geçir veya değiştir</string>
+    <string name="my_predictions_history_title">Tahmin Geçmişim</string>
+    <string name="my_predictions_empty">Henüz maç tahmini yapmadınız. Tahminler sekmesinden maçları seçmeye başlayın!</string>
+    <string name="your_pick_badge">Tahminin: %1$s</string>
 </resources>

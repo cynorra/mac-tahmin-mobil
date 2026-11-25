@@ -51,6 +51,9 @@ class PredictViewModel @Inject constructor(
 
         if (!uid.isNullOrEmpty()) {
             try {
+                repository.syncUserPredictionsFromRemote(uid)
+            } catch (_: Exception) {}
+            try {
                 val doc = firestore.collection("users").document(uid).get().await()
                 if (doc.exists()) {
                     remotePoints = doc.getLong("totalPoints")
