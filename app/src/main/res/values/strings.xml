@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MatchPick Pro</string>
-    <string name="play_store_title">MatchPick: AI Match Predictor</string>
-    <string name="play_store_short_description">AI-powered football predictions, live match analytics, xG telemetry &amp; tips.</string>
+    <string name="play_store_title">MatchPick: Soccer Predictions</string>
+    <string name="play_store_short_description">Today\'s soccer predictions &amp; AI match tips: pick 1X2, earn XP, top the ranks.</string>
     <string name="app_tagline">Next-Gen Football Predictions &amp; Community</string>
 
     <!-- Navigation -->
