@@ -30,16 +30,8 @@ class MatchPickApplication : Application(), Configuration.Provider {
         // Crashlytics User Identifier bağlama
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
 
-        // AdMob SDK'sını initialize et (AdMob internal looper/binder gereksinimleri için)
+        // AdMob SDK'sını initialize et (Gerçek üretim reklamları)
         try {
-            val reqConfig = com.google.android.gms.ads.RequestConfiguration.Builder()
-                .setTestDeviceIds(listOf(
-                    com.google.android.gms.ads.AdRequest.DEVICE_ID_EMULATOR,
-                    "103A05E61DA40E4E55DB9E16111C6F1C"
-                ))
-                .build()
-            MobileAds.setRequestConfiguration(reqConfig)
-
             MobileAds.initialize(this) { status ->
                 android.util.Log.d("GoogleAdsAnalytics", "MobileAds initialized: $status")
             }

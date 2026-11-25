@@ -64,9 +64,17 @@ fun PredictScreen(
     var selectedDate by remember { mutableStateOf(todayIso) }
     var telemetrySheetFixture by remember { mutableStateOf<FixtureEntity?>(null) }
 
-    val filteredFixtures = remember(fixtures, selectedLeague) {
-        if (selectedLeague == "ALL") fixtures
+    val filteredFixtures = remember(fixtures, selectedLeague, selectedDate) {
+        val byLeague = if (selectedLeague == "ALL") fixtures
         else fixtures.filter { it.leagueId.equals(selectedLeague, ignoreCase = true) }
+
+        val dateFmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val byDate = byLeague.filter { fix ->
+            if (fix.matchTimestamp <= 0L) true
+            else dateFmt.format(Date(fix.matchTimestamp * 1000L)) == selectedDate
+        }
+        // Seçilen günde maç varsa sadece o günün maçlarını göster, yoksa seçilen ligin yaklaşan tüm maçlarını göster
+        byDate.ifEmpty { byLeague }
     }
 
     Box(

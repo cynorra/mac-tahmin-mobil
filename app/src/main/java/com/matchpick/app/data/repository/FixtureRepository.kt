@@ -92,10 +92,16 @@ class FixtureRepository @Inject constructor(
                 }
                 // REPLACE kullanıcının tahminini siliyordu -> XP tekrar kazanılabiliyordu. Mevcut tahminleri koru.
                 val picks = fixtureDao.getPickedFixtures().associate { it.id to it.userPick }
-                fixtureDao.insertFixtures(entities.map { e -> picks[e.id]?.let { e.copy(userPick = it) } ?: e })
+                if (entities.isNotEmpty()) {
+                    val activeIds = entities.map { it.id }
+                    fixtureDao.deleteFixturesNotIn(activeIds)
+                    fixtureDao.insertFixtures(entities.map { e -> picks[e.id]?.let { e.copy(userPick = it) } ?: e })
+                }
             }
         } catch (_: Exception) {
-            // Offline fallback: Hata anında Room'daki mevcut verilerle devam edilir
+            // Offline fallback: Hata anında Room'daki mevcut verilerle devam edilir, ancak çok eski maçları temizle
+            val cutoff = (System.currentTimeMillis() / 1000L) - 43200L // 12 saatten eski bitmiş maçları temizle
+            try { fixtureDao.deleteExpiredFixtures(cutoff) } catch (_: Exception) {}
         }
     }
 }

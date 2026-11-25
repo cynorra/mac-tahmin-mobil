@@ -16,6 +16,10 @@ class LiveFixtureSeeder @Inject constructor(
      * populated by the sports API engine (TheSportsDB). Zero fake or mock fixtures.
      */
     suspend fun seedLiveFixturesIfEmpty() {
+        val cutoff = (System.currentTimeMillis() / 1000L) - 43200L
+        try {
+            fixtureDao.deleteExpiredFixtures(cutoff)
+        } catch (_: Exception) {}
         if (fixtureDao.getFixtureCount() > 0) return
 
         try {
