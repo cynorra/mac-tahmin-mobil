@@ -57,10 +57,11 @@ fun DateSelectorStrip(
             )
 
             Surface(
-                onClick = { onDateSelected(item.dateString) },
+                modifier = Modifier.bounceClickable(scaleDown = 0.94f) { onDateSelected(item.dateString) },
                 shape = RoundedCornerShape(20.dp),
                 color = bgColor,
-                border = BorderStroke(if (isSelected) 1.2.dp else 0.5.dp, borderColor)
+                shadowElevation = if (isSelected) 6.dp else 0.dp,
+                border = BorderStroke(if (isSelected) 1.3.dp else 0.6.dp, borderColor)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

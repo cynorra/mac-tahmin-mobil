@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
             analyticsTracker.logUserSessionStarted(uid, isGuest = auth.currentUser?.isAnonymous == true)
         }
 
-        MatchPickPalette.isAmoled = getSharedPreferences("app_settings", MODE_PRIVATE).getBoolean("pref_amoled", true)
+        MatchPickPalette.isAmoled = getSharedPreferences("app_settings", MODE_PRIVATE).getBoolean("pref_amoled", false)
 
         setContent {
             val predictState by predictViewModel.uiState.collectAsStateWithLifecycle()

@@ -35,6 +35,7 @@ import coil.compose.AsyncImage
 import com.matchpick.app.R
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.components.NumberFlowText
+import com.matchpick.app.ui.components.spatialGlassHighlight
 import com.matchpick.app.ui.theme.MatchPickPalette
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -67,7 +68,7 @@ fun ProfileScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatchPickPalette.DeepObsidian)
+            .background(Color.Transparent)
             .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 10.dp)
@@ -136,10 +137,17 @@ fun ProfileScreen(
 
         // Luxury Player Passport Card
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            color = MatchPickPalette.SurfaceDark,
-            border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+            modifier = Modifier
+                .fillMaxWidth()
+                .spatialGlassHighlight(
+                    accentColor = MatchPickPalette.NeonEmerald,
+                    cornerRadius = 22.dp,
+                    glowAlpha = 0.12f
+                ),
+            shape = RoundedCornerShape(22.dp),
+            color = MatchPickPalette.SurfaceDark.copy(alpha = 0.92f),
+            shadowElevation = 14.dp,
+            border = BorderStroke(1.dp, MatchPickPalette.HeroBorderBrush)
         ) {
             Column(
                 modifier = Modifier
@@ -595,10 +603,15 @@ private fun StatCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        modifier = modifier.spatialGlassHighlight(
+            accentColor = valueColor,
+            cornerRadius = 18.dp,
+            glowAlpha = 0.10f
+        ),
+        shape = RoundedCornerShape(18.dp),
+        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.90f),
+        shadowElevation = 8.dp,
+        border = BorderStroke(0.8.dp, MatchPickPalette.GlassCardBorderBrush)
     ) {
         Column(
             modifier = Modifier

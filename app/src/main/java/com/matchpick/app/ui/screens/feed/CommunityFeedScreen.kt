@@ -36,6 +36,7 @@ import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.core.moderation.ClientContentModerator
 import com.matchpick.app.core.moderation.ModerationResult
 import com.matchpick.app.ui.components.bounceClickable
+import com.matchpick.app.ui.components.spatialGlassHighlight
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -67,7 +68,7 @@ fun CommunityFeedScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatchPickPalette.DeepObsidian)
+            .background(Color.Transparent)
             .statusBarsPadding()
             .wrapContentWidth(Alignment.CenterHorizontally)
             .widthIn(max = 720.dp)
@@ -350,10 +351,17 @@ fun PostCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        modifier = modifier
+            .fillMaxWidth()
+            .spatialGlassHighlight(
+                accentColor = MatchPickPalette.ElectricCyan,
+                cornerRadius = 20.dp,
+                glowAlpha = 0.08f
+            ),
+        shape = RoundedCornerShape(20.dp),
+        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.90f),
+        shadowElevation = 8.dp,
+        border = BorderStroke(1.dp, MatchPickPalette.GlassCardBorderBrush)
     ) {
         Column(
             modifier = Modifier

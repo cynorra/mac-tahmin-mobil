@@ -41,7 +41,9 @@ import com.matchpick.app.core.analytics.AnalyticsTracker
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.components.LocalSonner
 import com.matchpick.app.ui.components.SonnerHost
+import com.matchpick.app.ui.components.SpatialAuroraBackground
 import com.matchpick.app.ui.components.rememberSonnerState
+import com.matchpick.app.ui.components.spatialGlassHighlight
 import com.matchpick.app.ui.screens.feed.CommunityFeedScreen
 import com.matchpick.app.ui.screens.feed.FeedViewModel
 import com.matchpick.app.ui.screens.leaderboard.LeaderboardScreen
@@ -156,80 +158,115 @@ fun MainNavigationHost(
         androidx.compose.ui.platform.LocalContext provides localizedContext,
         LocalSonner provides sonnerState
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MatchPickPalette.DeepObsidian)
+        ) {
+            SpatialAuroraBackground()
+
             Scaffold(
-                containerColor = MatchPickPalette.DeepObsidian,
+                containerColor = Color.Transparent,
             bottomBar = {
-                Surface(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .navigationBarsPadding(),
-                    color = Color(0xFA0B111D),
-                    border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle),
-                    shadowElevation = 16.dp
+                        .navigationBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    NavigationBar(
-                        containerColor = Color.Transparent,
-                        tonalElevation = 0.dp,
-                        modifier = Modifier.height(64.dp)
-                    ) {
-                        items.forEach { screen ->
-                            val isSelected = currentRoute == screen.route
-                            val iconScale by animateFloatAsState(
-                                targetValue = if (isSelected) 1.12f else 1.0f,
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessMedium
-                                ),
-                                label = "navIconScale"
+                    Surface(
+                        modifier = Modifier
+                            .widthIn(max = 520.dp)
+                            .fillMaxWidth()
+                            .spatialGlassHighlight(
+                                accentColor = MatchPickPalette.NeonEmerald,
+                                cornerRadius = 26.dp,
+                                glowAlpha = 0.06f
+                            ),
+                        shape = RoundedCornerShape(26.dp),
+                        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.94f),
+                        border = BorderStroke(
+                            1.dp,
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.22f),
+                                    MatchPickPalette.BorderSubtle
+                                )
                             )
+                        ),
+                        shadowElevation = 22.dp
+                    ) {
+                        NavigationBar(
+                            containerColor = Color.Transparent,
+                            tonalElevation = 0.dp,
+                            modifier = Modifier.height(64.dp)
+                        ) {
+                            items.forEach { screen ->
+                                val isSelected = currentRoute == screen.route
+                                val iconScale by animateFloatAsState(
+                                    targetValue = if (isSelected) 1.14f else 1.0f,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        stiffness = Spring.StiffnessMedium
+                                    ),
+                                    label = "navIconScale"
+                                )
 
-                            NavigationBarItem(
-                                icon = {
-                                    Box(
-                                        modifier = if (isSelected) {
-                                            Modifier
-                                                .clip(RoundedCornerShape(14.dp))
-                                                .background(MatchPickPalette.EmeraldDeep)
-                                                .padding(horizontal = 12.dp, vertical = 4.dp)
-                                        } else {
-                                            Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                                        },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            screen.icon,
-                                            contentDescription = null,
-                                            modifier = Modifier.scale(iconScale),
-                                            tint = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
+                                NavigationBarItem(
+                                    icon = {
+                                        Box(
+                                            modifier = if (isSelected) {
+                                                Modifier
+                                                    .clip(RoundedCornerShape(14.dp))
+                                                    .background(
+                                                        Brush.horizontalGradient(
+                                                            listOf(
+                                                                MatchPickPalette.NeonEmerald.copy(alpha = 0.22f),
+                                                                MatchPickPalette.ElectricCyan.copy(alpha = 0.16f)
+                                                            )
+                                                        )
+                                                    )
+                                                    .padding(horizontal = 14.dp, vertical = 4.dp)
+                                            } else {
+                                                Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                                            },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                screen.icon,
+                                                contentDescription = null,
+                                                modifier = Modifier.scale(iconScale),
+                                                tint = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted
+                                            )
+                                        }
+                                    },
+                                    label = {
+                                        Text(
+                                            text = stringResource(screen.titleRes),
+                                            fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
+                                            color = if (isSelected) MatchPickPalette.TextPrimary else MatchPickPalette.TextMuted,
+                                            fontSize = 10.sp
                                         )
-                                    }
-                                },
-                                label = {
-                                    Text(
-                                        text = stringResource(screen.titleRes),
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                        color = if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.TextMuted,
-                                        fontSize = 10.sp
-                                    )
-                                },
-                                selected = isSelected,
-                                colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = Color.Transparent
-                                ),
-                                onClick = {
-                                    if (currentRoute != screen.route) {
-                                        haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
+                                    },
+                                    selected = isSelected,
+                                    colors = NavigationBarItemDefaults.colors(
+                                        indicatorColor = Color.Transparent
+                                    ),
+                                    onClick = {
+                                        if (currentRoute != screen.route) {
+                                            haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
                                             }
-                                            launchSingleTop = true
-                                            restoreState = true
                                         }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }

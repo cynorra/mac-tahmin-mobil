@@ -46,6 +46,7 @@ import com.matchpick.app.ui.components.NumberFlowText
 import com.matchpick.app.ui.components.SonnerType
 import com.matchpick.app.ui.components.bounceClickable
 import com.matchpick.app.ui.components.magicBorderBeam
+import com.matchpick.app.ui.components.spatialGlassHighlight
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -207,7 +208,7 @@ fun OfficialPicksScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MatchPickPalette.DeepObsidian)
+            .background(Color.Transparent)
             .statusBarsPadding()
             .wrapContentWidth(Alignment.CenterHorizontally)
             .widthIn(max = 720.dp)
@@ -370,17 +371,23 @@ fun VipPickCard(
     modifier: Modifier = Modifier
 ) {
     val cardBorder = if (pick.isVipLocked) {
-        BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        BorderStroke(1.dp, MatchPickPalette.GlassCardBorderBrush)
     } else {
-        BorderStroke(0.8.dp, MatchPickPalette.NeonEmerald.copy(alpha = 0.45f))
+        BorderStroke(1.2.dp, MatchPickPalette.HeroBorderBrush)
     }
 
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (!pick.isVipLocked) Modifier.magicBorderBeam(strokeWidth = 1.dp) else Modifier),
-        shape = RoundedCornerShape(20.dp),
-        color = MatchPickPalette.SurfaceDark,
+            .spatialGlassHighlight(
+                accentColor = if (pick.isVipLocked) MatchPickPalette.VipGold else MatchPickPalette.NeonEmerald,
+                cornerRadius = 22.dp,
+                glowAlpha = 0.11f
+            )
+            .then(if (!pick.isVipLocked) Modifier.magicBorderBeam(strokeWidth = 1.2.dp, cornerRadius = 22.dp) else Modifier),
+        shape = RoundedCornerShape(22.dp),
+        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.92f),
+        shadowElevation = 12.dp,
         border = cardBorder
     ) {
         Column(

@@ -34,6 +34,7 @@ import com.matchpick.app.core.ads.AdConfig
 import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.ui.components.NumberFlowText
 import com.matchpick.app.ui.components.magicBorderBeam
+import com.matchpick.app.ui.components.spatialGlassHighlight
 import com.matchpick.app.ui.theme.MatchPickPalette
 
 @Immutable
@@ -61,7 +62,7 @@ fun LeaderboardScreen(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
-            .background(MatchPickPalette.DeepObsidian)
+            .background(Color.Transparent)
     ) {
         val isWideScreen = maxWidth >= 600.dp
 
@@ -386,10 +387,17 @@ fun ReferralHubCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(0.5.dp, MatchPickPalette.BorderSubtle)
+        modifier = modifier
+            .fillMaxWidth()
+            .spatialGlassHighlight(
+                accentColor = MatchPickPalette.NeonEmerald,
+                cornerRadius = 20.dp,
+                glowAlpha = 0.10f
+            ),
+        shape = RoundedCornerShape(20.dp),
+        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.92f),
+        shadowElevation = 10.dp,
+        border = BorderStroke(1.dp, MatchPickPalette.GlassCardBorderBrush)
     ) {
         Column(
             modifier = Modifier

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.MatchPick" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">#04070E</item>
-        <item name="android:statusBarColor">#04070E</item>
-        <item name="android:navigationBarColor">#080D1A</item>
+        <item name="android:windowBackground">#080E1C</item>
+        <item name="android:statusBarColor">#080E1C</item>
+        <item name="android:navigationBarColor">#080E1C</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

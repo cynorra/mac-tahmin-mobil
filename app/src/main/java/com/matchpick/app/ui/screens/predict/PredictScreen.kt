@@ -43,6 +43,7 @@ import com.matchpick.app.core.ads.AdaptiveBannerAd
 import com.matchpick.app.ui.components.NumberFlowText
 import com.matchpick.app.ui.components.bounceClickable
 import com.matchpick.app.ui.components.magicBorderBeam
+import com.matchpick.app.ui.components.spatialGlassHighlight
 import com.matchpick.app.data.local.FixtureEntity
 import com.matchpick.app.ui.components.DateSelectorStrip
 import com.matchpick.app.ui.components.LeagueFilterRow
@@ -91,7 +92,7 @@ fun PredictScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MatchPickPalette.DeepObsidian)
+            .background(Color.Transparent)
     ) {
         Column(
             modifier = Modifier
@@ -319,65 +320,95 @@ fun SpotlightDerbyHeroCard(
     onOpenTelemetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val animatedSweep by animateFloatAsState(
+        targetValue = (fixture.officialConfidence / 100f).coerceIn(0f, 1f) * 360f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "heroDialSweep"
+    )
+    val kickoffFormat = remember { SimpleDateFormat("dd MMM • HH:mm", Locale.getDefault()) }
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .magicBorderBeam(strokeWidth = 1.2.dp),
-        shape = RoundedCornerShape(24.dp),
-        color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(
-            1.dp,
-            Brush.verticalGradient(
-                listOf(
-                    MatchPickPalette.NeonEmerald.copy(alpha = 0.45f),
-                    MatchPickPalette.BorderSubtle,
-                    Color(0x10FFFFFF)
-                )
+            .spatialGlassHighlight(
+                accentColor = MatchPickPalette.NeonEmerald,
+                cornerRadius = 26.dp,
+                glowAlpha = 0.14f
             )
-        )
+            .magicBorderBeam(strokeWidth = 1.4.dp, cornerRadius = 26.dp),
+        shape = RoundedCornerShape(26.dp),
+        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.92f),
+        shadowElevation = 18.dp,
+        border = BorderStroke(1.dp, MatchPickPalette.HeroBorderBrush)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MatchPickPalette.GlassCardGradient)
-                .padding(18.dp)
+                .background(MatchPickPalette.HeroCardGradient)
+                .padding(20.dp)
         ) {
-            // Hero Badge Header
+            // Hero Badge Header + League & Kickoff Time
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = MatchPickPalette.VipDeep,
-                    border = BorderStroke(0.6.dp, MatchPickPalette.VipGold.copy(alpha = 0.35f))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 9.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        shape = RoundedCornerShape(10.dp),
+                        color = MatchPickPalette.VipDeep,
+                        border = BorderStroke(0.8.dp, MatchPickPalette.VipGold.copy(alpha = 0.45f))
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_crown_luxury),
-                            contentDescription = null,
-                            tint = MatchPickPalette.VipGold,
-                            modifier = Modifier.size(13.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = stringResource(R.string.marquee_derby_badge).uppercase(),
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            letterSpacing = 0.8.sp,
-                            color = MatchPickPalette.VipGold
-                        )
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_crown_luxury),
+                                contentDescription = null,
+                                tint = MatchPickPalette.VipGold,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.marquee_derby_badge).uppercase(),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 0.7.sp,
+                                color = MatchPickPalette.VipGold
+                            )
+                        }
+                    }
+
+                    if (fixture.matchTimestamp > 0L) {
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = MatchPickPalette.SurfaceElevated.copy(alpha = 0.85f),
+                            border = BorderStroke(0.6.dp, MatchPickPalette.BorderSubtle)
+                        ) {
+                            Text(
+                                text = kickoffFormat.format(Date(fixture.matchTimestamp * 1000L)),
+                                modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MatchPickPalette.ElectricCyan,
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
 
                 IconButton(
                     onClick = onShare,
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(34.dp)
                         .clip(CircleShape)
                         .background(MatchPickPalette.SurfaceElevated)
                 ) {
@@ -428,7 +459,7 @@ fun SpotlightDerbyHeroCard(
 
                             // Background Track
                             drawArc(
-                                color = Color(0xFF141F30),
+                                color = Color(0xFF1A2942),
                                 startAngle = 0f,
                                 sweepAngle = 360f,
                                 useCenter = false,
@@ -437,18 +468,17 @@ fun SpotlightDerbyHeroCard(
                                 style = Stroke(width = strokeWidth)
                             )
 
-                            // Confidence Arc with Smooth Caps
-                            val sweepAngle = (fixture.officialConfidence / 100f).coerceIn(0f, 1f) * 360f
+                            // Confidence Arc with Smooth Animated Sweep
                             drawArc(
                                 brush = Brush.sweepGradient(
                                     listOf(
                                         MatchPickPalette.NeonEmerald,
-                                        Color(0xFF00E5FF),
+                                        MatchPickPalette.ElectricCyan,
                                         MatchPickPalette.NeonEmerald
                                     )
                                 ),
                                 startAngle = -90f,
-                                sweepAngle = sweepAngle,
+                                sweepAngle = animatedSweep,
                                 useCenter = false,
                                 topLeft = topLeft,
                                 size = arcSize,
@@ -675,19 +705,30 @@ fun FixtureCard(
     modifier: Modifier = Modifier,
     onCardClicked: (() -> Unit)? = null
 ) {
+    val hasUserPick = !fixture.userPick.isNullOrEmpty()
     Surface(
         onClick = { onCardClicked?.invoke() },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .spatialGlassHighlight(
+                accentColor = if (hasUserPick) MatchPickPalette.NeonEmerald else MatchPickPalette.ElectricCyan,
+                cornerRadius = 22.dp,
+                glowAlpha = if (hasUserPick) 0.12f else 0.06f
+            ),
         enabled = onCardClicked != null,
-        shape = RoundedCornerShape(20.dp),
-        color = MatchPickPalette.SurfaceDark,
-        border = BorderStroke(0.6.dp, MatchPickPalette.BorderSubtle)
+        shape = RoundedCornerShape(22.dp),
+        color = MatchPickPalette.SurfaceDark.copy(alpha = 0.90f),
+        shadowElevation = 10.dp,
+        border = BorderStroke(
+            if (hasUserPick) 1.1.dp else 0.8.dp,
+            if (hasUserPick) MatchPickPalette.HeroBorderBrush else MatchPickPalette.GlassCardBorderBrush
+        )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MatchPickPalette.GlassCardGradient)
-                .padding(14.dp)
+                .padding(16.dp)
         ) {
             // Header: League & Stadium + Share
             Row(
@@ -773,8 +814,8 @@ fun FixtureCard(
                             color = MatchPickPalette.TextSecondary
                         )
                     }
-                    Spacer(modifier = Modifier.height(3.dp))
-                    LiveCountdownBadge()
+                    Spacer(modifier = Modifier.height(4.dp))
+                    LiveCountdownBadge(matchTimestamp = fixture.matchTimestamp)
                 }
 
                 TeamEmblemColumn(
@@ -895,19 +936,24 @@ private fun OddsButton(
     Surface(
         modifier = modifier
             .scale(scale)
-            .height(52.dp)
-            .bounceClickable(scaleDown = 0.95f, enabled = isEnabled) { onClick(choice) },
-        shape = RoundedCornerShape(14.dp),
+            .height(54.dp)
+            .bounceClickable(scaleDown = 0.94f, enabled = isEnabled) { onClick(choice) },
+        shape = RoundedCornerShape(16.dp),
         color = if (isSelected) MatchPickPalette.EmeraldDeep else MatchPickPalette.SurfaceElevated,
+        shadowElevation = if (isSelected) 8.dp else 2.dp,
         border = BorderStroke(
-            if (isSelected) 1.dp else 0.5.dp,
-            if (isSelected) MatchPickPalette.NeonEmerald else MatchPickPalette.BorderSubtle
+            if (isSelected) 1.3.dp else 0.7.dp,
+            if (isSelected) {
+                Brush.horizontalGradient(listOf(MatchPickPalette.NeonEmerald, MatchPickPalette.ElectricCyan))
+            } else {
+                Brush.verticalGradient(listOf(Color.White.copy(alpha = 0.14f), MatchPickPalette.BorderSubtle))
+            }
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (isSelected) MatchPickPalette.LuxurySelectedGradient else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))),
+                .background(if (isSelected) MatchPickPalette.LuxurySelectedGradient else MatchPickPalette.UnselectedOddsGradient),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -985,7 +1031,12 @@ private fun TeamEmblemColumn(
 }
 
 @Composable
-private fun LiveCountdownBadge() {
+private fun LiveCountdownBadge(matchTimestamp: Long = 0L) {
+    val timeString = remember(matchTimestamp) {
+        if (matchTimestamp > 0L) {
+            SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(matchTimestamp * 1000L))
+        } else null
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(top = 2.dp)
@@ -998,10 +1049,11 @@ private fun LiveCountdownBadge() {
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
-            text = stringResource(R.string.match_status_upcoming),
+            text = timeString ?: stringResource(R.string.match_status_upcoming),
             style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.SemiBold,
             color = MatchPickPalette.TextSecondary,
-            fontSize = 10.sp
+            fontSize = 10.5.sp
         )
     }
 }
