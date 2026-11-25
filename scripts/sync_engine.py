@@ -211,9 +211,20 @@ def main():
     if not fixtures:
         fixtures = fetch_fallback_sportsdb_fixtures()
 
-    # Keep up to 40 upcoming/today fixtures so daily bundle is rich and fast
-    fixtures = fixtures[:40]
-    print(f"Fetched {len(fixtures)} real fixtures from sports API.")
+    # Build a diverse daily bundle: include all of today's & tomorrow's matches, plus top domestic league matches across the week
+    by_league = {}
+    for f in fixtures:
+        by_league.setdefault(f['leagueId'], []).append(f)
+
+    balanced = []
+    # Guarantee up to 8 fixtures from each domestic league (superlig, epl, laliga, bundesliga, seriea) and up to 18 from ucl/uel
+    caps = {'superlig': 8, 'epl': 8, 'laliga': 8, 'bundesliga': 8, 'seriea': 8, 'ucl': 18}
+    for lg, items in by_league.items():
+        balanced.extend(items[:caps.get(lg, 8)])
+
+    balanced.sort(key=lambda x: x['matchTimestamp'])
+    fixtures = balanced
+    print(f"Fetched {len(fixtures)} real fixtures from sports API across {len(by_league)} leagues.")
 
     # Save to local assets for offline/embedded instant seed
     assets_dir = os.path.join(os.path.dirname(__file__), "..", "app", "src", "main", "assets")
